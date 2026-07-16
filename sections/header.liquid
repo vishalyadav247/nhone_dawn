@@ -480,16 +480,28 @@
     {% if settings.logo %}
       "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
+    {%- capture same_as_links -%}
+      {{- settings.social_twitter_link -}}|
+      {{- settings.social_facebook_link -}}|
+      {{- settings.social_pinterest_link -}}|
+      {{- settings.social_instagram_link -}}|
+      {{- settings.social_tiktok_link -}}|
+      {{- settings.social_tumblr_link -}}|
+      {{- settings.social_snapchat_link -}}|
+      {{- settings.social_youtube_link -}}|
+      {{- settings.social_vimeo_link -}}
+    {%- endcapture -%}
+    {%- assign same_as_links_array = same_as_links | split: '|' -%}
     "sameAs": [
-      {{ settings.social_twitter_link | json }},
-      {{ settings.social_facebook_link | json }},
-      {{ settings.social_pinterest_link | json }},
-      {{ settings.social_instagram_link | json }},
-      {{ settings.social_tiktok_link | json }},
-      {{ settings.social_tumblr_link | json }},
-      {{ settings.social_snapchat_link | json }},
-      {{ settings.social_youtube_link | json }},
-      {{ settings.social_vimeo_link | json }}
+      {%- assign printed_link = false -%}
+      {%- for social_link in same_as_links_array -%}
+        {%- assign trimmed_link = social_link | strip -%}
+        {%- if trimmed_link != blank -%}
+          {%- if printed_link -%},{%- endif -%}
+          {{ trimmed_link | json }}
+          {%- assign printed_link = true -%}
+        {%- endif -%}
+      {%- endfor -%}
     ],
     "url": {{ request.origin | append: page.url | json }}
   }
