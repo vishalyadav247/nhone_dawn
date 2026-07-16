@@ -1,5 +1,11 @@
 {%- liquid
   assign og_title = page_title | default: shop.name
+  assign brand_suffix = ' | ' | append: shop.name
+  assign og_title = og_title | replace: brand_suffix, ''
+  assign brand_suffix = ' - ' | append: shop.name
+  assign og_title = og_title | replace: brand_suffix, ''
+  assign brand_suffix = ' – ' | append: shop.name
+  assign og_title = og_title | replace: brand_suffix, '' | strip
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
   assign og_description = page_description | default: shop.description | default: shop.name

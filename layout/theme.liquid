@@ -51,10 +51,18 @@
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
     {%- endunless -%}
 
+    {%- liquid
+      assign clean_page_title = page_title
+      assign brand_suffix = ' | ' | append: shop.name
+      assign clean_page_title = clean_page_title | replace: brand_suffix, ''
+      assign brand_suffix = ' - ' | append: shop.name
+      assign clean_page_title = clean_page_title | replace: brand_suffix, ''
+      assign brand_suffix = ' – ' | append: shop.name
+      assign clean_page_title = clean_page_title | replace: brand_suffix, '' | strip
+    -%}
     <title>
-      {{- page_title -}}
+      {{- clean_page_title -}}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
     </title>
 
     {% if page_description %}
