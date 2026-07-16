@@ -1,0 +1,249 @@
+{% schema %}
+{
+  "name": "Custom Blog Slider",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Section Content"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Select Blog"
+    },
+    {
+      "type": "number",
+      "id": "article_limit",
+      "label": "Number of Articles",
+      "default": 6
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Blog Slider"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="blog-slider-wrapper">
+  <div class="page-width">
+    <div class="blog-header">
+      <h2 class="section-heading">{{ section.settings.heading }}</h2>
+      <div class="blog-desc">{{ section.settings.content }}</div>
+    </div>
+
+    <div class="owl-carousel blog-slider">
+      {% assign blog = blogs[section.settings.blog.handle] %}
+      {% if blog %}
+        {% for article in blog.articles limit: section.settings.article_limit %}
+          <div class="item blog-slide">
+            <a href="{{ article.url }}">
+              <div class="blog-card">
+                {% if article.image %}
+                  <div class="blog-image">
+                    <picture>
+                      {% if article.metafields.custom.mobile_cover_image != blank %}
+                        <source
+                          media="(max-width: 749px)"
+                          srcset="{{ article.metafields.custom.mobile_cover_image | image_url: width: 500 }}"
+                        >
+                      {% endif %}
+
+                      {% if article.metafields.custom.desktop_cover_image != blank %}
+                        <source
+                          media="(min-width: 750px)"
+                          srcset="{{ article.metafields.custom.desktop_cover_image | image_url: width: 500 }}"
+                        >
+                      {% endif %}
+
+                      <img
+                        src="{{ article.metafields.custom.desktop_cover_image | image_url: width: 500 }}"
+                        alt="{{ article.title }}"
+                        loading="lazy"
+                        width="1200"
+                        height="auto"
+                      >
+                    </picture>
+                  </div>
+                {% endif %}
+                <div class="blog-info">
+                  <h3 class="blog-heading">{{ article.title }}</h3>
+                  <p class="blog-date">{{ article.published_at | date: '%B %d, %Y' }}</p>
+                  <p class="blog-excerpt">
+                    {{ article.excerpt_or_content | strip_html | truncate: 150 }}
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No blog selected or blog does not exist.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .blog-slider-wrapper {
+    margin-bottom:20px;
+    background: #fdfdfd;
+
+    a{
+      text-decoration:none;
+    }
+  }
+
+  .blog-header {
+    margin-bottom:20px;
+  }
+
+  .blog-card {
+    display: grid;
+    grid-template-columns:1fr;
+    background: #fff;
+    overflow: hidden;
+    height: 100%;
+    position:relative;
+
+    @media screen and (min-width:1100px){
+      grid-template-columns:1fr 1fr;
+      min-height: 350px;
+    }
+  }
+
+  .blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .blog-info {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    left: -30px;
+    background: #ffffff;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 290px;
+  }
+
+  .blog-tag {
+    font-size: 12px;
+    font-weight: bold;
+    color: #001f4d;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .blog-heading {
+    font-weight: 500;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .blog-date {
+    font-size: 13px;
+    color: #888;
+    margin:5px 0 0 0;
+  }
+
+  .blog-excerpt {
+    font-size: 14px;
+    color: #333;
+    margin-bottom:0;
+  }
+
+  .read-more {
+    align-self: flex-start;
+    background: #001f4d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s;
+  }
+
+  .read-more:hover {
+    background: #003366;
+  }
+
+  /* Owl Carousel Custom Nav Placement */
+  .blog-slider-wrapper button.owl-prev{
+      left: -30px;
+  }
+
+  @media(max-width: 768px){
+    .blog-card{
+      flex-direction: column !important;
+      border: 1px solid #c0c0c0ba;
+    }
+    .blog-image img {
+      width: 100% !important;
+    }
+
+    .blog-desc{
+      text-align:center;
+    }
+    .blog-info {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      left: 0;
+      background: #ffffff;
+      top: 0;
+      transform: none;
+      height: fit-content;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const $carousel = $('.blog-slider');
+    $carousel.owlCarousel({
+      loop: true,
+      margin: 20,
+      nav: false,
+      dots: true,
+      navText: [
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+					fill="none" stroke="currentColor" stroke-width="2" 
+					stroke-linecap="round" stroke-linejoin="round" 
+					class="feather feather-chevron-left">
+					<polyline points="15 18 9 12 15 6"></polyline>
+				</svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+					fill="none" stroke="currentColor" stroke-width="2" 
+					stroke-linecap="round" stroke-linejoin="round" 
+					class="feather feather-chevron-right">
+					<polyline points="9 18 15 12 9 6"></polyline>
+				</svg>`,
+      ],
+      responsive: {
+        0: {
+          items: 1,
+        },
+        600: {
+          items: 1,
+        },
+        1100: {
+          items: 2,
+          nav: true,
+        },
+      },
+    });
+  });
+</script>

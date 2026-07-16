@@ -1,0 +1,5 @@
+<span style="margin-right: 8px; display: inline-block; width: 16px; height: 16px;">
+  <svg class="icon icon-location" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C6.686 2 4 4.686 4 8c0 4.28 6 10 6 10s6-5.72 6-10c0-3.314-2.686-6-6-6zm0 8.5A2.5 2.5 0 1 1 10 5.5a2.5 2.5 0 0 1 0 5z"/>
+  </svg>
+</span>

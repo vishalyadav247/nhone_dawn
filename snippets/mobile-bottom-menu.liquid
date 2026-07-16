@@ -1,0 +1,136 @@
+<style>
+  .mobile-bottom-menu{
+    display:none;
+  }
+    @media screen and (max-width:767px){
+      .mobile-bottom-menu{
+        height: 55px;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background:#fff;
+        z-index: 11;
+        padding:7px 0 7px 0;
+        display:flex;
+        justify-content:space-evenly;
+
+        a{
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          text-decoration:none;
+          svg{
+            fill:#757575;
+          }
+          > span{
+          font-size:10px;
+          color:#757575;
+          }
+          &.active{
+            svg{
+              fill:#7b059f;
+            }
+            > span{
+            font-size:10px;
+            color:#7b059f;
+            }
+
+            {% comment %} &:before{
+              content: '';
+              display: block;
+              width: 76px;
+              height: 2px;
+              background: #7b059f;
+              top: -7px;
+              position: absolute;
+            } {% endcomment %}
+          }
+        }
+        #cart-icon-bubble{
+          svg{
+            stroke:#757575;
+          }
+          &.active{
+            svg{
+              stroke:#7b059f;
+            }
+          }
+        }
+
+        .cart-count-bubble{
+          top:0;
+        }
+      }
+
+      footer{
+        margin-bottom:55px;
+      }
+    }
+</style>
+
+<div class="mobile-bottom-menu">
+  <a href="/" style="position:relative;bottom:-2px;" class="{% if template.name == 'index' %}active{% endif %}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" viewBox="0 0 512 512">
+      <path d="M240 6.1c9.1-8.2 22.9-8.2 32 0l232 208c9.9 8.8 10.7 24 1.8 33.9s-24 10.7-33.9 1.8l-8-7.2 0 205.3c0 35.3-28.7 64-64 64l-288 0c-35.3 0-64-28.7-64-64l0-205.3-8 7.2c-9.9 8.8-25 8-33.9-1.8s-8-25 1.8-33.9L240 6.1zm16 50.1L96 199.7 96 448c0 8.8 7.2 16 16 16l48 0 0-104c0-39.8 32.2-72 72-72l48 0c39.8 0 72 32.2 72 72l0 104 48 0c8.8 0 16-7.2 16-16l0-248.3-160-143.4zM208 464l96 0 0-104c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24l0 104z"/>
+    </svg>
+    <span>Home</span>
+  </a>
+  <a
+    href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
+    class=""
+    rel="nofollow"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="25" viewBox="0 0 448 512" style="margin-top:4px;">
+      <path d="M144 128a80 80 0 1 1 160 0 80 80 0 1 1 -160 0zm208 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0zM48 480c0-70.7 57.3-128 128-128l96 0c70.7 0 128 57.3 128 128l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-97.2-78.8-176-176-176l-96 0C78.8 304 0 382.8 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8z"/>
+    </svg>
+    <span>Account</span>
+  </a>
+
+  <a
+    href="{{ routes.cart_url }}"
+    class="link focus-inset {% if template.name == 'cart' %}active{% endif %}"
+    id="cart-icon-bubble"
+    style="position:relative;"
+  >
+    <svg
+      width="37px"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      style="fill:none !important;stroke-width:1.5;margin-top:-1px;"
+    >
+      <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g clip-path="url(#clip0_15_35)"> <rect width="24" height="24" fill="none" stroke="#fff"></rect> <path d="M5.33331 6H19.8672C20.4687 6 20.9341 6.52718 20.8595 7.12403L20.1095 13.124C20.0469 13.6245 19.6215 14 19.1172 14H16.5555H9.44442H7.99998" stroke="inherit" stroke-linejoin="round"></path> <path d="M2 4H4.23362C4.68578 4 5.08169 4.30341 5.19924 4.74003L8.30076 16.26C8.41831 16.6966 8.81422 17 9.26638 17H19" stroke="inherit" stroke-linecap="round" stroke-linejoin="round"></path> <circle cx="10" cy="20" r="1" stroke="inherit" stroke-linejoin="round"></circle> <circle cx="17.5" cy="20" r="1" stroke="inherit" stroke-linejoin="round"></circle> </g> <defs> <clipPath id="clip0_15_35"> <rect width="24" height="24" fill="white"></rect> </clipPath> </defs> </g>
+    </svg>
+    <span>Basket</span>
+    {%- if cart != empty -%}
+      <div class="cart-count-bubble">
+        {%- if cart.item_count < 100 -%}
+          <span aria-hidden="true">{{ cart.item_count }}</span>
+        {%- endif -%}
+        <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+      </div>
+    {%- endif -%}
+  </a>
+
+  <a
+    class="mobile-whatsapp-widget"
+    href="https://wa.me/919996775500?text=Hello!%20I%20have%20a%20question%20about%20your%20store"
+    target="_blank"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="28px" viewBox="0 0 448 512">
+      <path d="M380.9 97.1c-41.9-42-97.7-65.1-157-65.1-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480 117.7 449.1c32.4 17.7 68.9 27 106.1 27l.1 0c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3 18.6-68.1-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1s56.2 81.2 56.1 130.5c0 101.8-84.9 184.6-186.6 184.6zM325.1 300.5c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8s-14.3 18-17.6 21.8c-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7s-12.5-30.1-17.1-41.2c-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2s-9.7 1.4-14.8 6.9c-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.6 57.4c2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4s4.6-24.1 3.2-26.4c-1.3-2.5-5-3.9-10.5-6.6z"/>
+    </svg>
+    <span>Contact</span>
+  </a>
+
+  <a
+    aria-label="Track Order"
+    class="mobile-track-order-link"
+    href="#"
+    id="mobileBottomMenuTrackOrder"
+  >
+    {% render 'track-order-icon' %}
+    <span>Track Order</span>
+  </a>
+</div>

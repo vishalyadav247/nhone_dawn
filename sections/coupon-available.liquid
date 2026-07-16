@@ -1,0 +1,132 @@
+<div class="page-width section-template--coupon-available coupon-available-page">
+  <h1 class="collection-hero__title">{{ section.settings['section-heading'] }}</h1>
+  <div class="coupon-wrapper">
+    {% for block in section.blocks %}
+      <div class="coupon-card">
+        <div class="card card--standard color-background-1">
+          <div class="card__content">
+            {% if block.settings.image %}
+              <img src="{{ block.settings.image | img_url: '100x100' }}" alt="Coupon Logo" class="margin-bottom">
+            {% endif %}
+
+            <h3 class="h3">{{ block.settings.title }}</h3>
+            <p class="margin-bottom">{{ block.settings.description }}</p>
+
+            {% if block.settings.code != blank %}
+              <div class="coupon-code field margin-bottom">
+                <input type="text" readonly value="{{ block.settings.code }}" class="field__input">
+                <button class="button button--secondary small-hide copy-btn" data-code="{{ block.settings.code }}">
+                  Copy
+                </button>
+                <button
+                  class="field__button copy-btn medium-hide large-up-hide"
+                  type="button"
+                  data-code="{{ block.settings.code }}"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-copy"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+            {% endif %}
+            <!-- Copy icon button for mobile -->
+
+            <a href="{{ block.settings.redeem_url }}" class="button margin-bottom">Redeem</a>
+
+            <div class="flex space-between caption expiry-date">
+              <span
+                >Valid Till: <strong>{{ block.settings.expiry }}</strong></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.classList.contains('copy-btn')) {
+      const code = e.target.getAttribute('data-code');
+      navigator.clipboard.writeText(code);
+      e.target.innerText = 'Copied!';
+      setTimeout(() => {
+        e.target.innerText = 'Copy';
+      }, 2000);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Coupon Available",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section-heading",
+      "label": "Main Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "coupon",
+      "name": "Coupon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Coupon Logo"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Coupon Title",
+          "default": "Flat ₹100 OFF on APP"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Coupon Description",
+          "default": "Only on purchases above ₹499/- through our app only"
+        },
+        {
+          "type": "text",
+          "id": "code",
+          "label": "Coupon Code",
+          "default": "APP100"
+        },
+        {
+          "type": "url",
+          "id": "redeem_url",
+          "label": "Redeem URL",
+          "default": "/collections/all"
+        },
+        {
+          "type": "text",
+          "id": "expiry",
+          "label": "Expiry Date",
+          "default": "31st January 2026"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coupon Available Section"
+    }
+  ]
+}
+{% endschema %}

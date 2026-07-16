@@ -1,0 +1,88 @@
+<style>
+  .breadcrumbs{
+      nav{
+          height: 45px;
+          display: flex;
+          align-items: center;
+          flex-wrap:wrap;
+          gap: 5px;
+
+          span{
+              color:var(--theme-color-secondary);
+          }
+
+          @media screen and (max-width:767px){
+            font-size:1rem;
+          }
+      }
+      .product-breadcrumb-title{
+        max-width: 200px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        @media screen and (max-width:400px)
+      }
+    }
+</style>
+
+<div class="breadcrumbs">
+  <div class="page-width">
+    {% unless template == 'index' %}
+      <nav role="navigation" aria-label="breadcrumbs">
+        <a href="{{ routes.root_url }}" title="Home">Home</a>
+        <span aria-hidden="true"> / </span>
+
+        {% if template contains 'product' %}
+          {% assign path_parts = request.path | split: '/' %}
+          {% assign collection_handle = '' %}
+
+          {% if path_parts.size > 3 and path_parts[1] == 'collections' %}
+            {% assign collection_handle = path_parts[2] %}
+          {% endif %}
+
+          {% if collection_handle != '' %}
+            {% assign breadcrumb_collection = collections[collection_handle] %}
+            {% if breadcrumb_collection %}
+              <a href="{{ breadcrumb_collection.url }}" title="{{ breadcrumb_collection.title }}">
+                {{ breadcrumb_collection.title | escape }}
+              </a>
+              <span aria-hidden="true"> / </span>
+            {% endif %}
+          {% endif %}
+
+          <span class="product-breadcrumb-title">{{ product.title | escape }}</span>
+
+        {% elsif template contains 'collection' and collection.handle %}
+          {% if current_tags %}
+            <a href="{{ collection.url }}" title="{{ collection.title }}">
+              {{ collection.title | escape }}
+            </a>
+            <span aria-hidden="true"> / </span>
+            <span>{{ current_tags | join: ' + ' }}</span>
+          {% else %}
+            <span>{{ collection.title | escape }}</span>
+          {% endif %}
+
+        {% elsif template == 'blog' %}
+          <span>Blogs</span>
+
+        {% elsif template == 'article' %}
+          <a href="{{ blog.url }}" title="{{ blog.title }}">
+            {{ blog.title | escape }}
+          </a>
+          <span aria-hidden="true"> - </span>
+          <span>{{ article.title | escape }}</span>
+
+        {% elsif template contains 'cart' %}
+          <span>Your cart</span>
+
+        {% elsif template contains 'page' %}
+          <span>{{ page.title | escape }}</span>
+
+        {% else %}
+          <span>{{ page_title | escape }}</span>
+        {% endif %}
+      </nav>
+    {% endunless %}
+  </div>
+</div>

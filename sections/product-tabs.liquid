@@ -1,0 +1,179 @@
+<div class="product-tabs container page-width">
+  <ul class="tab-nav">
+    {% if section.settings.tab1_title != blank %}
+      <li class="active" data-tab="tab1">{{ section.settings.tab1_title }}</li>
+    {% endif %}
+    {% if product.metafields.custom.spec_table.value != blank %}
+      <li data-tab="tab2">{{ section.settings.tab2_title }}</li>
+    {% endif %}
+    {% if section.settings.tab3_title != blank %}
+      <li data-tab="tab3">{{ section.settings.tab3_title }}</li>
+    {% endif %}
+    {% if section.settings.tab4_title != blank %}
+      <li data-tab="tab4">{{ section.settings.tab4_title }}</li>
+    {% endif %}
+  </ul>
+
+  <div class="tab-content">
+    {% if section.settings.tab1_content != blank %}
+      <div id="tab1" class="tab-pane active">
+        {{ product.description }}
+      </div>
+    {% endif %}
+    {% if section.settings.tab2_content != blank %}
+      <div id="tab2" class="tab-pane ">
+        {% assign rows = product.metafields.custom.spec_table.value %}
+        {% if rows.size > 0 %}
+          <table class="custom-spec-table">
+            <tbody>
+              {% for row in rows %}
+                {% if row.section %}
+                  <tr>
+                    <th colspan="2" class="section-header">{{ row.section }}</th>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td>{{ row.label }}</td>
+                    <td>{{ row.value }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if section.settings.tab3_content != blank %}
+      <div id="tab3" class="tab-pane">
+        {% for block in section.blocks %}
+          {% if block.type == '@app' %}
+            {% render block %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if section.settings.tab4_content != blank %}
+      <div id="tab4" class="tab-pane">
+        {{ section.settings.tab4_content }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .product-tabs {
+    margin-top: 30px;
+  }
+  .tab-nav {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    border-bottom: 1px solid #ddd;
+  }
+  .tab-nav li {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    margin-right: 5px;
+    background: #f9f9f9;
+  }
+  .tab-nav li.active {
+    background: #fff;
+    font-weight: bold;
+  }
+  .tab-content .tab-pane {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ddd;
+  }
+  .tab-content .tab-pane.active {
+    display: block;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.tab-nav li');
+    const panes = document.querySelectorAll('.tab-pane');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', function () {
+        tabs.forEach((t) => t.classList.remove('active'));
+        panes.forEach((p) => p.classList.remove('active'));
+
+        this.classList.add('active');
+        const activePane = document.getElementById(this.getAttribute('data-tab'));
+        if (activePane) {
+          activePane.classList.add('active');
+        }
+      });
+    });
+  });
+</script>
+{% schema %}
+{
+  "name": "Product Tabs",
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "tab1_title",
+      "label": "Tab 1 Title",
+      "default": "Description"
+    },
+    {
+      "type": "richtext",
+      "id": "tab1_content",
+      "label": "Tab 1 Content",
+      "default": "<p>Enter the product description here.</p>"
+    },
+    {
+      "type": "text",
+      "id": "tab2_title",
+      "label": "Tab 2 Title",
+      "default": "Specifications"
+    },
+    {
+      "type": "richtext",
+      "id": "tab2_content",
+      "label": "Tab 2 Content",
+      "default": "<p>Enter the product specifications here.</p>"
+    },
+    {
+      "type": "text",
+      "id": "tab3_title",
+      "label": "Tab 3 Title",
+      "default": "Reviews"
+    },
+    {
+      "type": "richtext",
+      "id": "tab3_content",
+      "label": "Tab 3 Content",
+      "default": "<p>Enter customer reviews here.</p>"
+    },
+    {
+      "type": "text",
+      "id": "tab4_title",
+      "label": "Tab 4 Title",
+      "default": "Q&A"
+    },
+    {
+      "type": "richtext",
+      "id": "tab4_content",
+      "label": "Tab 4 Content",
+      "default": "<p>Enter questions and answers here.</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Tabs",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

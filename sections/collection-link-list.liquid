@@ -1,0 +1,84 @@
+<style>
+  .collection-link-list{
+      margin-bottom:25px;
+      line-height: 18px;
+
+      .collection-link-list__links{
+        margin-top:10px;
+      }
+
+      a{
+          color:#000000bf;
+          text-decoration:none;
+          font-size:13px;
+          margin: 0 3px;
+
+          &:hover{
+              color:#000000;
+              text-decoration:underline;
+          }
+      }
+  }
+</style>
+<div class="collection-link-list page-width">
+  {% if section.settings.section_heading != blank %}
+    <h2 class="collection-link-list__heading section-heading">
+      {{ section.settings.section_heading }}
+    </h2>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="collection-link-list__links">
+      {% for block in section.blocks %}
+        {% if block.settings.collection != blank %}
+          <a
+            href="{{ block.settings.collection.url }}"
+            class="collection-link-list__item"
+          >
+            {{- block.settings.collection.title -}}
+          </a>
+          {% unless forloop.last %}
+            <span class="collection-link-list__separator">|</span>
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Collection Link List",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "Popular Car Accessories List"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_link",
+      "name": "Collection Link",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Link List",
+      "blocks": [
+        {
+          "type": "collection_link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

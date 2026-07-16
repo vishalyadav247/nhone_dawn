@@ -1,0 +1,91 @@
+<section class="color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
+  {% assign imagesSelected = false %}
+  <div class="bannerCarousel owl-carousel">
+    {% for block in section.blocks %}
+      {% if block.settings.image_desktop != blank or block.settings.image_mobile != blank %}
+        {% assign imagesSelected = true %}
+        <div class="carousel-item">
+          <a
+            href="{{ block.settings.image_url | default: '#' }}"
+            {% if block.settings.open_in_new_tab %}
+              target="_blank"
+            {% endif %}
+          >
+            <picture>
+              <!-- Mobile image for screens up to 749px -->
+              <source media="(max-width: 749px)" srcset="{{ block.settings.image_mobile | img_url: 'master' }}">
+              <!-- Desktop image for screens 750px and wider -->
+              <source media="(min-width: 750px)" srcset="{{ block.settings.image_desktop | img_url: 'master' }}">
+              <!-- Fallback image -->
+              <img
+                src="{{ block.settings.image_desktop | img_url: 'master' }}"
+                alt="{{ block.settings.image_alt | escape }}"
+                width="auto"
+                height="auto"
+              >
+            </picture>
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+    {% if imagesSelected == false %}
+      <p>Please upload desktop and mobile images and add URLs in the block settings.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Banner Carousel",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Banner image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Desktop Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Alt Text",
+          "default": "Image description"
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "Link URL",
+          "default": "/"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open link in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner Carousel",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

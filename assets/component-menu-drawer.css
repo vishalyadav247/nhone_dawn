@@ -1,0 +1,230 @@
+/* --- Root Icon & Wrapper Adjustments --- */
+.header__icon--menu {
+  position: initial;
+}
+
+/* --- Overlay Styling --- */
+
+.header__icon--menu:before{
+  top:0 !important;
+  height:100% !important;
+  position:fixed !important;
+  transition:all 0.2s ease-out;
+}
+.header__icon--menu[aria-expanded=false]:before{
+  left:-100%;
+}
+.header__icon--menu[aria-expanded=true]:before{
+  left:0;
+}
+
+/* --- Drawer Base --- */
+.menu-drawer {
+  position: fixed;
+  left: -100%;
+  top: 0;
+  width: 100%;
+  max-width:310px;
+  transition:all 0.2s ease-out;
+  z-index: 3;
+  background-color: rgb(var(--color-background));
+  overflow-x: hidden;
+  padding: 25px 0 0 0;
+  height: 100%;
+}
+
+.header__icon--menu[aria-expanded=true] + #menu-drawer{
+  left:0;
+}
+
+.header__icon--menu[aria-expanded=false] + #menu-drawer{
+  left:-100%;
+}
+#menu-drawer{
+  .menu-drawer__inner-container{
+    height:100%;
+
+    .menu-drawer__navigation-container{
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+  details[open] > summary .svg-wrapper {
+    transform: rotate(0deg);
+  }
+
+  details > summary .svg-wrapper {
+    transform: rotate(-90deg);
+  }
+}
+
+/* --- Accordion Core Mechanics --- */
+.menu-drawer__menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-drawer__menu-item {
+  padding: 1.1rem 3rem;
+  font-size: 1.8rem;
+  text-decoration: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+/* --- Submenu Accordion --- */
+.menu-drawer__submenu {
+  max-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  transform: scaleY(0.98);
+  transform-origin: top;
+  background-color: rgba(var(--color-background), 1);
+  transition:
+    max-height var(--duration-default) ease-out,
+    opacity var(--duration-default) ease-out,
+    transform var(--duration-default) ease-out;
+}
+
+details[open] > .menu-drawer__submenu {
+  visibility: visible;
+  opacity: 1;
+  max-height: 100%;
+  transform: scaleY(1);
+} 
+
+/* --- Caret/Icon Handling --- */
+.menu-drawer__menu-item .svg-wrapper {
+  width: 15px;
+  transition: transform 0.3s ease-out;
+}
+
+/* --- Utility Links --- */
+.menu-drawer__utility-links {
+  background-color: rgba(var(--color-foreground), 0.03);
+  padding: 2rem 3rem;
+}
+
+/* --- Responsive Boundaries --- */
+@media screen and (min-width: 750px) {
+  .menu-drawer {
+    width: 40rem;
+    border-right: var(--drawer-border-width) solid rgba(var(--color-foreground), var(--drawer-border-opacity));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .menu-drawer.country-selector-open {
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .menu-drawer__menu-item {
+    font-size: 1.6rem;
+  }
+}
+
+@media screen and (max-width:1000px){
+  .section-header{
+    z-index:100 !important;
+  }
+}
+
+.header__heading-link{
+  padding:0;
+}
+
+header-drawer{
+  summary .icon-caret {
+    position: relative;
+    right:0;
+    top:-1px;
+  }
+
+  .level-one{
+    > li{
+      > details{
+        > summary{
+          color:rgba(0,0,0,1);
+          font-weight:500;
+
+          &:hover{
+            color:rgba(0,0,0,1);
+          }
+        }
+      }
+      > a{
+        color:rgba(0,0,0,1);
+        font-weight:500;
+      }
+    }
+  }
+
+  .level-two{
+    > li{
+      > details{
+        > summary{
+          color:rgba(0,0,0,0.7);
+          font-weight:500;
+        }
+      }
+      > a{
+        color:rgba(0,0,0,0.7);
+        font-weight:500;
+      }
+    }
+  }
+  .level-three{
+    li{
+      a{
+        color:rgba(0,0,0,0.5);
+        font-weight:500;
+      }
+    }
+  }
+  details[open]>.menu-drawer__submenu{
+    max-height:100%;
+  }
+  .icon.icon-close{
+    position: fixed;
+    right: 12px;
+    z-index: 111;
+    top: 10px;
+    stroke: #fff;
+    display:none;
+  }
+  .menu-drawer__utility-links{
+    display:flex;
+    justify-content:space-between;
+    padding-top: 0;
+    padding-bottom: 0;
+    align-items: center;
+
+    .menu-drawer__account.link{
+      display: flex;
+      gap: 10px;
+      font-size: 20px;
+
+      .svg-wrapper{
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .list-social{
+      .svg-wrapper,svg{
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
+}
+
+

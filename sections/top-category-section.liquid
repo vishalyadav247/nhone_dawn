@@ -1,0 +1,71 @@
+<section class="top-categories-section">
+  <div class="container page-width">
+    <h2 class="section-heading">Top Categories</h2>
+    <div class="top-categories-carousel">
+      {% for category in section.blocks %}
+        <div class="category-item text-center">
+          <a href="{{ category.settings.category_url }}" class="category-link">
+            {% if category.settings.category_image %}
+              <img
+                src="{{ category.settings.category_image | image_url: width: 400 }}"
+                alt="{{ category.settings.category_alt | escape }}"
+                class="category-img"
+                loading="lazy"
+                width="auto"
+                height="auto"
+              >
+            {% else %}
+              <p>No image set</p>
+            {% endif %}
+            <p class="category-title carousel-caption">{{ category.settings.category_title }}</p>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Top Categories Carousel",
+  "settings": [],
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "category_block",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "category_image",
+          "label": "Category Icon/Image"
+        },
+        {
+          "type": "text",
+          "id": "category_alt",
+          "label": "Alt Text",
+          "default": "Category Image Alt Text"
+        },
+        {
+          "type": "text",
+          "id": "category_title",
+          "label": "Category Title",
+          "default": "Category Name"
+        },
+        {
+          "type": "url",
+          "id": "category_url",
+          "label": "Category Link",
+          "default": "/collections/all"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Top Categories",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

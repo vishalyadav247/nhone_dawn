@@ -1,0 +1,39 @@
+<div class="page-width-desktop container color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
+  <div class="modal">
+    <div class="modal-content offer-modal">
+      <span class="close-button">×</span>
+      {% if section.settings.popup_link != blank %}
+        <a href="{{ section.settings.popup_link }}" target="_blank">
+          <img src="{{ section.settings.image_popup | img_url: 'master' }}" height="auto" width="100%">
+        </a>
+      {% else %}
+        <img src="{{ section.settings.image_popup | img_url: 'master' }}" height="auto" width="100%">
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Popup Image",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_popup",
+      "label": "Select Popup Image"
+    },
+    {
+      "type": "url",
+      "id": "popup_link",
+      "label": "Popup Link URL",
+      "default": "/"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Popup Image",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

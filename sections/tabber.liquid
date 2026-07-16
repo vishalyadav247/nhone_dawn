@@ -1,0 +1,196 @@
+{{ 'section-tabber-form.css' | asset_url | stylesheet_tag }}
+<div class="warranty-form-container">
+  <div class="container">
+    <h2 class="section-heading" style="margin-top:0;">Register Product Warranty</h2>
+    <div>
+      <div class="success-message" id="registerSuccess">Your product warranty has been registered successfully!</div>
+      <div class="error-message" id="registerError">There was an error registering your product. Please try again.</div>
+
+      <form id="warrantyForm">
+        <div class="form-group">
+          <label for="name">Full Name*</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address*</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="mobile">Mobile Number* (10 digits)</label>
+          <input
+            type="tel"
+            id="mobile"
+            name="mobile"
+            pattern="[0-9]{10}"
+            maxlength="10"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="pincode">Pincode*</label>
+          <input type="text" id="pincode" name="pincode" pattern="[0-9]{6}" required>
+        </div>
+
+        <div class="form-group">
+          <label for="city">City*</label>
+          <input type="text" id="city" name="city" required>
+        </div>
+
+        <div class="form-group">
+          <label for="state">State*</label>
+          <input type="text" id="state" name="state" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productName">Product Name*</label>
+          <input type="text" id="productName" name="productName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="purchaseDate">Date of Purchase*</label>
+          <input type="date" id="purchaseDate" name="purchaseDate" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productType">Product Type*</label>
+          <select id="productType" name="productType" required>
+            <option value="">Select Product Type</option>
+            {% liquid
+              assign productTypes = section.settings['product-types']
+              assign typeArr = productTypes | split: ','
+            %}
+            {% for option in typeArr %}
+              <option value="{{ option | strip | downcase | replace : " ","-" }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="serialNumber">Serial Number*</label>
+          <input type="text" id="serialNumber" name="serialNumber" required>
+        </div>
+
+        <div class="form-group">
+          <label for="invoiceImage">Upload Invoice / Warranty Card*</label>
+          <input
+            type="file"
+            id="invoiceImage"
+            name="invoiceImage"
+            accept="image/*"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="orderNumber">Order Number*</label>
+          <input type="text" id="orderNumber" name="orderNumber" required>
+        </div>
+
+        <div style="text-align: center; width: 100%;margin-top:50px;">
+          <button type="submit" id="registerWarranty" class="btn-submit">
+            <span class="btn-text">Register Warranty</span>
+            <span class="btn-spinner"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div style="margin-top:30px;">
+      <p>
+        <strong>Disclaimer:</strong><br>
+        <em
+          >Warranty for products is provided and claimed directly by the respective brand/manufacturer. NH ONE will
+          assist and guide customers in the warranty claim process wherever required.<br>
+          For NH ONE–branded products, warranty claims will be handled directly by NH ONE.</em
+        >
+      </p>
+    </div>
+  </div>
+</div>
+{{ 'https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js' | script_tag }}
+<script>
+  jQuery('#warrantyForm').on('submit', function (e) {
+    e.preventDefault();
+
+    var filter = /[0-9]{10}/;
+    var pattern = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;
+
+    var leadName = $('#name').val();
+    var leadPhone = $('#mobile').val();
+    var leadEmail = $('#email').val();
+
+    if (leadName === '') {
+      alert('Please enter your name.');
+      return false;
+    } else if (leadPhone === '' || !filter.test(leadPhone)) {
+      alert('Invalid mobile number.');
+      return false;
+    } else if (leadEmail !== '' && !pattern.test(leadEmail)) {
+      alert('Invalid email address.');
+      return false;
+    }
+
+    var fileInput = document.getElementById('invoiceImage');
+    var file = fileInput.files[0];
+
+    if (!file) {
+      alert('Please upload invoice image.');
+      return false;
+    }
+
+    var reader = new FileReader();
+
+    reader.onload = function () {
+      var base64Image = reader.result.split(',')[1];
+
+      var formData = $('#warrantyForm').serializeArray();
+
+      formData.push({ name: 'image', value: base64Image }, { name: 'image_name', value: file.name });
+
+      {% comment %} AKfycbwEmgtdhiJ9O6wULXjdhWpxpTIbuA5RV8bEhjgDQ1Q-sdvT2UccIK8zkOjaD4uMlg8o5w {% endcomment %}
+      $('#registerWarranty').addClass('loading').prop('disabled', true);
+
+      $.ajax({
+        url: 'https://script.google.com/macros/s/AKfycbzLgad6niEJoNq7CK8DsLQ9IBZaMzykRvLROgHFeTP-yCEJl3S_uRVo7uxabNb1eI9L/exec',
+        type: 'POST',
+        data: $.param(formData),
+        success: function (result) {
+          $('#registerWarranty').removeClass('loading').prop('disabled', false);
+
+          $('#warrantyForm')[0].reset();
+          $('#warrantyForm').hide();
+          $('#registerSuccess').show();
+        },
+        error: function () {
+          $('#registerWarranty').removeClass('loading').prop('disabled', false);
+          $('#registerError').show().delay(5000).fadeOut();
+        },
+      });
+    };
+
+    reader.readAsDataURL(file);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Warranty Form",
+  "settings": [
+    {
+      "type": "textarea",
+      "label": "Product Type",
+      "id": "product-types",
+      "info": "Add product types comma separated"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Warranty Form"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,82 @@
+<style>
+  .sub-collections {
+    position: relative;
+
+    @media screen and (min-width:768px){
+      margin: 30px 0 !important;
+    }
+
+    .sub-collection-card__link{
+      text-decoration:none;
+
+      h3{
+        font-size: 13px;
+        font-weight: 500;
+        max-width: 125px;
+        margin: 15px auto;
+      }
+    }
+
+    .owl-stage-outer{
+      overflow:hidden;
+      position:relative;
+
+      .owl-stage{
+        display:flex;
+      }
+    }
+
+    .owl-nav {
+      button{
+        padding:0;
+        padding-top:3px;
+
+        &.owl-next{
+          padding-left:3px;
+        }
+      }
+
+      &.disabled{
+        display:none !important;
+      }
+    }
+
+    .sub-collection-card {
+      text-align: center;
+      max-width:200px;
+    }
+
+    .sub-collection-card__image{
+      img {
+        width: 110px;
+        height: 110px;
+        object-fit:contain;
+      }
+    }
+  }
+</style>
+
+<div class="">
+  {% if collection.metafields.custom.sub_collections != blank %}
+    <div class="sub-collections" id="sub-collections">
+      {% for sub_collection in collection.metafields.custom.sub_collections.value %}
+        <div class="sub-collection-card carousel-item item">
+          <a href="{{ sub_collection.url }}" class="sub-collection-card__link">
+            {% if sub_collection.metafields.custom.second_image != blank %}
+              <div class="sub-collection-card__image">
+                <img
+                  src="{{ sub_collection.metafields.custom.second_image | image_url: width: 600 }}"
+                  alt="sub_collection.title"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+            <h3 class="sub-collection-card__title">
+              {{ sub_collection.title }}
+            </h3>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

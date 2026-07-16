@@ -1,0 +1,119 @@
+<div class="info-features page-width">
+  {% for i in (1..4) %}
+    {% capture feature_icon %}feature{{ i }}_icon{% endcapture %}
+    {% capture feature_title %}feature{{ i }}_title{% endcapture %}
+    {% capture feature_description %}feature{{ i }}_description{% endcapture %}
+
+    <div class="feature">
+      <div>
+        {% if section.settings[feature_icon] %}
+        <img src="{{ section.settings[feature_icon] | img_url: 'large'}}" alt="{{ section.settings[feature_title] }} width="auto" height="auto"">
+      {% endif %}
+      </div>
+      <div>
+        <h3>{{ section.settings[feature_title] }}</h3>
+      <p>{{ section.settings[feature_description] }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Info Features",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Feature 1"
+    },
+    {
+      "type": "text",
+      "id": "feature1_title",
+      "label": "Title",
+      "default": "FREE DELIVERY"
+    },
+    {
+      "type": "textarea",
+      "id": "feature1_description",
+      "label": "Description",
+      "default": "Across the Country"
+    },
+    {
+      "type": "image_picker",
+      "id": "feature1_icon",
+      "label": "Icon"
+    },
+
+    {
+      "type": "header",
+      "content": "Feature 2"
+    },
+    {
+      "type": "text",
+      "id": "feature2_title",
+      "label": "Title",
+      "default": "EASY RETURNS"
+    },
+    {
+      "type": "textarea",
+      "id": "feature2_description",
+      "label": "Description",
+      "default": "10 Days Return Policy"
+    },
+    {
+      "type": "image_picker",
+      "id": "feature2_icon",
+      "label": "Icon"
+    },
+
+    {
+      "type": "header",
+      "content": "Feature 3"
+    },
+    {
+      "type": "text",
+      "id": "feature3_title",
+      "label": "Title",
+      "default": "COMFORT PAYMENTS"
+    },
+    {
+      "type": "textarea",
+      "id": "feature3_description",
+      "label": "Description",
+      "default": "COD and Online Payment Options"
+    },
+    {
+      "type": "image_picker",
+      "id": "feature3_icon",
+      "label": "Icon"
+    },
+
+    {
+      "type": "header",
+      "content": "Feature 4"
+    },
+    {
+      "type": "text",
+      "id": "feature4_title",
+      "label": "Title",
+      "default": "CUSTOMER SUPPORT"
+    },
+    {
+      "type": "textarea",
+      "id": "feature4_description",
+      "label": "Description",
+      "default": "Mon to Sat\n9:00 AM to 6:00 PM"
+    },
+    {
+      "type": "image_picker",
+      "id": "feature4_icon",
+      "label": "Icon"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Info Features"
+    }
+  ]
+}
+{% endschema %}

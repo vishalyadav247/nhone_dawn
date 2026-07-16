@@ -1,0 +1,110 @@
+<section class="page-width color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
+  <h2 class="section-heading">{{ section.settings['section-heading'] }}</h2>
+  {% assign textFound = false %}
+  <div class="CarCarousel owl-carousel" data-rtl="{{ section.settings.reverse_direction }}">
+    {% for block in section.blocks %}
+      {% if block.settings.Car_text != blank %}
+        {% assign textFound = true %}
+        <div class="carousel-item">
+          <a
+            href="{{ block.settings.link_url | default: '#' }}"
+            class="carousel-link"
+            {% if block.settings.open_in_new_tab %}
+              target="_blank" rel="noopener"
+            {% endif %}
+          >
+            <figure class="carousel-figure">
+              <img
+                src="{{ block.settings.image_desktop | image_url: width: 600 }}"
+                alt="{{ block.settings.image_alt | escape }}"
+                loading="lazy"
+                width="100%"
+                height="100%"
+              >
+              <figcaption class="carousel-caption">
+                {{ block.settings.Car_text }}
+              </figcaption>
+            </figure>
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+    {% if textFound == false %}
+      <p>Please add Car text in block settings.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Car Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section-heading",
+      "label": "Section Heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse_direction",
+      "label": "Reverse Scroll Direction",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "secondary_background",
+      "label": "Use Secondary Background",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text_block",
+      "name": "Text Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Alt Text",
+          "default": "Image description"
+        },
+        {
+          "type": "text",
+          "id": "Car_text",
+          "label": "Car Caption Text",
+          "default": "Your Car Name here"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL",
+          "default": "/"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open link in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Car Carousel",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

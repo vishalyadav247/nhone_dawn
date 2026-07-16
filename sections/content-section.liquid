@@ -1,0 +1,48 @@
+<section class="content-section  color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
+  <div class="page-width-desktop">
+    <div class="content-wrapper">
+      {% if section.settings.heading != blank %}
+        <h1 class="sectionHeading">{{ section.settings.heading }}</h1>
+      {% endif %}
+      {% if section.settings.paragraph != blank %}
+        <p class="section-paragraph">{{ section.settings.paragraph }}</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Content Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Your Section Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "paragraph",
+      "label": "Paragraph"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "secondary_background",
+      "label": "Use Secondary Background",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Content Section"
+    }
+  ]
+}
+{% endschema %}

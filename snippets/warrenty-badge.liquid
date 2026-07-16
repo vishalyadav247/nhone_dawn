@@ -1,0 +1,14 @@
+<div class="pdpBadgeWrapperTop">
+  {% assign images = '1 Month://cdn.shopify.com/s/files/1/0913/1848/5293/files/WhatsApp_Image_2026-03-28_at_6.18.50_PM_1.jpg?v=1775100327,6 Month://cdn.shopify.com/s/files/1/0913/1848/5293/files/WhatsApp_Image_2026-03-28_at_6.18.51_PM.jpg?v=1775100328,1 Year://cdn.shopify.com/s/files/1/0913/1848/5293/files/1_Year.png?v=1754413724,18 Months://cdn.shopify.com/s/files/1/0913/1848/5293/files/18_Months.png?v=1754413825,2 Years://cdn.shopify.com/s/files/1/0913/1848/5293/files/2_Year.png?v=1754413961,30 Months://cdn.shopify.com/s/files/1/0913/1848/5293/files/30_Months.png?v=1754414899,3 Years://cdn.shopify.com/s/files/1/0913/1848/5293/files/3_Year.png?v=1754414955,Lifetime://cdn.shopify.com/s/files/1/0913/1848/5293/files/WhatsApp_Image_2026-03-28_at_6.18.50_PM.jpg?v=1775100327'
+    | split: ','
+  %}
+  {% for item in images %}
+    {% assign tag_and_image = item | split: ':' %}
+    {% assign tag = tag_and_image[0] %}
+    {% assign image_url = tag_and_image[1] %}
+
+    {% if product.tags contains tag %}
+      <img src="{{ image_url }}" alt="{{ tag }}">
+    {% endif %}
+  {% endfor %}
+</div>

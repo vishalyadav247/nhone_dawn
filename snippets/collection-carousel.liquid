@@ -1,0 +1,176 @@
+{% comment %}
+  collection-carousel.liquid
+  This section uses metafields to display different carousel content for each collection
+{% endcomment %}
+
+{%- if collection.metafields.custom.carousel_enabled -%}
+  <div class="collection-carousel-container" data-collection-id="{{ collection.id }}">
+    <div class="carousel-wrapper">
+      {% if collection.metafields.custom.carousel_title != blank %}
+        <h2 class="carousel-title">{{ collection.metafields.custom.carousel_title }}</h2>
+      {% endif %}
+
+      {% if collection.metafields.custom.carousel_subtitle != blank %}
+        <div class="carousel-subtitle">{{ collection.metafields.custom.carousel_subtitle }}</div>
+      {% endif %}
+
+      {% assign carousel_items = collection.metafields.custom.carousel_items.value %}
+      {% if carousel_items != blank %}
+        <div class="carousel-slider carousel">
+          {% for item in carousel_items %}
+            <div class="carousel-slide">
+              {% if item.image != blank %}
+                <div class="carousel-image">
+                  <img src="{{ item.image | img_url: '800x' }}" alt="{{ item.title | escape }}">
+                </div>
+              {% endif %}
+
+              {% if item.title != blank %}
+                <h3 class="slide-title">{{ item.title }}</h3>
+              {% endif %}
+
+              {% if item.text != blank %}
+                <div class="slide-text">{{ item.text }}</div>
+              {% endif %}
+
+              {% if item.button_text != blank and item.button_url != blank %}
+                <a href="{{ item.button_url }}" class="slide-button">
+                  {{ item.button_text }}
+                </a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="carousel-controls">
+          <button class="carousel-prev" aria-label="Previous slide">
+            <!-- {% render 'icon-chevron-left' %} -->
+          </button>
+          <div class="carousel-dots"></div>
+          <button class="carousel-next" aria-label="Next slide">
+            <!-- {% render 'icon-chevron-right' %} -->
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const carousel = document.querySelector('.carousel');
+      if (carousel) {
+        // Initialize the carousel with collection-specific settings
+        const collectionId = carousel.closest('.collection-carousel-container').dataset.collectionId;
+
+        // You can customize carousel settings per collection
+        const settings = {
+          slidesToShow: {% if collection.metafields.custom.carousel_slides_to_show %}{{ collection.metafields.custom.carousel_slides_to_show }}{% else %}3{% endif %},
+          slidesToScroll: 1,
+          dots: true,
+          arrows: true,
+          autoplay: {% if collection.metafields.custom.carousel_autoplay %}true{% else %}false{% endif %},
+          infinite: true,
+          responsive: [
+            {
+              breakpoint: 1024,
+              settings: {
+                slidesToShow: 2
+              }
+            },
+            {
+              breakpoint: 640,
+              settings: {
+                slidesToShow: 1
+              }
+            }
+          ]
+        };
+
+        // Initialize carousel with Slick
+        $(carousel).slick(settings);
+      }
+    });
+  </script>
+
+  <style>
+    .collection-carousel-container {
+      margin: 40px 0;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .carousel-wrapper {
+      padding: 0 20px;
+    }
+
+    .carousel-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .carousel-subtitle {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .carousel-slider {
+      margin-bottom: 30px;
+    }
+
+    .carousel-slide {
+      padding: 10px;
+    }
+
+    .carousel-image {
+      margin-bottom: 15px;
+    }
+
+    .carousel-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .slide-title {
+      margin-bottom: 10px;
+    }
+
+    .slide-text {
+      margin-bottom: 15px;
+    }
+
+    .slide-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #000;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    .slide-button:hover {
+      background-color: #333;
+    }
+
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .carousel-prev,
+    .carousel-next {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 8px;
+      margin: 0 15px;
+    }
+  </style>
+{%- endif -%}

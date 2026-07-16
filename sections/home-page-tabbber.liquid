@@ -1,0 +1,250 @@
+<section class="shopify-tabber" id="shopify-tabber-{{ section.id }}">
+  <div class="page-width">
+    <!-- Tab Navigation -->
+    <ul class="tab-nav">
+      {% if section.settings.title != blank %}
+        <h2 class="section-heading">{{ section.settings.title }}</h2>
+      {% endif %}
+      <span class="tab-nav">
+        {% for block in section.blocks %}
+          {% assign collection = block.settings.collection %}
+          <li class="{% if forloop.first %}active{% endif %}" data-tab="tab-{{ section.id }}-{{ block.id }}">
+            {{ collection.title }}
+          </li>
+        {% endfor %}
+      </span>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      {% for block in section.blocks %}
+        {% assign collection = block.settings.collection %}
+
+        <div
+          id="tab-{{ section.id }}-{{ block.id }}"
+          class="tab-pane {% if forloop.first %}active{% endif %}"
+        >
+          {% if collection.products_count > 0 %}
+            <div class="product-carousel owl-carousel carousel">
+              {% assign available_count = 0 %}
+
+              {% for product in collection.products %}
+                {% if product.available %}
+                  <div class="item">
+                    {% render 'card-product',
+                      card_product: product,
+                      media_aspect_ratio: 'adapt',
+                      image_shape: 'default',
+                      show_secondary_image: true,
+                      show_vendor: false,
+                      show_rating: true,
+                      quick_add: true,
+                      section_id: section.id
+                    %}
+                  </div>
+
+                  {% assign available_count = available_count | plus: 1 %}
+                  {% if available_count == 15 %}
+                    {% break %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No products found in this collection.</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .shopify-tabber .tab-nav {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 0 !important;
+    align-items: center;
+    padding-bottom:5px;
+
+    span.tab-nav{
+      gap: 10px;
+    }
+  }
+  .shopify-tabber .tab-nav li {
+    padding: 8px 16px;
+    border: 1px solid #7b059f;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.3s;
+  }
+  .shopify-tabber .tab-nav li.active {
+    background-color: #7b059f;
+    color: #fff;
+    border-color: #7b059f;
+  }
+  .shopify-tabber .tab-pane {
+    display: none;
+  }
+  .shopify-tabber .tab-pane.active {
+    display: block;
+    margin-top: 20px;
+  }
+  .shopify-tabber .item {
+
+    text-align: center;
+  }
+  .shopify-tabber .item img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.shopify-tabber').forEach(function (section) {
+      const tabLinks = section.querySelectorAll('.tab-nav li');
+      const tabPanes = section.querySelectorAll('.tab-pane');
+
+      {% comment %} function initCarousel(scope) {
+        $(scope)
+          .find('.product-carousel')
+          .not('.owl-loaded')
+          .owlCarousel({
+            items: 5,
+            margin: 20,
+            loop: false,
+            nav: true,
+            dots: false,
+            navText: [
+              `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+              fill="none" stroke="currentColor" stroke-width="2" 
+              stroke-linecap="round" stroke-linejoin="round" 
+              class="feather feather-chevron-left">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>`,
+              `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+              fill="none" stroke="currentColor" stroke-width="2" 
+              stroke-linecap="round" stroke-linejoin="round" 
+              class="feather feather-chevron-right">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>`,
+            ],
+            responsive: {
+              0: {
+                items: 2,
+                margin: 5,
+              },
+              600: { items: 2 },
+              1000: { items: 6 },
+            },
+          });
+      } {% endcomment %}
+      function initCarousel(scope) {
+  const $carousel = $(scope).find('.product-carousel');
+
+  if ($carousel.hasClass('owl-loaded')) {
+    $carousel.trigger('destroy.owl.carousel');
+    $carousel.removeClass('owl-loaded');
+    $carousel.find('.owl-stage-outer').children().unwrap();
+  }
+
+  $carousel.owlCarousel({
+    margin: 10,
+    loop: false,
+    nav: true,
+    dots: false,
+    navText: [
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>`
+    ],
+    responsive: {
+      0: { items: 2, margin: 5,nav:false },
+      600: { items: 2 },
+      1000: { items: 6 }
+    }
+  });
+}
+
+
+      initCarousel(section.querySelector('.tab-pane.active'));
+
+      tabLinks.forEach((tab) => {
+        {% comment %} tab.addEventListener('click', () => {
+          tabLinks.forEach((el) => el.classList.remove('active'));
+          tabPanes.forEach((el) => el.classList.remove('active'));
+
+          tab.classList.add('active');
+          const targetId = tab.getAttribute('data-tab');
+          const targetTab = section.querySelector('#' + targetId);
+          if (targetTab) {
+            targetTab.classList.add('active');
+            initCarousel(targetTab);
+          }
+        }); {% endcomment %}
+        tab.addEventListener('click', () => {
+  tabLinks.forEach(el => el.classList.remove('active'));
+  tabPanes.forEach(el => el.classList.remove('active'));
+
+  tab.classList.add('active');
+  const targetId = tab.getAttribute('data-tab');
+  const targetTab = section.querySelector('#' + targetId);
+
+  if (targetTab) {
+    targetTab.classList.add('active');
+
+    setTimeout(() => {
+      initCarousel(targetTab);
+    }, 50);
+  }
+});
+
+
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Tabber Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Browse By Category"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_tab",
+      "name": "Collection Tab",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabber Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

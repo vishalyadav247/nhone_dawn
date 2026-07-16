@@ -1,0 +1,132 @@
+<!-- Track Order Popup -->
+<div id="trackOrderModal" class="track-order-modal">
+  <div class="track-order-box">
+    <button class="track-order-close" type="button">×</button>
+
+    <h2>Track Your Order</h2>
+    <p>Enter your tracking number below.</p>
+
+    <form id="trackOrderForm">
+      <input
+        type="text"
+        id="trackOrderInput"
+        placeholder="Enter tracking number"
+        required
+      >
+      <button type="submit">Track Order</button>
+    </form>
+  </div>
+</div>
+
+<style>
+  @media screen and (max-width:900px){
+    #HeaderDrawer-track-order{
+      display:none;
+    }
+  }
+  .track-order-modal {
+    display: none;
+    position: fixed;
+    z-index: 999999;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .track-order-modal.active {
+    display: flex;
+  }
+
+  .track-order-box {
+    background: #fff;
+    width: 100%;
+    max-width: 420px;
+    padding: 28px 24px;
+    border-radius: 14px;
+    text-align: center;
+    position: relative;
+  }
+
+  .track-order-close {
+    position: absolute;
+    right: 14px;
+    top: 10px;
+    border: 0;
+    background: transparent;
+    font-size: 28px;
+    cursor: pointer;
+  }
+
+  .track-order-box h2 {
+    margin: 0 0 8px;
+    color: #8700a8;
+  }
+
+  .track-order-box p {
+    margin-bottom: 18px;
+  }
+
+  #trackOrderInput {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+
+  #trackOrderForm button {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #8700a8;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('trackOrderModal');
+    const form = document.getElementById('trackOrderForm');
+    const input = document.getElementById('trackOrderInput');
+    const closeBtn = document.querySelector('.track-order-close');
+
+    function openTrackOrderPopup(event) {
+      event.preventDefault();
+      modal.classList.add('active');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closeTrackOrderPopup() {
+      modal.classList.remove('active');
+      input.value = '';
+    }
+
+    document.querySelectorAll('#HeaderMenu-track-order, #mobileBottomMenuTrackOrder').forEach((el) => {
+      el.addEventListener('click', openTrackOrderPopup);
+    });
+
+    closeBtn.addEventListener('click', closeTrackOrderPopup);
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) {
+        closeTrackOrderPopup();
+      }
+    });
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const trackingNumber = input.value.trim();
+
+      if (!trackingNumber) return;
+
+      window.location.href = 'https://nhone.shiprocket.co/tracking/' + encodeURIComponent(trackingNumber);
+    });
+  });
+</script>
+<!-- Track Order Popup -->

@@ -1,0 +1,7 @@
+{% if product.metafields.custom.productpage_bulletpoints != blank %}
+
+  <div class="product-material">
+    <h3>Product Details</h3> 
+    <p>{{ product.metafields.custom.productpage_bulletpoints | metafield_tag }}</p>
+  </div>
+  {% endif %}

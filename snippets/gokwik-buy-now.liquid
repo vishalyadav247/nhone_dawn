@@ -1,0 +1,18 @@
+{% if settings.goBuynowEnable %}             
+  <button type="button" class="button disabled" disabled onclick="onBuyNowClick(this)" id="gokwik-buy-now"{% if settings.hideFlow %} style="display:none !important;" {% endif %}>
+    <div style="display:none" class="addloadr" id="btn-loader">
+      <div class="cir-loader">Loading..</div>
+    </div>
+    <span class="btn-text">
+      <span>{{ settings.buyNowText }}</span>
+      <span>{{ settings.sub-titile }}</span>
+    </span>
+    <span class="pay-opt-icon">
+      {% if settings.enableLogo %}
+        <img src="https://cdn.gokwik.co/v4/images/upi-icons.svg"> 
+        <img src="https://cdn.gokwik.co/v4/images/right-arrow.svg">
+      {% endif %}
+    </span>
+    
+  </button>  
+{% endif %}

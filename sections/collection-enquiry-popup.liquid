@@ -1,0 +1,124 @@
+{% if template.name == 'collection' %}
+  <style>
+    .collection-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+    }
+
+    .collection-popup.hidden {
+      display: none;
+    }
+
+    .collection-popup__overlay {
+      display:block !important;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .collection-popup__content {
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+      margin: auto;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .collection-popup__content img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .collection-popup__close {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      background: #000;
+      color: #fff;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    @media screen and (max-width:767px){
+      .collection-popup__content{
+        margin: auto 20px;
+      }
+    }
+  </style>
+  <div
+    id="collection-popup"
+    class="collection-popup hidden"
+    data-delay="{{ section.settings.delay | times: 1000 }}"
+    data-expiry="{{ section.settings.expiry_days | times: 86400000 }}"
+  >
+    <div class="collection-popup__overlay"></div>
+
+    <div class="collection-popup__content">
+      <button class="collection-popup__close" aria-label="Close popup">✕</button>
+
+      {% if section.settings.popup_link != blank %}
+        <a href="{{ section.settings.popup_link }}">
+      {% endif %}
+
+      {% if section.settings.popup_image %}
+        <img
+          src="{{ section.settings.popup_image | image_url: width: 1200 }}"
+          alt="Collection Popup"
+          loading="lazy"
+        >
+      {% endif %}
+
+      {% if section.settings.popup_link != blank %}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Collection Enquiry Popup",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "popup_image",
+      "label": "Popup Image"
+    },
+    {
+      "type": "url",
+      "id": "popup_link",
+      "label": "Popup Image Link"
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Popup Delay (seconds)",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "expiry_days",
+      "label": "Reopen After (days)",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 7
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Enquiry Popup"
+    }
+  ]
+}
+{% endschema %}

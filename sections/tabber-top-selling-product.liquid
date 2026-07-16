@@ -1,0 +1,194 @@
+<section class="custom-tabber-section" id="custom-tabber-{{ section.id }}">
+  <div class="custom-tabber-container page-width">
+    <!-- Tab Navigation -->
+    <ul class="custom-tabber-nav">
+      {% if section.settings.title != blank %}
+        <h2 class="custom-tabber-heading text-center">{{ section.settings.title }}</h2>
+      {% endif %}
+      <span class="custom-tabber-nav-wrap">
+        {% for block in section.blocks %}
+          {% assign collection = block.settings.collection %}
+          <li
+            class="{% if forloop.first %}custom-tab-active{% endif %}"
+            data-tab="custom-tab-{{ section.id }}-{{ block.id }}"
+          >
+            {{ collection.title }}
+          </li>
+        {% endfor %}
+      </span>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="custom-tabber-content">
+      {% for block in section.blocks %}
+        {% assign collection = block.settings.collection %}
+        <div
+          id="custom-tab-{{ section.id }}-{{ block.id }}"
+          class="custom-tab-pane {% if forloop.first %}custom-tab-active{% endif %}"
+        >
+          {% if collection.products_count > 0 %}
+            <div class="custom-carousel owl-carousel owl-theme">
+              {% for product in collection.products limit: 8 %}
+                <div class="custom-carousel-item">
+                  {% comment %}
+                    <a href="{{ product.url }}" class="custom-product-link">
+                      <img
+                        src="{{ product.featured_image | image_url: width: 600 }}"
+                        alt="{{ product.title | escape }}"
+                        width="600"
+                        height="auto"
+                        loading="lazy"
+                      >
+                      <p class="custom-product-title">{{ product.title }}</p>
+                    </a>
+                  {% endcomment %}
+                  {% render 'card-product',
+                    card_product: product,
+                    media_aspect_ratio: 'adapt',
+                    image_shape: 'default',
+                    show_secondary_image: true,
+                    show_vendor: true,
+                    show_rating: true,
+                    lazy_load: lazy_load,
+                    skip_styles: skip_card_product_styles,
+                    quick_add: true,
+                    section_id: section.id
+                  %}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No products found in this collection.</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .custom-tabber-nav {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .custom-tabber-nav-wrap {
+    display: flex;
+    gap: 20px;
+  }
+
+  .custom-tabber-nav li {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.3s;
+  }
+
+  .custom-tabber-nav li.custom-tab-active {
+    background-color: #7b059f;
+    color: #fff;
+    border-color: #7b059f;
+  }
+
+  .custom-tabber-content .custom-tab-pane {
+    display: none;
+  }
+
+  .custom-tabber-content .custom-tab-pane.custom-tab-active {
+    display: block;
+    margin-top: 20px;
+  }
+
+  .custom-carousel-item {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .custom-carousel-item img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.custom-tabber-section').forEach(function (section) {
+      const tabLinks = section.querySelectorAll('.custom-tabber-nav li');
+      const tabPanes = section.querySelectorAll('.custom-tab-pane');
+
+      function initCarousel(scope) {
+        $(scope)
+          .find('.custom-carousel')
+          .not('.owl-loaded')
+          .owlCarousel({
+            items: 4,
+            margin: 20,
+            loop: false,
+            nav: true,
+            dots: false,
+            responsive: {
+              0: { items: 1 },
+              600: { items: 2 },
+              1000: { items: 4 },
+            },
+          });
+      }
+
+      initCarousel(section.querySelector('.custom-tab-pane.custom-tab-active'));
+
+      tabLinks.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabLinks.forEach((el) => el.classList.remove('custom-tab-active'));
+          tabPanes.forEach((el) => el.classList.remove('custom-tab-active'));
+
+          tab.classList.add('custom-tab-active');
+          const targetId = tab.getAttribute('data-tab');
+          const targetTab = section.querySelector('#' + targetId);
+          if (targetTab) {
+            targetTab.classList.add('custom-tab-active');
+            initCarousel(targetTab);
+          }
+        });
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Tabber Section Custom",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "More Categories"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_tab",
+      "name": "Collection Tab",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Tabber Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

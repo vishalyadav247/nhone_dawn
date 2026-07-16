@@ -1,0 +1,53 @@
+<section class="container color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
+<div class="page-width-desktop all-products-collection">
+  <h2 class="sectionHeading">{{ section.settings.section_heading }}</h2>
+  {% assign collection = collections[section.settings.collection] %}
+  {% if collection.products.size > 0 %}
+    <div class="products-grid carousel owl-carousel owl-theme">
+      {% for product in collection.products %}
+        <div class="product-item">
+          <a href="{{ product.url }}">
+            <img src="{{ product.featured_image | img_url: 'large' }}" alt="{{ product.title }}" width="auto" height="auto">
+            <p>{{ product.title }}</p>
+            <p>{{ product.price | money }}</p>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No products found in this collection.</p>
+  {% endif %}
+</div>
+</section>
+
+
+{% schema %}
+{
+  "name": "top-selling-product",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "Our Top Selling products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+  ],
+  "presets": [
+    {
+      "name": "top-selling-product",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

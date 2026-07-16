@@ -1,0 +1,607 @@
+<style>
+  .futuristic-sitemap {
+    margin: 5px 0;
+  }
+
+  .sitemap-shell {
+    padding: 24px 0;
+  }
+
+  .sitemap-header {
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .sitemap-header h1 {
+    margin: 0 0 10px;
+    font-size: clamp(20px, 6vw, 32px);
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+
+  .sitemap-subtext {
+    max-width: 760px;
+    margin: 0 auto;
+    opacity: .70;
+    font-size:16px;
+  }
+
+  .sitemap-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .sitemap-tab {
+    appearance: none;
+    border: 1px solid var(--theme-color);
+    background: #fff;
+    color: var(--theme-color);
+    padding: 6px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all .25s ease;
+  }
+
+  .sitemap-tab:hover,
+  .sitemap-tab.is-active {
+    background: var(--theme-color);
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  .sitemap-panel {
+    display: none;
+  }
+
+  .sitemap-panel.is-active {
+    display: block;
+  }
+
+  .sitemap-card {
+    min-height: 300px;
+    background:#f4f4f4;
+    padding: 10px 20px;
+    border-radius: 12px;
+  }
+
+  .sitemap-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    border-bottom:1px solid #d6d6d6;
+    padding-bottom: 10px;
+  }
+
+  .sitemap-card-head h2,
+  .blog-block h3 {
+    margin: 0;
+    font-weight:500;
+  }
+
+  .sitemap-search {
+    width: min(320px, 100%);
+    padding: 9px 14px;
+    border-radius: 5px;
+    border: 1px solid #d6d6d6;
+    background: #ffffff;
+    color: inherit;
+    outline: none;
+
+    &:focus{
+      box-shadow: none;
+      border-color:var(--theme-color);
+    }
+  }
+
+  .sitemap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .sitemap-link-card {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .sitemap-link-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .blog-block + .blog-block {
+    margin-top: 28px;
+  }
+
+  .tab-page {
+    display: none;
+  }
+
+  .tab-page.is-active {
+    display: block;
+  }
+
+  .tab-pagination-controls,
+  .shopify-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+
+  .pager-numbers {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pager-btn,
+  .pager-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 35px;
+    padding: 0 14px;
+    border-radius: 5px;
+    border: 1px solid #d6d6d6;
+    background: rgba(255, 255, 255, .06);
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .pager-number.is-active,
+  .pager-btn:hover,
+  .pager-number:hover {
+    background: var(--theme-color);
+    color:#fff;
+  }
+
+  .pager-btn.is-disabled {
+    opacity: .45;
+    pointer-events: none;
+  }
+
+  .search-hidden {
+    display: none !important;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .sitemap-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .sitemap-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sitemap-shell {
+      padding:15px 0 25px 0;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .sitemap-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sitemap-tab {
+      width: fit-content;
+    }
+    .sitemap-card {
+      padding: 10px;
+    }
+    .pager-numbers{
+      order:-1;
+      width:100%;
+    }
+  }
+</style>
+
+{% liquid
+  assign products_per_page = 24
+  assign collections_per_page = 42
+%}
+
+<section class="futuristic-sitemap page-width">
+  <div class="sitemap-shell">
+    <div class="sitemap-header">
+      <h1>{{ page.title | default: 'Sitemap' }}</h1>
+      <p class="sitemap-subtext">Browse products, collections, pages, blogs, and key store links in one place.</p>
+    </div>
+
+    <div class="sitemap-tabs">
+      <button class="sitemap-tab is-active" type="button" data-tab-target="pages-tab">Pages</button>
+      <button class="sitemap-tab" type="button" data-tab-target="collections-tab">Collections</button>
+      <button class="sitemap-tab" type="button" data-tab-target="products-tab">Products</button>
+      <button class="sitemap-tab" type="button" data-tab-target="blogs-tab">Blogs</button>
+      <button class="sitemap-tab" type="button" data-tab-target="other-tab">Other</button>
+    </div>
+
+    <div class="sitemap-panels">
+      <div id="pages-tab" class="sitemap-panel is-active">
+        <div class="sitemap-card">
+          <div class="sitemap-card-head">
+            <h2>Pages</h2>
+          </div>
+          <div class="sitemap-grid">
+            {% for page_item in pages %}
+              <a class="sitemap-link-card" href="{{ page_item.url }}">
+                <span>{{ page_item.title }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div id="collections-tab" class="sitemap-panel">
+        <div class="sitemap-card">
+          <div class="sitemap-card-head">
+            <h2>Collections</h2>
+            <input
+              type="text"
+              class="sitemap-search"
+              data-search-input="collections"
+              placeholder="Search collections..."
+            >
+          </div>
+
+          {% assign collection_counter = 0 %}
+          {% for collection in collections %}
+            {% assign collection_counter = collection_counter | plus: 1 %}
+          {% endfor %}
+
+          {% assign collections_total_pages = collection_counter | divided_by: collections_per_page %}
+          {% assign collections_remainder = collection_counter | modulo: collections_per_page %}
+          {% if collections_remainder > 0 %}
+            {% assign collections_total_pages = collections_total_pages | plus: 1 %}
+          {% endif %}
+
+          <div class="tab-pagination-wrap" data-tab-list="collections">
+            {% assign start_index = 0 %}
+            {% assign end_index = collections_per_page %}
+            {% assign page_no = 1 %}
+
+            {% for collection in collections %}
+              {% assign mod = forloop.index0 | modulo: collections_per_page %}
+              {% if mod == 0 %}
+                <div
+                  class="tab-page {% if page_no == 1 %}is-active{% endif %}"
+                  data-page-group="collections"
+                  data-page-number="{{ page_no }}"
+                >
+                  <div class="sitemap-grid searchable-grid" data-search-scope="collections">
+              {% endif %}
+
+              <a
+                class="sitemap-link-card searchable-item"
+                href="{{ collection.url }}"
+                data-title="{{ collection.title | downcase }}"
+              >
+                <span>{{ collection.title }}</span>
+              </a>
+
+              {% assign next_mod = forloop.index | modulo: collections_per_page %}
+              {% if next_mod == 0 or forloop.last %}
+                </div>
+                </div>
+                {% assign page_no = page_no | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          {% if collections_total_pages > 1 %}
+            <div class="tab-pagination-controls" data-pagination-controls="collections">
+              <button type="button" class="pager-btn" data-page-prev="collections">Prev</button>
+              <div class="pager-numbers">
+                {% for i in (1..collections_total_pages) %}
+                  <button
+                    type="button"
+                    class="pager-number {% if i == 1 %}is-active{% endif %}"
+                    data-page-jump="collections"
+                    data-page-number="{{ i }}"
+                  >
+                    {{ i }}
+                  </button>
+                {% endfor %}
+              </div>
+              <button type="button" class="pager-btn" data-page-next="collections">Next</button>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="products-tab" class="sitemap-panel">
+        <div class="sitemap-card">
+          <div class="sitemap-card-head">
+            <h2>Products</h2>
+            <input
+              type="text"
+              class="sitemap-search"
+              data-search-input="products"
+              placeholder="Search products..."
+            >
+          </div>
+
+          {% paginate collections.all.products by products_per_page %}
+            <div class="sitemap-grid searchable-grid" data-search-scope="products">
+              {% for product in collections.all.products %}
+                <a
+                  class="sitemap-link-card searchable-item"
+                  href="{{ product.url }}"
+                  data-title="{{ product.title | downcase }}"
+                >
+                  <span>{{ product.title }}</span>
+                </a>
+              {% endfor %}
+            </div>
+
+            {% if paginate.pages > 1 %}
+              <div class="shopify-pagination">
+                {% if paginate.previous %}
+                  <a class="pager-btn" href="{{ paginate.previous.url }}#products-tab">Prev</a>
+                {% else %}
+                  <span class="pager-btn is-disabled">Prev</span>
+                {% endif %}
+
+                <div class="pager-numbers">
+                  {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                      <a class="pager-number" href="{{ part.url }}#products-tab">{{ part.title }}</a>
+                    {% else %}
+                      {% if part.title == paginate.current_page %}
+                        <span class="pager-number is-active">{{ part.title }}</span>
+                      {% else %}
+                        <span class="pager-number">{{ part.title }}</span>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+
+                {% if paginate.next %}
+                  <a class="pager-btn" href="{{ paginate.next.url }}#products-tab">Next</a>
+                {% else %}
+                  <span class="pager-btn is-disabled">Next</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endpaginate %}
+        </div>
+      </div>
+
+      <div id="blogs-tab" class="sitemap-panel">
+        <div class="sitemap-card">
+          <div class="sitemap-card-head">
+            <h2>Blogs</h2>
+          </div>
+
+          {% assign news_blog = blogs.news %}
+
+          {% if news_blog != blank %}
+            <div class="blog-block">
+              <h3 style="margin-bottom:10px;">
+                <a href="{{ news_blog.url }}">{{ news_blog.title }}</a>
+              </h3>
+
+              {% if news_blog.articles_count > 0 %}
+                <div class="sitemap-grid">
+                  {% for article in news_blog.articles %}
+                    <a class="sitemap-link-card" href="{{ article.url }}">
+                      <span>{{ article.title }}</span>
+                    </a>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="other-tab" class="sitemap-panel">
+        <div class="sitemap-card">
+          <div class="sitemap-card-head">
+            <h2>Other Links</h2>
+          </div>
+          <div class="sitemap-grid">
+            <a class="sitemap-link-card" href="/search"><span>Search</span></a>
+            <a class="sitemap-link-card" href="/cart"><span>Cart</span></a>
+            <a class="sitemap-link-card" href="/collections/all"><span>All Products</span></a>
+            <a class="sitemap-link-card" href="/blogs"><span>All Blogs</span></a>
+            <a class="sitemap-link-card" href="/sitemap.xml"><span>XML Sitemap</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tabs = document.querySelectorAll('.sitemap-tab');
+      var panels = document.querySelectorAll('.sitemap-panel');
+
+      function activateTab(targetId) {
+        var url = new URL(window.location.href);
+        var hasPageParam = url.searchParams.has('page');
+
+        if (targetId !== 'products-tab' && hasPageParam) {
+          url.searchParams.delete('page');
+          url.hash = targetId;
+          window.location.href = url.toString();
+          return;
+        }
+
+        tabs.forEach(function (tab) {
+          tab.classList.toggle('is-active', tab.dataset.tabTarget === targetId);
+        });
+
+        panels.forEach(function (panel) {
+          panel.classList.toggle('is-active', panel.id === targetId);
+        });
+
+        url.hash = targetId;
+
+        if (history.replaceState) {
+          history.replaceState(null, '', url.toString());
+        } else {
+          location.hash = targetId;
+        }
+      }
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          activateTab(tab.dataset.tabTarget);
+        });
+      });
+
+      var hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById(hash)) {
+        activateTab(hash);
+      }
+
+      function setupTabPagination(groupName) {
+        var pages = document.querySelectorAll('[data-page-group="' + groupName + '"]');
+        var prevBtn = document.querySelector('[data-page-prev="' + groupName + '"]');
+        var nextBtn = document.querySelector('[data-page-next="' + groupName + '"]');
+        var jumpBtns = document.querySelectorAll('[data-page-jump="' + groupName + '"]');
+
+        if (!pages.length) return;
+
+        var currentPage = 1;
+        var maxPage = pages.length;
+
+        function renderPage(page) {
+          currentPage = page;
+
+          pages.forEach(function (el) {
+            el.classList.toggle('is-active', Number(el.dataset.pageNumber) === currentPage);
+          });
+
+          jumpBtns.forEach(function (btn) {
+            btn.classList.toggle('is-active', Number(btn.dataset.pageNumber) === currentPage);
+          });
+
+          if (prevBtn) prevBtn.disabled = currentPage === 1;
+          if (nextBtn) nextBtn.disabled = currentPage === maxPage;
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function () {
+            if (currentPage > 1) renderPage(currentPage - 1);
+          });
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function () {
+            if (currentPage < maxPage) renderPage(currentPage + 1);
+          });
+        }
+
+        jumpBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            renderPage(Number(btn.dataset.pageNumber));
+          });
+        });
+
+        renderPage(1);
+      }
+
+      setupTabPagination('collections');
+      function setupSearch(scopeName) {
+        var input = document.querySelector('[data-search-input="' + scopeName + '"]');
+        if (!input) return;
+
+        input.addEventListener('input', function () {
+          var term = input.value.trim().toLowerCase();
+
+          if (scopeName === 'collections') {
+            var pages = document.querySelectorAll('[data-page-group="collections"]');
+            var paginationControls = document.querySelector('[data-pagination-controls="collections"]');
+            var firstMatchedPage = null;
+
+            pages.forEach(function (page) {
+              var items = page.querySelectorAll('.searchable-item');
+              var pageHasMatch = false;
+
+              items.forEach(function (item) {
+                var title = item.dataset.title || '';
+                var match = term === '' || title.indexOf(term) !== -1;
+
+                item.classList.toggle('search-hidden', !match);
+
+                if (match) {
+                  pageHasMatch = true;
+                }
+              });
+
+              if (term === '') {
+                page.classList.remove('is-active');
+              } else {
+                page.classList.toggle('is-active', pageHasMatch);
+                if (pageHasMatch && !firstMatchedPage) {
+                  firstMatchedPage = page;
+                }
+              }
+            });
+
+            if (term !== '') {
+              pages.forEach(function (page) {
+                page.classList.toggle('is-active', page === firstMatchedPage);
+              });
+
+              if (paginationControls) {
+                paginationControls.style.display = 'none';
+              }
+            } else {
+              pages.forEach(function (page, index) {
+                page.classList.toggle('is-active', index === 0);
+              });
+
+              if (paginationControls) {
+                paginationControls.style.display = '';
+              }
+            }
+          } else {
+            var scope = document.querySelector('[data-search-scope="' + scopeName + '"]');
+            if (!scope) return;
+
+            var items = scope.querySelectorAll('.searchable-item');
+
+            items.forEach(function (item) {
+              var title = item.dataset.title || '';
+              var match = term === '' || title.indexOf(term) !== -1;
+              item.classList.toggle('search-hidden', !match);
+            });
+          }
+        });
+      }
+
+      setupSearch('collections');
+      setupSearch('products');
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Site Map",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Site Map"
+    }
+  ]
+}
+{% endschema %}
