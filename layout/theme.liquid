@@ -336,6 +336,7 @@
 
 <script>
   (function () {
+    function initAttributionTracking() {
     var params = new URLSearchParams(window.location.search);
 
     var trackingParams = [
@@ -400,14 +401,39 @@
     });
 
     if (Object.keys(cartAttributes).length > 0) {
-      fetch('/cart/update.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attributes: cartAttributes })
-      })
-        .then(function (r) { return r.json(); })
-        .then(function () { console.log('Attribution synced to Shopify cart.'); })
-        .catch(function (e) { console.error('Cart attribute update failed:', e); });
+      var payload = JSON.stringify({ attributes: cartAttributes });
+
+      // Skip the POST when these exact attributes were already synced to
+      // this cart this session — avoids a redundant cart write on every
+      // page view. Keyed by cart token so a fresh cart re-syncs.
+      var syncMarker = payload + '|' + (getCookie('cart') || '');
+      var alreadySynced = false;
+      try {
+        alreadySynced = sessionStorage.getItem('attribution_synced') === syncMarker;
+      } catch (e) {}
+
+      if (!alreadySynced) {
+        fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload
+        })
+          .then(function (r) { return r.json(); })
+          .then(function () {
+            try { sessionStorage.setItem('attribution_synced', payload + '|' + (getCookie('cart') || '')); } catch (e) {}
+            console.log('Attribution synced to Shopify cart.');
+          })
+          .catch(function (e) { console.error('Cart attribute update failed:', e); });
+      }
+    }
+    }
+
+    // Run off the critical path: cookie parsing/writes and the cart sync
+    // don't need to block HTML parsing in <head>.
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initAttributionTracking, { timeout: 3000 });
+    } else {
+      setTimeout(initAttributionTracking, 200);
     }
   })();
 </script>
@@ -518,8 +544,8 @@
       >
     </a>
 
-    {{ 'https://code.jquery.com/jquery-3.6.0.min.js' | script_tag }}
-    {{ 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js' | script_tag }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" defer></script>
 
     {%- render 'mobile-bottom-menu' -%}
 

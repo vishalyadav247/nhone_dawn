@@ -23,7 +23,9 @@ if(!previewMode){
 	});
 }
 $(function() {
-	$(".carousel").each(function() {
+	// Skip carousels owned by section scripts (tabber sections init their own
+	// .product-carousel/.custom-carousel) and anything already initialized.
+	$(".carousel").not(".product-carousel, .custom-carousel, .owl-loaded").each(function() {
 		$(this).owlCarousel({
 			items: 3,
 			margin: 20,
@@ -229,23 +231,18 @@ window.addEventListener('load', function() {
 
 //js for open submenu on hover
 const inlineMenu = document.querySelector(".header__inline-menu");
-const detailsItems = inlineMenu.querySelectorAll("details");
 
-detailsItems.forEach(item => {
-	const ulElement = item.querySelector("ul");
-	item.addEventListener("mouseover", () => {
-
-		item.setAttribute("open", true);
-		ulElement.addEventListener("mouseleave", () => {
-			item.removeAttribute("open");
+if (inlineMenu) {
+	inlineMenu.querySelectorAll("details").forEach(item => {
+		item.addEventListener("mouseenter", () => {
+			item.setAttribute("open", true);
 		});
 
 		item.addEventListener("mouseleave", () => {
 			item.removeAttribute("open");
 		});
-
 	});
-});
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 	const contentWrapper = document.querySelector('.read-more-text');
@@ -359,55 +356,56 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// mobile bottom menu cart bubble count js 
+// mobile bottom menu cart bubble count js
 (function () {
-const MOBILE_SELECTOR = '.mobile-bottom-menu';
-
-function updateMobileCartBubble() {
-	const mobileMenu = document.querySelector(MOBILE_SELECTOR);
-	if (!mobileMenu || window.innerWidth > 767) return;
-
-	const cartLink = mobileMenu.querySelector('#cart-icon-bubble');
+function renderMobileCartBubble(itemCount) {
+	const cartLink = document.querySelector('.mobile-bottom-menu #mobile-cart-icon-bubble');
 	if (!cartLink) return;
 
-	fetch('/cart.js')
-	.then((res) => res.json())
-	.then((cart) => {
-		let bubble = cartLink.querySelector('.cart-count-bubble');
+	let bubble = cartLink.querySelector('.cart-count-bubble');
 
-		if (cart.item_count > 0) {
+	if (itemCount > 0) {
 		if (!bubble) {
 			bubble = document.createElement('div');
 			bubble.className = 'cart-count-bubble';
 			bubble.innerHTML = `<span aria-hidden="true"></span>`;
 			cartLink.appendChild(bubble);
 		}
-		bubble.querySelector('span').textContent = cart.item_count;
-		} else if (bubble) {
+		bubble.querySelector('span').textContent = itemCount < 100 ? itemCount : '';
+	} else if (bubble) {
 		bubble.remove();
-		}
-	});
+	}
 }
 
-/* 🔥 Patch fetch to listen cart updates */
-const originalFetch = window.fetch;
-window.fetch = function () {
-	return originalFetch.apply(this, arguments).then((response) => {
-	try {
-		const url = arguments[0];
-		if (
-		typeof url === 'string' &&
-		(url.includes('/cart/add') || url.includes('/cart/change') || url.includes('/cart/update'))
-		) {
-		setTimeout(updateMobileCartBubble, 300);
-		}
-	} catch (e) {}
-	return response;
-	});
-};
+// /cart/change responses carry item_count directly; add-to-cart responses
+// carry the rendered cart-icon-bubble section instead, so parse it.
+function itemCountFromCartData(cartData) {
+	if (!cartData) return null;
+	if (typeof cartData.item_count === 'number') return cartData.item_count;
 
-/* Initial sync on load */
-document.addEventListener('DOMContentLoaded', updateMobileCartBubble);
+	const sectionHtml = cartData.sections && cartData.sections['cart-icon-bubble'];
+	if (typeof sectionHtml === 'string') {
+		const doc = new DOMParser().parseFromString(sectionHtml, 'text/html');
+		const countSpan = doc.querySelector('.cart-count-bubble span[aria-hidden="true"]');
+		if (countSpan) return parseInt(countSpan.textContent, 10) || 0;
+		if (!doc.querySelector('.cart-count-bubble')) return 0;
+	}
+	return null;
+}
+
+if (typeof subscribe === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+	subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
+		const count = itemCountFromCartData(event && event.cartData);
+		if (count !== null) {
+			renderMobileCartBubble(count);
+			return;
+		}
+		fetch('/cart.js')
+			.then((res) => res.json())
+			.then((cart) => renderMobileCartBubble(cart.item_count))
+			.catch(() => {});
+	});
+}
 })();
 
 (function () {
@@ -444,27 +442,27 @@ document.addEventListener('DOMContentLoaded', updateMobileCartBubble);
     }
   }
 
-  // Shopify product-recommendations lifecycle hook
   document.addEventListener('DOMContentLoaded', function () {
-    var recommendations = document.querySelector('product-recommendations');
-
-    if (!recommendations) return;
-
-    recommendations.addEventListener('load', function () {
-      initRelatedProductsCarousel();
-    });
-  });
-
-  // Defensive fallback for async DOM injection
-  var observer = new MutationObserver(function () {
     if (document.querySelector('.pdp-related-products')) {
       initRelatedProductsCarousel();
-      observer.disconnect();
+      return;
     }
-  });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
+    var recommendations = document.querySelector('product-recommendations');
+    if (!recommendations) return;
+
+    // Recommendations are fetched and injected after load; watch only that
+    // element and stop observing once the carousel is initialized.
+    var observer = new MutationObserver(function () {
+      if (recommendations.querySelector('.pdp-related-products')) {
+        observer.disconnect();
+        initRelatedProductsCarousel();
+      }
+    });
+
+    observer.observe(recommendations, {
+      childList: true,
+      subtree: true
+    });
   });
 })();

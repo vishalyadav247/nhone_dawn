@@ -2451,36 +2451,60 @@
 {% endschema %}
 
 <script>
-  window.onload = function () {
+  window.addEventListener('load', function () {
+    if (typeof payuAffordability === 'undefined') return;
+
     const widgetConfig = {
       key: "Your Merchant Key //Reach out to your KAM in case you don't have one",
       amount: '6000',
     };
 
     payuAffordability.init(widgetConfig);
-  };
+  });
 </script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    let observer = null;
+
     function moveWishlist() {
       const wishlist = document.querySelector('#wishlist-hero-product-page-button');
       const target = document.querySelector('.custom-wishlist-holder');
 
-      if (wishlist && target && !target.contains(wishlist)) {
-        target.appendChild(wishlist);
+      if (!wishlist || !target) return false;
 
+      if (!target.contains(wishlist)) {
+        target.appendChild(wishlist);
         document.body.classList.add('wishlist-loaded');
       }
+      return true;
     }
 
-    const observer = new MutationObserver(moveWishlist);
+    // The app injects the button at an unknown time/place, so watch the body
+    // only until the button has been relocated, then stop observing.
+    function armObserver() {
+      if (observer) {
+        observer.disconnect();
+        observer = null;
+      }
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+      if (moveWishlist()) return;
 
-    moveWishlist();
+      observer = new MutationObserver(function () {
+        if (moveWishlist()) {
+          observer.disconnect();
+          observer = null;
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    armObserver();
+
+    document.addEventListener('shopify:section:load', armObserver);
   });
 </script>
