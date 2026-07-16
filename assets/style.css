@@ -1757,6 +1757,10 @@ body{
   }
 }
 
+.contact-page-header{
+  text-align: center;
+}
+
 /* .product-card-wrapper{
   product-form{
     form{
