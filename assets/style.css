@@ -1806,7 +1806,7 @@ background-color: transparent !important;
 
 .cart__checkout-button,
 .minicart_dynamic_button,
-.sm-widget-btn,
+#sm-widget-btn,
 .gokwik-checkout{
   border-radius:30px !important;
   overflow:hidden;
