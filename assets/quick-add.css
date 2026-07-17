@@ -59,7 +59,7 @@
 
 @media screen and (min-width: 750px) {
   .quick-add-modal__content {
-    --modal-height-offset: 5rem;
+    --modal-height-offset: 10rem;
     margin-top: var(--modal-height-offset);
     width: 80%;
     max-height: calc(100% - var(--modal-height-offset) * 2);
