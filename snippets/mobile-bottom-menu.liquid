@@ -48,7 +48,7 @@
             } {% endcomment %}
           }
         }
-        #mobile-cart-icon-bubble{
+        #cart-icon-bubble{
           svg{
             stroke:#757575;
           }
@@ -91,7 +91,8 @@
   <a
     href="{{ routes.cart_url }}"
     class="link focus-inset {% if template.name == 'cart' %}active{% endif %}"
-    id="mobile-cart-icon-bubble"
+    id="cart-icon-bubble"
+    onclick="event.preventDefault(); document.querySelector('.header__icon--cart').click();"
     style="position:relative;"
   >
     <svg
