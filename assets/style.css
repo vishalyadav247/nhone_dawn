@@ -1569,7 +1569,7 @@ predictive-search:not([loading]) .predictive-search__loading-state{
 
 /* Thumb */
 ::-webkit-scrollbar-thumb {
-  background: #959595ff;
+  background: #ad7ab8ff;
   border-radius: 5px;
   transition: 0.3s ease;
 }
