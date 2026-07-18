@@ -1557,26 +1557,27 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   }
 }
 
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
 
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: #cdc9c9ff;
-  }
+::-webkit-scrollbar {
+  width: 7px;
+}
 
-  /* Thumb */
-  ::-webkit-scrollbar-thumb {
-    background: #474747ff;
-    border-radius: 5px;
-    transition: 0.3s ease;
-  }
+/* Track */
+::-webkit-scrollbar-track {
+  background: #cdc9c9ff;
+}
 
-  /* Hover Effect */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
+/* Thumb */
+::-webkit-scrollbar-thumb {
+  background: #707070ff;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+/* Hover Effect */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 body{
   #codk-full-modal-svelte[data-visible="false"]{
