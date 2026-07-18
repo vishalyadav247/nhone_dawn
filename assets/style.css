@@ -1564,7 +1564,7 @@ predictive-search:not([loading]) .predictive-search__loading-state{
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #defbffff;
+  background: #fedeffff;
 }
 
 /* Thumb */
