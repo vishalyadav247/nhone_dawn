@@ -1,1 +1,881 @@
-{"sections":{"banner_section_4ipiEf":{"type":"banner-section","blocks":{"image_rULdyn":{"type":"image","name":"Excellence Motion","settings":{"image_desktop":"shopify:\/\/shop_images\/Black_and_Orange_Banner_5290_X1590_042311fb-d245-45b4-8148-21db2071a7e8.png","image_mobile":"shopify:\/\/shop_images\/Black_and_Orange_Banner_1000_x_800_px_d32b8bb0-7ea8-410d-ab7a-c7e4a011e9b9.png","image_alt":"Image description","image_url":"\/","open_in_new_tab":false}},"image_NtLWxx":{"type":"image","name":"Banner - Drive in Style","settings":{"image_desktop":"shopify:\/\/shop_images\/Latest_car_acc_Banner_1710_Revised.png","image_mobile":"shopify:\/\/shop_images\/Latest_car_acc_Banner_1000_x_800_px_1710_Revised.png","image_alt":"Image description","image_url":"","open_in_new_tab":false}},"image_wbH8x3":{"type":"image","name":"Banner - Provision led","settings":{"image_desktop":"shopify:\/\/shop_images\/LED_Prepaid_1710_Banner_Revised.png","image_mobile":"shopify:\/\/shop_images\/LED_Festive_1710_Banner_1000_x_800_px_Revised.png","image_alt":"Image description","image_url":"shopify:\/\/collections\/car-led-headlights","open_in_new_tab":false}}},"block_order":["image_rULdyn","image_NtLWxx","image_wbH8x3"],"settings":{"color_scheme":""}},"car_carousel_W9niJY":{"type":"car-carousel","blocks":{"text_block_RYUj4b":{"type":"text_block","name":"Music System","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_7_5b2991d8-e48e-403f-9ff8-85207c89004d.png","image_alt":"Music System","Car_text":"MUSIC SYSTEM","link_url":"shopify:\/\/collections\/car-music-system","open_in_new_tab":false}},"text_block_VLeUVm":{"type":"text_block","name":"Headlight Bulb","settings":{"image_desktop":"shopify:\/\/shop_images\/LED_Light_200_X_200_Px_-_1_-_Edited.png","image_alt":"HEADLIGHT BULB","Car_text":"HEADLIGHT BULB","link_url":"shopify:\/\/collections\/car-led-headlights","open_in_new_tab":false}},"text_block_AhbeCh":{"type":"text_block","name":"Horn","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_8_2a75a77c-e7d2-4244-9a27-ee5893547089.png","image_alt":"HORN","Car_text":"HORN","link_url":"shopify:\/\/collections\/car-horn","open_in_new_tab":false}},"text_block_JEVTEK":{"type":"text_block","name":"Android Frame","settings":{"image_desktop":"shopify:\/\/shop_images\/Android_Frame_9_Inch_Compatible_with_Renault_Duster.png","image_alt":"Android Frame","Car_text":"ANDROID FRAME","link_url":"shopify:\/\/collections\/android-frame","open_in_new_tab":false}},"text_block_j7KhPr":{"type":"text_block","name":"Fog Lamp Bracket","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_8_982889ea-222f-4247-aff1-d617a7661d0e.png","image_alt":"Fog Lamp Bracket","Car_text":"Fog Lamp Bracket","link_url":"shopify:\/\/collections\/fog-lamp-bracket","open_in_new_tab":false}},"text_block_86kA8f":{"type":"text_block","name":"cleaning & Care","settings":{"image_desktop":"shopify:\/\/shop_images\/Cleaning_Care_200_x_200_px.png","image_alt":"CLEANING & CARE","Car_text":"CLEANING & CARE","link_url":"shopify:\/\/collections\/car-cleaning-care","open_in_new_tab":false}},"text_block_BTyLTP":{"type":"text_block","name":"Car Camera","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_4_58fb0e35-15f6-4f02-8d64-ec1b4df4aefb.png","image_alt":"Car Camera","Car_text":"CAR CAMERA","link_url":"shopify:\/\/collections\/car-cameras","open_in_new_tab":false}},"text_block_PcgRmb":{"type":"text_block","name":"Key Cover","settings":{"image_desktop":"shopify:\/\/shop_images\/Car_Key_Cover_200_x_200_px.png","image_alt":"KEY COVER","Car_text":"KEY COVER","link_url":"shopify:\/\/collections\/car-key-cover","open_in_new_tab":false}},"text_block_Uf8cDF":{"type":"text_block","name":"Spare Parts","disabled":true,"settings":{"image_desktop":"shopify:\/\/shop_images\/Spare_Parts_200_x_200_px.png","image_alt":"SPARE PARTS","Car_text":"SPARE PARTS","link_url":"#","open_in_new_tab":false}},"text_block_y3qpPp":{"type":"text_block","name":"Interior","settings":{"image_desktop":"shopify:\/\/shop_images\/Interior_200_x_200_px.png","image_alt":"INTERIOR","Car_text":"INTERIOR","link_url":"shopify:\/\/collections\/car-interior","open_in_new_tab":false}},"text_block_TGbgB6":{"type":"text_block","name":"Exterior","settings":{"image_desktop":"shopify:\/\/shop_images\/Exterior_200_x_200_px.png","image_alt":"EXTERIOR","Car_text":"EXTERIOR","link_url":"shopify:\/\/collections\/car-exterior","open_in_new_tab":false}},"text_block_dtiEXp":{"type":"text_block","name":"safety","settings":{"image_desktop":"shopify:\/\/shop_images\/Safety_200_x_200_px.png","image_alt":"SAFETY","Car_text":"SAFETY","link_url":"shopify:\/\/collections\/safety","open_in_new_tab":false}}},"block_order":["text_block_RYUj4b","text_block_VLeUVm","text_block_AhbeCh","text_block_JEVTEK","text_block_j7KhPr","text_block_86kA8f","text_block_BTyLTP","text_block_PcgRmb","text_block_Uf8cDF","text_block_y3qpPp","text_block_TGbgB6","text_block_dtiEXp"],"name":"Category Carousel","settings":{"section-heading":"Shop By Category","reverse_direction":true,"color_scheme":"","secondary_background":false}},"car_carousel_4JN3Rr":{"type":"car-carousel","blocks":{"text_block_GAHzyg":{"type":"text_block","name":"Blaupunkt","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_9_5f406372-aeb3-411d-a393-1c1ea04fb0a9.png","image_alt":"BLAUPUNKT","Car_text":"BLAUPUNKT","link_url":"shopify:\/\/collections\/blaupunkt","open_in_new_tab":false}},"text_block_CwrDaN":{"type":"text_block","name":"Nakamichi","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_16_3907fb3d-184e-4bd3-99f8-d725f40b24df.png","image_alt":"Nakamichi","Car_text":"Nakamichi","link_url":"shopify:\/\/collections\/nakamichi","open_in_new_tab":false}},"text_block_jU94JD":{"type":"text_block","name":"Hella","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_12_f48c3fd1-9858-4338-8007-30e62460f290.png","image_alt":"HELLA","Car_text":"HELLA","link_url":"shopify:\/\/collections\/hella","open_in_new_tab":false}},"text_block_Hm8URb":{"type":"text_block","name":"Cardi","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_10_c5df8d17-8ede-4bce-8c69-a3dbb90e527d.png","image_alt":"CARDI","Car_text":"CARDI","link_url":"shopify:\/\/collections\/cardi","open_in_new_tab":false}},"text_block_DtbdyM":{"type":"text_block","name":"GFX","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_11_a092b3c5-5388-4a3a-bc16-ca42f6ea63e6.png","image_alt":"GFX","Car_text":"GFX","link_url":"shopify:\/\/collections\/gfx","open_in_new_tab":false}},"text_block_Qej9bP":{"type":"text_block","name":"Onkyo","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_18.png","image_alt":"ONKYO","Car_text":"ONKYO","link_url":"shopify:\/\/collections\/onkyo","open_in_new_tab":false}},"text_block_H4KhrX":{"type":"text_block","name":"YueMi Ecosystem","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_25.png","image_alt":"YueMi Ecosystem","Car_text":"YueMi Ecosystem","link_url":"shopify:\/\/collections\/yuemi-ecosystem","open_in_new_tab":false}},"text_block_KAnJdM":{"type":"text_block","name":"JBL","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_14_155000f6-f930-4cdb-8e76-54ff4bf2a7f3.png","image_alt":"JBL","Car_text":"JBL","link_url":"shopify:\/\/collections\/jbl","open_in_new_tab":false}},"text_block_gRNGew":{"type":"text_block","name":"Pioneer","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_20.png","image_alt":"Pioneer","Car_text":"Pioneer","link_url":"shopify:\/\/collections\/pioneer","open_in_new_tab":false}},"text_block_YWXGVb":{"type":"text_block","name":"Sony","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_22_f3ee97f7-ca87-47e2-9ee2-9e9dd604dd9f.png","image_alt":"SONY","Car_text":"SONY","link_url":"shopify:\/\/collections\/sony","open_in_new_tab":false}},"text_block_x87aLg":{"type":"text_block","name":"Osram","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_19.png","image_alt":"OSRAM","Car_text":"OSRAM","link_url":"shopify:\/\/collections\/osram","open_in_new_tab":false}},"text_block_WDqezJ":{"type":"text_block","name":"3M","settings":{"image_desktop":"shopify:\/\/shop_images\/Untitled_design_8_7ccfa854-8ee1-408f-a32b-bbfd1fc0b63b.png","image_alt":"3M","Car_text":"3M","link_url":"shopify:\/\/collections\/3m","open_in_new_tab":false}}},"block_order":["text_block_GAHzyg","text_block_CwrDaN","text_block_jU94JD","text_block_Hm8URb","text_block_DtbdyM","text_block_Qej9bP","text_block_H4KhrX","text_block_KAnJdM","text_block_gRNGew","text_block_YWXGVb","text_block_x87aLg","text_block_WDqezJ"],"name":"Brand Carousel","settings":{"section-heading":"Shop By Brand","reverse_direction":false,"color_scheme":"","secondary_background":false}},"top_category_section_tVBBqj":{"type":"top-category-section","blocks":{"category_block_9zzX77":{"type":"category_block","name":"Music System","settings":{"category_image":"shopify:\/\/shop_images\/Music_System.png","category_alt":"MUSIC SYSTEM","category_title":"MUSIC SYSTEM","category_url":"shopify:\/\/collections\/car-music-system"}},"category_block_LiVYx3":{"type":"category_block","name":"LED Headlight","settings":{"category_image":"shopify:\/\/shop_images\/Clean_Care_1000X1000_Px_1.png","category_alt":"Led Headlight bulb","category_title":"LED HEADLIGHT BULB","category_url":"shopify:\/\/collections\/car-led-headlights"}},"category_block_MXDTFH":{"type":"category_block","name":"Fog Lamp Bracket","settings":{"category_image":"shopify:\/\/shop_images\/Untitled_design_8_982889ea-222f-4247-aff1-d617a7661d0e.png","category_alt":"FOG LAMP BRACKET","category_title":"FOG LAMP BRACKET","category_url":"shopify:\/\/collections\/fog-lamp-bracket"}},"category_block_VU9MVt":{"type":"category_block","name":"Key Cover","settings":{"category_image":"shopify:\/\/shop_images\/Clean_Care_1000X1000_Px_2.png","category_alt":"Key Cover","category_title":"KEY COVER","category_url":"shopify:\/\/collections\/car-key-cover"}},"category_block_wYmQ6k":{"type":"category_block","name":"Perfume","settings":{"category_image":"shopify:\/\/shop_images\/Car_Perfume_1000X1000_px.png","category_alt":"PERFUME","category_title":"CAR PERFUME","category_url":"shopify:\/\/collections\/perfume"}},"category_block_w3CjqT":{"type":"category_block","name":"Cleaning & Care","settings":{"category_image":"shopify:\/\/shop_images\/Clean_Care_1000X1000_Px.png","category_alt":"CLEANING & CARE","category_title":"CLEANING & CARE","category_url":"shopify:\/\/collections\/car-cleaning-care"}}},"block_order":["category_block_9zzX77","category_block_LiVYx3","category_block_MXDTFH","category_block_VU9MVt","category_block_wYmQ6k","category_block_w3CjqT"],"custom_css":[],"name":"Top Categories","settings":{}},"home_page_tabbber_KiTEVe":{"type":"home-page-tabbber","blocks":{"collection_tab_DnCyPx":{"type":"collection_tab","settings":{"collection":"car-android-player"}},"collection_tab_Pc89dR":{"type":"collection_tab","settings":{"collection":"dashcam"}},"collection_tab_qNwLpk":{"type":"collection_tab","settings":{"collection":"perfume"}},"collection_tab_pDnd7H":{"type":"collection_tab","settings":{"collection":"car-speaker"}},"collection_tab_Cft3zK":{"type":"collection_tab","settings":{"collection":"car-exterior"}}},"block_order":["collection_tab_DnCyPx","collection_tab_Pc89dR","collection_tab_qNwLpk","collection_tab_pDnd7H","collection_tab_Cft3zK"],"name":"Tabber Section","settings":{"title":"FEATURED PRODUCTS"}},"featured_box_section_W7xpeT":{"type":"featured-box-section","blocks":{"feature_tdmRmr":{"type":"feature","settings":{"image":"shopify:\/\/shop_images\/Car_Charger_offer_banner.png","image_alt":"Feature Image","button_text":"","link":"shopify:\/\/collections\/car-device-charger"}},"feature_Yp3c7X":{"type":"feature","settings":{"image":"shopify:\/\/shop_images\/Headlight_bulb_offer_banner.png","image_alt":"Check & Pay","button_text":"","link":"shopify:\/\/collections\/car-led-headlights"}},"feature_xrEXCe":{"type":"feature","settings":{"image":"shopify:\/\/shop_images\/Car_Key_Cover_offer_banner.png","image_alt":"Buy Car","button_text":"","link":"shopify:\/\/collections\/car-key-cover"}},"feature_GgYMRW":{"type":"feature","settings":{"image":"shopify:\/\/shop_images\/Cleaning_Care_offer_banner.png","image_alt":"Feature Image","button_text":"","link":"shopify:\/\/collections\/car-cleaning-care"}}},"block_order":["feature_tdmRmr","feature_Yp3c7X","feature_xrEXCe","feature_GgYMRW"],"name":"Feature Box Grid","settings":{}},"info_features_dQaP6T":{"type":"info-features","name":"Info Features","settings":{"feature1_title":"FREE DELIVERY","feature1_description":"Across the Country","feature1_icon":"shopify:\/\/shop_images\/free-delivery.png","feature2_title":"EASY RETURNS","feature2_description":"7 Days Return Policy","feature2_icon":"shopify:\/\/shop_images\/product-return.png","feature3_title":"COMFORT PAYMENTS","feature3_description":"COD and Online Payment","feature3_icon":"shopify:\/\/shop_images\/payment-method.png","feature4_title":"CUSTOMER SUPPORT","feature4_description":"24 x 7 (Support)","feature4_icon":"shopify:\/\/shop_images\/customer-service.png"}},"home_page_tabbber_rjDEBe":{"type":"home-page-tabbber","blocks":{"collection_tab_MUYxeF":{"type":"collection_tab","settings":{"collection":"top-selling-products"}},"collection_tab_MqfLke":{"type":"collection_tab","settings":{"collection":"car-interior"}},"collection_tab_VYewaY":{"type":"collection_tab","settings":{"collection":"car-android-player"}},"collection_tab_TT8Abd":{"type":"collection_tab","settings":{"collection":"car-key-cover"}}},"block_order":["collection_tab_MUYxeF","collection_tab_MqfLke","collection_tab_VYewaY","collection_tab_TT8Abd"],"name":"Tabber Section","settings":{"title":"TOP-SELLING  PRODUCTS"}},"content_section_NJcANL":{"type":"content-section","disabled":true,"settings":{"heading":"ABOUT US","paragraph":"<p>At NH ONE, we’re driven by a passion for performance, innovation, and style on the road. As a trusted brand in automotive accessories, we offer a wide range of high-quality products designed to enhance your vehicle’s functionality, appearance, and safety.<br\/>From powerful LED headlight bulbs to durable exterior and interior accessories, every NH ONE product reflects our commitment to quality, reliability, and customer satisfaction. We understand the evolving needs of modern drivers and deliver solutions that blend cutting-edge technology with practical design.<br\/>With a presence across major online marketplaces like Amazon, Flipkart, and our own retail channels, NH ONE has become a go-to choice for car enthusiasts and daily drivers alike.<\/p><p><br\/><strong>Why Choose NH ONE?<\/strong><\/p><p>🚗 <strong>Premium Quality Accessories<\/strong><br\/><br\/>💡 <strong>Innovative Lighting Solutions<\/strong><br\/><br\/>🛠️ <strong>Easy Installation & Compatibility<\/strong><br\/><br\/>🛒 <strong>Trusted by Thousands of Customers<\/strong><br\/><br\/>📦 <strong>Fast Delivery & Reliable Support<\/strong><\/p><p>Whether you're upgrading your ride for performance, visibility, or personal style — <strong>NH ONE powers every journey with confidence.<\/strong><\/p><p><strong>NH ONE – Drive with Purpose. Upgrade with Confidence.<\/strong><\/p>","color_scheme":"scheme-1","secondary_background":true}},"shopping_guide_section_4KLxKh":{"type":"shopping-guide-section","disabled":true,"name":"Shopping Guide - Two Columns","settings":{"title":"Your Shopping Guide","image1":"shopify:\/\/shop_images\/bike-gear_360x_941c714e-cd04-4884-83eb-0f36462fd7c1.png","heading1":"BIKE","items1":"Locks|\/collections\/locks\nBody Covers|\/collections\/body-covers","button_link1":"shopify:\/\/products\/do-not-touch-my-car-warning-sign-with-suction-cup-red-and-white-10-x-9-cm-silicon-material-easy-to-apply-and-remove","image2":"shopify:\/\/shop_images\/bike-gear_360x_941c714e-cd04-4884-83eb-0f36462fd7c1.png","heading2":"CAR","items2":"Seat Covers|\/collections\/seat-covers\nAccessories|\/collections\/all","button_link2":"shopify:\/\/collections"}},"custom_blog_slider_pKWVym":{"type":"custom-blog-slider","disabled":true,"name":"Custom Blog Slider","settings":{"heading":"","content":"","blog":"news","article_limit":2}},"custom_blog_slider_q3PnbU":{"type":"custom-blog-slider","name":"Custom Blog Slider","settings":{"heading":"LATEST FROM OUR BLOGS","content":"","blog":"news","article_limit":6}},"read_more_content_VTWaD8":{"type":"Read-more-content","name":"Read More Content Section","settings":{}},"1757748884bdaad3ec":{"type":"apps","blocks":{"judge_me_reviews_featured_carousel_TN4iYB":{"type":"shopify:\/\/apps\/judge-me-reviews\/blocks\/featured_carousel\/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8","settings":{"maxwidth":1920}}},"block_order":["judge_me_reviews_featured_carousel_TN4iYB"],"settings":{"include_margins":true}},"collection_link_list_pADwVb":{"type":"collection-link-list","blocks":{"collection_link_tCENcj":{"type":"collection_link","settings":{"collection":"alturas-g4"}},"collection_link_3fGVxC":{"type":"collection_link","settings":{"collection":"android-frame"}},"collection_link_ndWXRy":{"type":"collection_link","settings":{"collection":"accord"}},"collection_link_GK6rtD":{"type":"collection_link","settings":{"collection":"bolero-neo"}},"collection_link_eDaRh6":{"type":"collection_link","settings":{"collection":"amaze"}},"collection_link_jzgDEr":{"type":"collection_link","settings":{"collection":"alto"}},"collection_link_6jPPTT":{"type":"collection_link","settings":{"collection":"baleno"}},"collection_link_YVp9EB":{"type":"collection_link","settings":{"collection":"breeza"}},"collection_link_ApfgC9":{"type":"collection_link","settings":{"collection":"camry"}},"collection_link_7qJcd4":{"type":"collection_link","settings":{"collection":"car-cameras"}},"collection_link_G9Xzaz":{"type":"collection_link","settings":{"collection":"dashcam"}},"collection_link_jT6Qbb":{"type":"collection_link","settings":{"collection":"duster"}},"collection_link_ExCqmG":{"type":"collection_link","settings":{"collection":"dzire"}},"collection_link_HNTMrd":{"type":"collection_link","settings":{"collection":"figo"}},"collection_link_YtUbnW":{"type":"collection_link","settings":{"collection":"fiesta"}},"collection_link_diYm6x":{"type":"collection_link","settings":{"collection":"gloster"}},"collection_link_bpNLgG":{"type":"collection_link","settings":{"collection":"hector"}},"collection_link_zT8eU8":{"type":"collection_link","settings":{"collection":"grand-i10"}},"collection_link_39nVX3":{"type":"collection_link","settings":{"collection":"honda"}},"collection_link_V3Xim8":{"type":"collection_link","settings":{"collection":"car-focus-light"}},"collection_link_9VHprH":{"type":"collection_link","settings":{"collection":"car-360-camera"}},"collection_link_wcTCby":{"type":"collection_link","settings":{"collection":"captur"}},"collection_link_itxxVh":{"type":"collection_link","settings":{"collection":"mahindra"}},"collection_link_8mCRpz":{"type":"collection_link","settings":{"collection":"hyundai"}}},"block_order":["collection_link_tCENcj","collection_link_3fGVxC","collection_link_ndWXRy","collection_link_GK6rtD","collection_link_eDaRh6","collection_link_jzgDEr","collection_link_6jPPTT","collection_link_YVp9EB","collection_link_ApfgC9","collection_link_7qJcd4","collection_link_G9Xzaz","collection_link_jT6Qbb","collection_link_ExCqmG","collection_link_HNTMrd","collection_link_YtUbnW","collection_link_diYm6x","collection_link_bpNLgG","collection_link_zT8eU8","collection_link_39nVX3","collection_link_V3Xim8","collection_link_9VHprH","collection_link_wcTCby","collection_link_itxxVh","collection_link_8mCRpz"],"name":"Collection Link List","settings":{"section_heading":"Popular Car Accessories List"}}},"order":["banner_section_4ipiEf","car_carousel_W9niJY","car_carousel_4JN3Rr","top_category_section_tVBBqj","home_page_tabbber_KiTEVe","featured_box_section_W7xpeT","info_features_dQaP6T","home_page_tabbber_rjDEBe","content_section_NJcANL","shopping_guide_section_4KLxKh","custom_blog_slider_pKWVym","custom_blog_slider_q3PnbU","read_more_content_VTWaD8","1757748884bdaad3ec","collection_link_list_pADwVb"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner_section_4ipiEf": {
+      "type": "banner-section",
+      "blocks": {
+        "image_rULdyn": {
+          "type": "image",
+          "name": "Excellence Motion",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Black_and_Orange_Banner_5290_X1590_042311fb-d245-45b4-8148-21db2071a7e8.png",
+            "image_mobile": "shopify://shop_images/Black_and_Orange_Banner_1000_x_800_px_d32b8bb0-7ea8-410d-ab7a-c7e4a011e9b9.png",
+            "image_alt": "Image description",
+            "image_url": "/",
+            "open_in_new_tab": false
+          }
+        },
+        "image_qbPDUU": {
+          "type": "image",
+          "name": "Banner - Music System",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_75.png",
+            "image_mobile": "shopify://shop_images/Untitled_design_76.png",
+            "image_alt": "Image description",
+            "image_url": "/",
+            "open_in_new_tab": false
+          }
+        },
+        "image_NtLWxx": {
+          "type": "image",
+          "name": "Banner - Drive in Style",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Latest_car_acc_Banner_1710_Revised.png",
+            "image_mobile": "shopify://shop_images/Latest_car_acc_Banner_1000_x_800_px_1710_Revised.png",
+            "image_alt": "Image description",
+            "image_url": "",
+            "open_in_new_tab": false
+          }
+        },
+        "image_wbH8x3": {
+          "type": "image",
+          "name": "Banner - Provision led",
+          "settings": {
+            "image_desktop": "shopify://shop_images/LED_Prepaid_1710_Banner_Revised.png",
+            "image_mobile": "shopify://shop_images/LED_Festive_1710_Banner_1000_x_800_px_Revised.png",
+            "image_alt": "Image description",
+            "image_url": "shopify://collections/car-led-headlights",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "image_rULdyn",
+        "image_qbPDUU",
+        "image_NtLWxx",
+        "image_wbH8x3"
+      ],
+      "settings": {
+        "color_scheme": ""
+      }
+    },
+    "car_carousel_W9niJY": {
+      "type": "car-carousel",
+      "blocks": {
+        "text_block_RYUj4b": {
+          "type": "text_block",
+          "name": "Music System",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_7_5b2991d8-e48e-403f-9ff8-85207c89004d.png",
+            "image_alt": "Music System",
+            "Car_text": "MUSIC SYSTEM",
+            "link_url": "shopify://collections/car-music-system",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_VLeUVm": {
+          "type": "text_block",
+          "name": "Headlight Bulb",
+          "settings": {
+            "image_desktop": "shopify://shop_images/LED_Light_200_X_200_Px_-_1_-_Edited.png",
+            "image_alt": "HEADLIGHT BULB",
+            "Car_text": "HEADLIGHT BULB",
+            "link_url": "shopify://collections/car-led-headlights",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_AhbeCh": {
+          "type": "text_block",
+          "name": "Horn",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_8_2a75a77c-e7d2-4244-9a27-ee5893547089.png",
+            "image_alt": "HORN",
+            "Car_text": "HORN",
+            "link_url": "shopify://collections/car-horn",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_JEVTEK": {
+          "type": "text_block",
+          "name": "Android Frame",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Android_Frame_9_Inch_Compatible_with_Renault_Duster.png",
+            "image_alt": "Android Frame",
+            "Car_text": "ANDROID FRAME",
+            "link_url": "shopify://collections/android-frame",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_j7KhPr": {
+          "type": "text_block",
+          "name": "Fog Lamp Bracket",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_8_982889ea-222f-4247-aff1-d617a7661d0e.png",
+            "image_alt": "Fog Lamp Bracket",
+            "Car_text": "Fog Lamp Bracket",
+            "link_url": "shopify://collections/fog-lamp-bracket",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_86kA8f": {
+          "type": "text_block",
+          "name": "cleaning & Care",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Cleaning_Care_200_x_200_px.png",
+            "image_alt": "CLEANING & CARE",
+            "Car_text": "CLEANING & CARE",
+            "link_url": "shopify://collections/car-cleaning-care",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_BTyLTP": {
+          "type": "text_block",
+          "name": "Car Camera",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_4_58fb0e35-15f6-4f02-8d64-ec1b4df4aefb.png",
+            "image_alt": "Car Camera",
+            "Car_text": "CAR CAMERA",
+            "link_url": "shopify://collections/car-cameras",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_PcgRmb": {
+          "type": "text_block",
+          "name": "Key Cover",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Car_Key_Cover_200_x_200_px.png",
+            "image_alt": "KEY COVER",
+            "Car_text": "KEY COVER",
+            "link_url": "shopify://collections/car-key-cover",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_Uf8cDF": {
+          "type": "text_block",
+          "name": "Spare Parts",
+          "disabled": true,
+          "settings": {
+            "image_desktop": "shopify://shop_images/Spare_Parts_200_x_200_px.png",
+            "image_alt": "SPARE PARTS",
+            "Car_text": "SPARE PARTS",
+            "link_url": "#",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_y3qpPp": {
+          "type": "text_block",
+          "name": "Interior",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Interior_200_x_200_px.png",
+            "image_alt": "INTERIOR",
+            "Car_text": "INTERIOR",
+            "link_url": "shopify://collections/car-interior",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_TGbgB6": {
+          "type": "text_block",
+          "name": "Exterior",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Exterior_200_x_200_px.png",
+            "image_alt": "EXTERIOR",
+            "Car_text": "EXTERIOR",
+            "link_url": "shopify://collections/car-exterior",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_dtiEXp": {
+          "type": "text_block",
+          "name": "safety",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Safety_200_x_200_px.png",
+            "image_alt": "SAFETY",
+            "Car_text": "SAFETY",
+            "link_url": "shopify://collections/safety",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "text_block_RYUj4b",
+        "text_block_VLeUVm",
+        "text_block_AhbeCh",
+        "text_block_JEVTEK",
+        "text_block_j7KhPr",
+        "text_block_86kA8f",
+        "text_block_BTyLTP",
+        "text_block_PcgRmb",
+        "text_block_Uf8cDF",
+        "text_block_y3qpPp",
+        "text_block_TGbgB6",
+        "text_block_dtiEXp"
+      ],
+      "name": "Category Carousel",
+      "settings": {
+        "section-heading": "Shop By Category",
+        "reverse_direction": true,
+        "color_scheme": "",
+        "secondary_background": false
+      }
+    },
+    "car_carousel_4JN3Rr": {
+      "type": "car-carousel",
+      "blocks": {
+        "text_block_GAHzyg": {
+          "type": "text_block",
+          "name": "Blaupunkt",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_9_5f406372-aeb3-411d-a393-1c1ea04fb0a9.png",
+            "image_alt": "BLAUPUNKT",
+            "Car_text": "BLAUPUNKT",
+            "link_url": "shopify://collections/blaupunkt",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_CwrDaN": {
+          "type": "text_block",
+          "name": "Nakamichi",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_16_3907fb3d-184e-4bd3-99f8-d725f40b24df.png",
+            "image_alt": "Nakamichi",
+            "Car_text": "Nakamichi",
+            "link_url": "shopify://collections/nakamichi",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_jU94JD": {
+          "type": "text_block",
+          "name": "Hella",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_12_f48c3fd1-9858-4338-8007-30e62460f290.png",
+            "image_alt": "HELLA",
+            "Car_text": "HELLA",
+            "link_url": "shopify://collections/hella",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_Hm8URb": {
+          "type": "text_block",
+          "name": "Cardi",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_10_c5df8d17-8ede-4bce-8c69-a3dbb90e527d.png",
+            "image_alt": "CARDI",
+            "Car_text": "CARDI",
+            "link_url": "shopify://collections/cardi",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_DtbdyM": {
+          "type": "text_block",
+          "name": "GFX",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_11_a092b3c5-5388-4a3a-bc16-ca42f6ea63e6.png",
+            "image_alt": "GFX",
+            "Car_text": "GFX",
+            "link_url": "shopify://collections/gfx",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_Qej9bP": {
+          "type": "text_block",
+          "name": "Onkyo",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_18.png",
+            "image_alt": "ONKYO",
+            "Car_text": "ONKYO",
+            "link_url": "shopify://collections/onkyo",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_H4KhrX": {
+          "type": "text_block",
+          "name": "YueMi Ecosystem",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_25.png",
+            "image_alt": "YueMi Ecosystem",
+            "Car_text": "YueMi Ecosystem",
+            "link_url": "shopify://collections/yuemi-ecosystem",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_KAnJdM": {
+          "type": "text_block",
+          "name": "JBL",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_14_155000f6-f930-4cdb-8e76-54ff4bf2a7f3.png",
+            "image_alt": "JBL",
+            "Car_text": "JBL",
+            "link_url": "shopify://collections/jbl",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_gRNGew": {
+          "type": "text_block",
+          "name": "Pioneer",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_20.png",
+            "image_alt": "Pioneer",
+            "Car_text": "Pioneer",
+            "link_url": "shopify://collections/pioneer",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_YWXGVb": {
+          "type": "text_block",
+          "name": "Sony",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_22_f3ee97f7-ca87-47e2-9ee2-9e9dd604dd9f.png",
+            "image_alt": "SONY",
+            "Car_text": "SONY",
+            "link_url": "shopify://collections/sony",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_x87aLg": {
+          "type": "text_block",
+          "name": "Osram",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_19.png",
+            "image_alt": "OSRAM",
+            "Car_text": "OSRAM",
+            "link_url": "shopify://collections/osram",
+            "open_in_new_tab": false
+          }
+        },
+        "text_block_WDqezJ": {
+          "type": "text_block",
+          "name": "3M",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Untitled_design_8_7ccfa854-8ee1-408f-a32b-bbfd1fc0b63b.png",
+            "image_alt": "3M",
+            "Car_text": "3M",
+            "link_url": "shopify://collections/3m",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "text_block_GAHzyg",
+        "text_block_CwrDaN",
+        "text_block_jU94JD",
+        "text_block_Hm8URb",
+        "text_block_DtbdyM",
+        "text_block_Qej9bP",
+        "text_block_H4KhrX",
+        "text_block_KAnJdM",
+        "text_block_gRNGew",
+        "text_block_YWXGVb",
+        "text_block_x87aLg",
+        "text_block_WDqezJ"
+      ],
+      "name": "Brand Carousel",
+      "settings": {
+        "section-heading": "Shop By Brand",
+        "reverse_direction": false,
+        "color_scheme": "",
+        "secondary_background": false
+      }
+    },
+    "top_category_section_tVBBqj": {
+      "type": "top-category-section",
+      "blocks": {
+        "category_block_9zzX77": {
+          "type": "category_block",
+          "name": "Music System",
+          "settings": {
+            "category_image": "shopify://shop_images/Music_System.png",
+            "category_alt": "MUSIC SYSTEM",
+            "category_title": "MUSIC SYSTEM",
+            "category_url": "shopify://collections/car-music-system"
+          }
+        },
+        "category_block_LiVYx3": {
+          "type": "category_block",
+          "name": "LED Headlight",
+          "settings": {
+            "category_image": "shopify://shop_images/Clean_Care_1000X1000_Px_1.png",
+            "category_alt": "Led Headlight bulb",
+            "category_title": "LED HEADLIGHT BULB",
+            "category_url": "shopify://collections/car-led-headlights"
+          }
+        },
+        "category_block_MXDTFH": {
+          "type": "category_block",
+          "name": "Fog Lamp Bracket",
+          "settings": {
+            "category_image": "shopify://shop_images/Untitled_design_8_982889ea-222f-4247-aff1-d617a7661d0e.png",
+            "category_alt": "FOG LAMP BRACKET",
+            "category_title": "FOG LAMP BRACKET",
+            "category_url": "shopify://collections/fog-lamp-bracket"
+          }
+        },
+        "category_block_VU9MVt": {
+          "type": "category_block",
+          "name": "Key Cover",
+          "settings": {
+            "category_image": "shopify://shop_images/Clean_Care_1000X1000_Px_2.png",
+            "category_alt": "Key Cover",
+            "category_title": "KEY COVER",
+            "category_url": "shopify://collections/car-key-cover"
+          }
+        },
+        "category_block_wYmQ6k": {
+          "type": "category_block",
+          "name": "Perfume",
+          "settings": {
+            "category_image": "shopify://shop_images/Car_Perfume_1000X1000_px.png",
+            "category_alt": "PERFUME",
+            "category_title": "CAR PERFUME",
+            "category_url": "shopify://collections/perfume"
+          }
+        },
+        "category_block_w3CjqT": {
+          "type": "category_block",
+          "name": "Cleaning & Care",
+          "settings": {
+            "category_image": "shopify://shop_images/Clean_Care_1000X1000_Px.png",
+            "category_alt": "CLEANING & CARE",
+            "category_title": "CLEANING & CARE",
+            "category_url": "shopify://collections/car-cleaning-care"
+          }
+        }
+      },
+      "block_order": [
+        "category_block_9zzX77",
+        "category_block_LiVYx3",
+        "category_block_MXDTFH",
+        "category_block_VU9MVt",
+        "category_block_wYmQ6k",
+        "category_block_w3CjqT"
+      ],
+      "custom_css": [],
+      "name": "Top Categories",
+      "settings": {}
+    },
+    "home_page_tabbber_KiTEVe": {
+      "type": "home-page-tabbber",
+      "blocks": {
+        "collection_tab_DnCyPx": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "car-android-player"
+          }
+        },
+        "collection_tab_Pc89dR": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "dashcam"
+          }
+        },
+        "collection_tab_qNwLpk": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "perfume"
+          }
+        },
+        "collection_tab_pDnd7H": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "car-speaker"
+          }
+        },
+        "collection_tab_Cft3zK": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "car-exterior"
+          }
+        }
+      },
+      "block_order": [
+        "collection_tab_DnCyPx",
+        "collection_tab_Pc89dR",
+        "collection_tab_qNwLpk",
+        "collection_tab_pDnd7H",
+        "collection_tab_Cft3zK"
+      ],
+      "name": "Tabber Section",
+      "settings": {
+        "title": "FEATURED PRODUCTS"
+      }
+    },
+    "featured_box_section_W7xpeT": {
+      "type": "featured-box-section",
+      "blocks": {
+        "feature_tdmRmr": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/Car_Charger_offer_banner.png",
+            "image_alt": "Feature Image",
+            "button_text": "",
+            "link": "shopify://collections/car-device-charger"
+          }
+        },
+        "feature_Yp3c7X": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/Headlight_bulb_offer_banner.png",
+            "image_alt": "Check & Pay",
+            "button_text": "",
+            "link": "shopify://collections/car-led-headlights"
+          }
+        },
+        "feature_xrEXCe": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/Car_Key_Cover_offer_banner.png",
+            "image_alt": "Buy Car",
+            "button_text": "",
+            "link": "shopify://collections/car-key-cover"
+          }
+        },
+        "feature_GgYMRW": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/Cleaning_Care_offer_banner.png",
+            "image_alt": "Feature Image",
+            "button_text": "",
+            "link": "shopify://collections/car-cleaning-care"
+          }
+        }
+      },
+      "block_order": [
+        "feature_tdmRmr",
+        "feature_Yp3c7X",
+        "feature_xrEXCe",
+        "feature_GgYMRW"
+      ],
+      "name": "Feature Box Grid",
+      "settings": {}
+    },
+    "info_features_dQaP6T": {
+      "type": "info-features",
+      "name": "Info Features",
+      "settings": {
+        "feature1_title": "FREE DELIVERY",
+        "feature1_description": "Across the Country",
+        "feature1_icon": "shopify://shop_images/free-delivery.png",
+        "feature2_title": "EASY RETURNS",
+        "feature2_description": "7 Days Return Policy",
+        "feature2_icon": "shopify://shop_images/product-return.png",
+        "feature3_title": "COMFORT PAYMENTS",
+        "feature3_description": "COD and Online Payment",
+        "feature3_icon": "shopify://shop_images/payment-method.png",
+        "feature4_title": "CUSTOMER SUPPORT",
+        "feature4_description": "24 x 7 (Support)",
+        "feature4_icon": "shopify://shop_images/customer-service.png"
+      }
+    },
+    "home_page_tabbber_rjDEBe": {
+      "type": "home-page-tabbber",
+      "blocks": {
+        "collection_tab_MUYxeF": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "top-selling-products"
+          }
+        },
+        "collection_tab_MqfLke": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "car-interior"
+          }
+        },
+        "collection_tab_VYewaY": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "car-android-player"
+          }
+        },
+        "collection_tab_TT8Abd": {
+          "type": "collection_tab",
+          "settings": {
+            "collection": "car-key-cover"
+          }
+        }
+      },
+      "block_order": [
+        "collection_tab_MUYxeF",
+        "collection_tab_MqfLke",
+        "collection_tab_VYewaY",
+        "collection_tab_TT8Abd"
+      ],
+      "name": "Tabber Section",
+      "settings": {
+        "title": "TOP-SELLING  PRODUCTS"
+      }
+    },
+    "content_section_NJcANL": {
+      "type": "content-section",
+      "disabled": true,
+      "settings": {
+        "heading": "ABOUT US",
+        "paragraph": "<p>At NH ONE, we’re driven by a passion for performance, innovation, and style on the road. As a trusted brand in automotive accessories, we offer a wide range of high-quality products designed to enhance your vehicle’s functionality, appearance, and safety.<br/>From powerful LED headlight bulbs to durable exterior and interior accessories, every NH ONE product reflects our commitment to quality, reliability, and customer satisfaction. We understand the evolving needs of modern drivers and deliver solutions that blend cutting-edge technology with practical design.<br/>With a presence across major online marketplaces like Amazon, Flipkart, and our own retail channels, NH ONE has become a go-to choice for car enthusiasts and daily drivers alike.</p><p><br/><strong>Why Choose NH ONE?</strong></p><p>🚗 <strong>Premium Quality Accessories</strong><br/><br/>💡 <strong>Innovative Lighting Solutions</strong><br/><br/>🛠️ <strong>Easy Installation & Compatibility</strong><br/><br/>🛒 <strong>Trusted by Thousands of Customers</strong><br/><br/>📦 <strong>Fast Delivery & Reliable Support</strong></p><p>Whether you're upgrading your ride for performance, visibility, or personal style — <strong>NH ONE powers every journey with confidence.</strong></p><p><strong>NH ONE – Drive with Purpose. Upgrade with Confidence.</strong></p>",
+        "color_scheme": "scheme-1",
+        "secondary_background": true
+      }
+    },
+    "shopping_guide_section_4KLxKh": {
+      "type": "shopping-guide-section",
+      "disabled": true,
+      "name": "Shopping Guide - Two Columns",
+      "settings": {
+        "title": "Your Shopping Guide",
+        "image1": "shopify://shop_images/bike-gear_360x_941c714e-cd04-4884-83eb-0f36462fd7c1.png",
+        "heading1": "BIKE",
+        "items1": "Locks|/collections/locks\nBody Covers|/collections/body-covers",
+        "button_link1": "shopify://products/do-not-touch-my-car-warning-sign-with-suction-cup-red-and-white-10-x-9-cm-silicon-material-easy-to-apply-and-remove",
+        "image2": "shopify://shop_images/bike-gear_360x_941c714e-cd04-4884-83eb-0f36462fd7c1.png",
+        "heading2": "CAR",
+        "items2": "Seat Covers|/collections/seat-covers\nAccessories|/collections/all",
+        "button_link2": "shopify://collections"
+      }
+    },
+    "custom_blog_slider_pKWVym": {
+      "type": "custom-blog-slider",
+      "disabled": true,
+      "name": "Custom Blog Slider",
+      "settings": {
+        "heading": "",
+        "content": "",
+        "blog": "news",
+        "article_limit": 2
+      }
+    },
+    "custom_blog_slider_q3PnbU": {
+      "type": "custom-blog-slider",
+      "name": "Custom Blog Slider",
+      "settings": {
+        "heading": "LATEST FROM OUR BLOGS",
+        "content": "",
+        "blog": "news",
+        "article_limit": 6
+      }
+    },
+    "read_more_content_VTWaD8": {
+      "type": "Read-more-content",
+      "name": "Read More Content Section",
+      "settings": {}
+    },
+    "1757748884bdaad3ec": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_featured_carousel_TN4iYB": {
+          "type": "shopify://apps/judge-me-reviews/blocks/featured_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "maxwidth": 1920
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_featured_carousel_TN4iYB"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "collection_link_list_pADwVb": {
+      "type": "collection-link-list",
+      "blocks": {
+        "collection_link_tCENcj": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "alturas-g4"
+          }
+        },
+        "collection_link_3fGVxC": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "android-frame"
+          }
+        },
+        "collection_link_ndWXRy": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "accord"
+          }
+        },
+        "collection_link_GK6rtD": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "bolero-neo"
+          }
+        },
+        "collection_link_eDaRh6": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "amaze"
+          }
+        },
+        "collection_link_jzgDEr": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "alto"
+          }
+        },
+        "collection_link_6jPPTT": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "baleno"
+          }
+        },
+        "collection_link_YVp9EB": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "breeza"
+          }
+        },
+        "collection_link_ApfgC9": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "camry"
+          }
+        },
+        "collection_link_7qJcd4": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "car-cameras"
+          }
+        },
+        "collection_link_G9Xzaz": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "dashcam"
+          }
+        },
+        "collection_link_jT6Qbb": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "duster"
+          }
+        },
+        "collection_link_ExCqmG": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "dzire"
+          }
+        },
+        "collection_link_HNTMrd": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "figo"
+          }
+        },
+        "collection_link_YtUbnW": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "fiesta"
+          }
+        },
+        "collection_link_diYm6x": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "gloster"
+          }
+        },
+        "collection_link_bpNLgG": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "hector"
+          }
+        },
+        "collection_link_zT8eU8": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "grand-i10"
+          }
+        },
+        "collection_link_39nVX3": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "honda"
+          }
+        },
+        "collection_link_V3Xim8": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "car-focus-light"
+          }
+        },
+        "collection_link_9VHprH": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "car-360-camera"
+          }
+        },
+        "collection_link_wcTCby": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "captur"
+          }
+        },
+        "collection_link_itxxVh": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "mahindra"
+          }
+        },
+        "collection_link_8mCRpz": {
+          "type": "collection_link",
+          "settings": {
+            "collection": "hyundai"
+          }
+        }
+      },
+      "block_order": [
+        "collection_link_tCENcj",
+        "collection_link_3fGVxC",
+        "collection_link_ndWXRy",
+        "collection_link_GK6rtD",
+        "collection_link_eDaRh6",
+        "collection_link_jzgDEr",
+        "collection_link_6jPPTT",
+        "collection_link_YVp9EB",
+        "collection_link_ApfgC9",
+        "collection_link_7qJcd4",
+        "collection_link_G9Xzaz",
+        "collection_link_jT6Qbb",
+        "collection_link_ExCqmG",
+        "collection_link_HNTMrd",
+        "collection_link_YtUbnW",
+        "collection_link_diYm6x",
+        "collection_link_bpNLgG",
+        "collection_link_zT8eU8",
+        "collection_link_39nVX3",
+        "collection_link_V3Xim8",
+        "collection_link_9VHprH",
+        "collection_link_wcTCby",
+        "collection_link_itxxVh",
+        "collection_link_8mCRpz"
+      ],
+      "name": "Collection Link List",
+      "settings": {
+        "section_heading": "Popular Car Accessories List"
+      }
+    }
+  },
+  "order": [
+    "banner_section_4ipiEf",
+    "car_carousel_W9niJY",
+    "car_carousel_4JN3Rr",
+    "top_category_section_tVBBqj",
+    "home_page_tabbber_KiTEVe",
+    "featured_box_section_W7xpeT",
+    "info_features_dQaP6T",
+    "home_page_tabbber_rjDEBe",
+    "content_section_NJcANL",
+    "shopping_guide_section_4KLxKh",
+    "custom_blog_slider_pKWVym",
+    "custom_blog_slider_q3PnbU",
+    "read_more_content_VTWaD8",
+    "1757748884bdaad3ec",
+    "collection_link_list_pADwVb"
+  ]
+}
