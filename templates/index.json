@@ -132,7 +132,7 @@
             "image_desktop": "shopify://shop_images/Cleaning_Care_200_x_200_px.png",
             "image_alt": "CLEANING & CARE",
             "Car_text": "CLEANING & CARE",
-            "link_url": "shopify://collections/car-cleaning-care",
+            "link_url": "shopify://collections/car-interior-cleaning-products",
             "open_in_new_tab": false
           }
         },
@@ -444,7 +444,7 @@
             "category_image": "shopify://shop_images/Clean_Care_1000X1000_Px.png",
             "category_alt": "CLEANING & CARE",
             "category_title": "CLEANING & CARE",
-            "category_url": "shopify://collections/car-cleaning-care"
+            "category_url": "shopify://collections/car-interior-cleaning-products"
           }
         }
       },
@@ -542,7 +542,7 @@
             "image": "shopify://shop_images/Cleaning_Care_offer_banner.png",
             "image_alt": "Feature Image",
             "button_text": "",
-            "link": "shopify://collections/car-cleaning-care"
+            "link": "shopify://collections/car-interior-cleaning-products"
           }
         }
       },
