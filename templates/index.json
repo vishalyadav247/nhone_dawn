@@ -110,7 +110,7 @@
             "image_desktop": "shopify://shop_images/Android_Frame_9_Inch_Compatible_with_Renault_Duster.png",
             "image_alt": "Android Frame",
             "Car_text": "ANDROID FRAME",
-            "link_url": "shopify://collections/android-frame",
+            "link_url": "shopify://collections/car-android-frame",
             "open_in_new_tab": false
           }
         },
@@ -693,7 +693,7 @@
         "collection_link_3fGVxC": {
           "type": "collection_link",
           "settings": {
-            "collection": "android-frame"
+            "collection": "car-android-frame"
           }
         },
         "collection_link_ndWXRy": {
