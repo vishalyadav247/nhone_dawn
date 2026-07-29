@@ -177,7 +177,7 @@
             "image_desktop": "shopify://shop_images/Interior_200_x_200_px.png",
             "image_alt": "INTERIOR",
             "Car_text": "INTERIOR",
-            "link_url": "shopify://collections/car-interior",
+            "link_url": "shopify://collections/car-interior-accessories",
             "open_in_new_tab": false
           }
         },
@@ -585,7 +585,7 @@
         "collection_tab_MqfLke": {
           "type": "collection_tab",
           "settings": {
-            "collection": "car-interior"
+            "collection": "car-interior-accessories"
           }
         },
         "collection_tab_VYewaY": {
