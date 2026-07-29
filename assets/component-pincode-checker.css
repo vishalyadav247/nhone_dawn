@@ -1,0 +1,363 @@
+/* Pincode fitment checker block (main-product)
+   All states are fixed-height by design: the input/chip row is always 4rem tall
+   and the result slot is always 2.6rem tall, so the block never shifts layout. */
+
+.pincode-checker {
+  display: block;
+}
+
+.pincode-checker__card {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+}
+
+.pincode-checker__icon {
+  flex: 0 0 2.4rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: rgb(var(--color-foreground));
+}
+
+.pincode-checker__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pincode-checker__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pincode-checker__heading {
+  margin: 0;
+  font-weight: 600;
+}
+
+.pincode-checker__subtext {
+  margin: 0;
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+/* Input row and chip row share one slot with identical fixed height —
+   JS toggles [hidden] between them, so swapping causes no layout shift. */
+.pincode-checker__row {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.pincode-checker__row[hidden] {
+  display: none;
+}
+
+.pincode-checker__input {
+  flex: 1;
+  min-width: 0;
+  max-width: 16rem;
+  height: 100%;
+  font-size: 1.4rem;
+  padding: 0 1.2rem;
+  color: rgb(var(--color-foreground));
+  background-color: rgb(var(--color-background));
+  border: 0.1rem solid rgba(var(--color-foreground), 0.55);
+  border-radius: 0.4rem;
+}
+
+.pincode-checker__input:focus {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline-offset: 0.1rem;
+}
+
+.pincode-checker__input--invalid {
+  border-color: #c8102e;
+  animation: pincode-shake 0.3s linear;
+}
+
+@keyframes pincode-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-0.4rem);
+  }
+  75% {
+    transform: translateX(0.4rem);
+  }
+}
+
+.pincode-checker__button {
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  padding: 0 1.6rem;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.pincode-checker__chip {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  background-color: rgba(var(--color-foreground), 0.06);
+  border-radius: 2rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pincode-checker__chip [data-chip-pin] {
+  margin-left: 0.4rem;
+  font-weight: 600;
+}
+
+.pincode-checker__change {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.3rem;
+  text-decoration: underline;
+  color: rgb(var(--color-link));
+}
+
+/* Result slot: fixed height across idle / loading / found / notfound. */
+.pincode-checker__result {
+  height: 2.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.pincode-checker__idle {
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pincode-checker__shimmer {
+  width: 70%;
+  height: 1.4rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-foreground), 0.08) 25%,
+    rgba(var(--color-foreground), 0.18) 50%,
+    rgba(var(--color-foreground), 0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: pincode-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes pincode-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.pincode-checker__strip {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0.2rem 0.8rem;
+  border-radius: 0.4rem;
+  font-size: 1.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pincode-checker__strip--found {
+  color: #067d47;
+  background-color: #e6f6ee;
+}
+
+.pincode-checker__strip--notfound {
+  color: #8a5a00;
+  background-color: #fdf3e0;
+}
+
+.pincode-checker__view {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.2rem;
+  text-decoration: underline;
+  color: rgb(var(--color-link));
+}
+
+/* Fitment centres modal (ModalDialog moves it to document.body). */
+.pincode-fitment-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  display: none;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.pincode-fitment-modal[open] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pincode-fitment-modal__content {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  width: min(48rem, 92vw);
+  max-height: 80vh;
+  border-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pincode-fitment-modal__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.6rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.12);
+}
+
+.pincode-fitment-modal__header h2 {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pincode-fitment-modal__close {
+  width: 4.4rem;
+  height: 4.4rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgb(var(--color-foreground));
+}
+
+.pincode-fitment-modal__close svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.pincode-fitment-modal__list {
+  overflow-y: auto;
+  padding: 1.6rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+@media screen and (max-width: 749px) {
+  .pincode-fitment-modal[open] {
+    align-items: flex-end;
+  }
+
+  .pincode-fitment-modal__content {
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 1.2rem 1.2rem 0 0;
+    animation: pincode-slide-up 0.25s ease-out;
+  }
+}
+
+@keyframes pincode-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Centre cards inside the modal. */
+.pincode-centre-card {
+  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+}
+
+.pincode-centre-card__name {
+  margin: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.pincode-centre-card__badge {
+  display: inline-block;
+  background-color: #e6f6ee;
+  color: #067d47;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  border-radius: 2rem;
+  padding: 0.2rem 0.8rem;
+}
+
+.pincode-centre-card__address {
+  margin: 0.4rem 0 0;
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.8);
+}
+
+.pincode-centre-card__actions {
+  display: flex;
+  gap: 1.6rem;
+  margin-top: 0.8rem;
+}
+
+.pincode-centre-card__call,
+.pincode-centre-card__directions {
+  font-size: 1.3rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pincode-checker__shimmer {
+    animation: none;
+    background: rgba(var(--color-foreground), 0.12);
+  }
+
+  .pincode-checker__input--invalid {
+    animation: none;
+  }
+
+  .pincode-fitment-modal__content {
+    animation: none;
+  }
+}
+
+/* Fallback while the component is not defined (JS still loading, disabled, or
+   failed): visually hide the interactive rows but KEEP their reserved height
+   (visibility, not display), so the block does not collapse then expand —
+   i.e. no layout shift — when the deferred script upgrades the element.
+   The chip row stays display:none via its [hidden] attribute either way. */
+pincode-checker:not(:defined) .pincode-checker__row,
+pincode-checker:not(:defined) .pincode-checker__result {
+  visibility: hidden;
+}

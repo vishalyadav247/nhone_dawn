@@ -1,0 +1,95 @@
+{% comment %}
+  Renders the "Pincode fitment checker" product block.
+
+  Accepts:
+  - block: {Object} the pincode_checker block (settings + shopify_attributes)
+  - section_id: {String} the parent section id
+
+  Usage:
+  {% render 'pincode-checker', block: block, section_id: section.id %}
+{% endcomment %}
+
+{{ 'component-pincode-checker.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'pincode-checker.js' | asset_url }}" defer="defer"></script>
+
+<pincode-checker
+  class="pincode-checker quick-add-hidden"
+  data-section-id="{{ section_id }}"
+  data-centres-url="{{ 'fitment-centres.json' | asset_url }}"
+  data-modal="#PincodeFitmentModal-{{ section_id }}"
+  data-success-text="{{ block.settings.success_text | escape }}"
+  data-not-found-text="{{ block.settings.not_found_text | escape }}"
+  data-dialog-title="{{ block.settings.dialog_title | escape }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="pincode-checker__card">
+    <span class="pincode-checker__icon" aria-hidden="true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        focusable="false"
+      >
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    </span>
+    <div class="pincode-checker__body">
+      {%- if block.settings.heading != blank -%}
+        <p class="pincode-checker__heading">{{ block.settings.heading | escape }}</p>
+      {%- endif -%}
+      {%- if block.settings.subtext != blank -%}
+        <p class="pincode-checker__subtext">{{ block.settings.subtext | escape }}</p>
+      {%- endif -%}
+      <div class="pincode-checker__row pincode-checker__row--input">
+        <input
+          class="pincode-checker__input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="postal-code"
+          pattern="[0-9]{6}"
+          maxlength="6"
+          placeholder="Pincode"
+          aria-label="Delivery pincode"
+          id="PincodeInput-{{ section_id }}"
+        >
+        <button type="button" class="pincode-checker__button button button--secondary">Check</button>
+      </div>
+      <div class="pincode-checker__row pincode-checker__row--chip" hidden>
+        <span class="pincode-checker__chip">Showing for <span data-chip-pin></span></span>
+        <button type="button" class="pincode-checker__change link">Change</button>
+      </div>
+      <div class="pincode-checker__result" role="status" aria-live="polite" data-result>
+        {%- if block.settings.idle_text != blank -%}
+          <span class="pincode-checker__idle">{{ block.settings.idle_text | escape }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+  <modal-dialog id="PincodeFitmentModal-{{ section_id }}" class="pincode-fitment-modal">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="PincodeFitmentModalTitle-{{ section_id }}"
+      class="pincode-fitment-modal__content"
+      tabindex="-1"
+    >
+      <div class="pincode-fitment-modal__header">
+        <h2 class="h4" id="PincodeFitmentModalTitle-{{ section_id }}" data-modal-title></h2>
+        <button
+          id="ModalClose-pincode-{{ section_id }}"
+          type="button"
+          class="pincode-fitment-modal__close"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+      </div>
+      <div class="pincode-fitment-modal__list" data-centres-list></div>
+    </div>
+  </modal-dialog>
+</pincode-checker>

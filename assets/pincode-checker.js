@@ -1,0 +1,306 @@
+if (!customElements.get('pincode-checker')) {
+  customElements.define(
+    'pincode-checker',
+    class PincodeChecker extends HTMLElement {
+      static STORAGE_KEY = 'nhone-fitment-pincode';
+      static dataPromise = null;
+      static rangeCache = new WeakMap();
+      static memPin = null;
+
+      connectedCallback() {
+        if (this.initialized) return;
+        this.initialized = true;
+
+        this.input = this.querySelector('.pincode-checker__input');
+        this.checkButton = this.querySelector('.pincode-checker__button');
+        this.inputRow = this.querySelector('.pincode-checker__row--input');
+        this.chipRow = this.querySelector('.pincode-checker__row--chip');
+        this.chipPin = this.querySelector('[data-chip-pin]');
+        this.changeButton = this.querySelector('.pincode-checker__change');
+        this.result = this.querySelector('[data-result]');
+        const idleElement = this.querySelector('.pincode-checker__idle');
+        this.idleText = idleElement ? idleElement.textContent.trim() : '';
+
+        this.matches = [];
+        this.lastCheckedPin = null;
+        this.busy = false;
+        this.prefetched = false;
+
+        this.addEventListener('focusin', this.onFocusIn.bind(this));
+        if (this.input) {
+          this.input.addEventListener('input', this.onInput.bind(this));
+          this.input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              this.onCheckClick();
+            }
+          });
+        }
+        if (this.checkButton) this.checkButton.addEventListener('click', this.onCheckClick.bind(this));
+        if (this.changeButton) this.changeButton.addEventListener('click', this.onChangeClick.bind(this));
+
+        this.applySavedPin();
+      }
+
+      getModal() {
+        // ModalDialog moves itself to document.body on connect, so look it up globally.
+        if (!this.modal || !this.modal.isConnected) {
+          this.modal = document.querySelector(this.dataset.modal);
+        }
+        return this.modal;
+      }
+
+      loadData() {
+        if (!PincodeChecker.dataPromise) {
+          PincodeChecker.dataPromise = fetch(this.dataset.centresUrl)
+            .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+            .then((data) =>
+              Array.isArray(data.centres) ? data.centres : Promise.reject(new Error('Malformed fitment centres data'))
+            )
+            .catch((error) => {
+              PincodeChecker.dataPromise = null;
+              throw error;
+            });
+        }
+        return PincodeChecker.dataPromise;
+      }
+
+      matchCentres(pinString, centres) {
+        const pin = parseInt(pinString, 10);
+        return centres.filter(
+          (centre) => typeof centre.pincodes === 'string' && centre.pincodes !== '' && this.pinInRanges(pin, centre)
+        );
+      }
+
+      pinInRanges(pin, centre) {
+        let ranges = PincodeChecker.rangeCache.get(centre);
+        if (!ranges) {
+          ranges = centre.pincodes
+            .split(',')
+            .map((token) => {
+              const part = token.trim();
+              const dash = part.indexOf('-');
+              if (dash > 0) {
+                return [parseInt(part.slice(0, dash), 10), parseInt(part.slice(dash + 1), 10)];
+              }
+              const value = parseInt(part, 10);
+              return [value, value];
+            })
+            .filter((range) => !Number.isNaN(range[0]) && !Number.isNaN(range[1]));
+          PincodeChecker.rangeCache.set(centre, ranges);
+        }
+        return ranges.some((range) => pin >= range[0] && pin <= range[1]);
+      }
+
+      onFocusIn() {
+        if (this.prefetched) return;
+        this.prefetched = true;
+        this.loadData().catch(() => {});
+      }
+
+      onInput() {
+        const digits = this.input.value.replace(/\D/g, '').slice(0, 6);
+        if (this.input.value !== digits) this.input.value = digits;
+        this.input.classList.remove('pincode-checker__input--invalid');
+        if (digits.length === 6) this.check(digits);
+      }
+
+      onCheckClick() {
+        const value = this.input ? this.input.value : '';
+        if (/^\d{6}$/.test(value)) {
+          this.check(value);
+        } else {
+          this.flagInvalid();
+        }
+      }
+
+      flagInvalid() {
+        if (!this.input) return;
+        this.input.classList.remove('pincode-checker__input--invalid');
+        void this.input.offsetWidth; // restart the shake animation
+        this.input.classList.add('pincode-checker__input--invalid');
+      }
+
+      onChangeClick() {
+        const pin = this.lastCheckedPin || (this.chipPin ? this.chipPin.textContent.trim() : '');
+        if (this.chipRow) this.chipRow.hidden = true;
+        if (this.inputRow) this.inputRow.hidden = false;
+        if (this.input) {
+          this.input.value = /^\d{6}$/.test(pin) ? pin : '';
+          this.input.focus();
+          this.input.select();
+        }
+        this.lastCheckedPin = null;
+        this.setState('idle');
+      }
+
+      onViewCentresClick(event) {
+        const modal = this.getModal();
+        if (!modal || typeof modal.show !== 'function') return;
+        this.buildCards(modal);
+        const title = modal.querySelector('[data-modal-title]');
+        if (title) {
+          title.textContent = (this.dataset.dialogTitle || '').replace('[pincode]', this.lastCheckedPin || '');
+        }
+        modal.show(event.currentTarget);
+      }
+
+      async check(pin, { fromStorage = false } = {}) {
+        if (this.busy) return;
+        if (pin === this.lastCheckedPin && (this.dataset.state === 'found' || this.dataset.state === 'notfound')) {
+          return;
+        }
+        this.busy = true;
+        this.setState('loading');
+
+        let centres;
+        try {
+          centres = await this.loadData();
+        } catch (error) {
+          console.warn('pincode-checker: could not load fitment centres', error);
+          this.setState('idle');
+          if (fromStorage) {
+            if (this.chipRow) this.chipRow.hidden = true;
+            if (this.inputRow) this.inputRow.hidden = false;
+            if (this.input) this.input.value = pin;
+          }
+          this.busy = false;
+          return;
+        }
+
+        this.matches = this.matchCentres(pin, centres);
+        this.lastCheckedPin = pin;
+        this.savePin(pin);
+        this.setState(this.matches.length ? 'found' : 'notfound', pin);
+        this.busy = false;
+      }
+
+      applySavedPin() {
+        const pin = this.readPin();
+        if (!pin) return;
+        if (this.inputRow) this.inputRow.hidden = true;
+        if (this.chipRow) {
+          this.chipRow.hidden = false;
+          if (this.chipPin) this.chipPin.textContent = pin;
+        }
+        this.check(pin, { fromStorage: true });
+      }
+
+      setState(state, pin) {
+        this.dataset.state = state;
+        if (!this.result) return;
+        this.result.textContent = '';
+
+        if (state === 'idle') {
+          const idle = document.createElement('span');
+          idle.className = 'pincode-checker__idle';
+          idle.textContent = this.idleText;
+          this.result.appendChild(idle);
+          return;
+        }
+
+        if (state === 'loading') {
+          const shimmer = document.createElement('span');
+          shimmer.className = 'pincode-checker__shimmer';
+          this.result.appendChild(shimmer);
+          return;
+        }
+
+        const strip = document.createElement('span');
+        strip.className = `pincode-checker__strip pincode-checker__strip--${state}`;
+        const template = state === 'found' ? this.dataset.successText : this.dataset.notFoundText;
+        strip.textContent = (template || '').replace('[pincode]', pin || '');
+        this.result.appendChild(strip);
+
+        if (state === 'found') {
+          const view = document.createElement('button');
+          view.type = 'button';
+          view.className = 'pincode-checker__view link';
+          view.textContent = this.matches.length === 1 ? 'View centre' : `View ${this.matches.length} centres`;
+          view.setAttribute('aria-haspopup', 'dialog');
+          view.addEventListener('click', this.onViewCentresClick.bind(this));
+          this.result.appendChild(view);
+        }
+      }
+
+      buildCards(modal) {
+        const list = modal.querySelector('[data-centres-list]');
+        if (!list) return;
+        list.textContent = '';
+
+        this.matches.forEach((centre) => {
+          const card = document.createElement('div');
+          card.className = 'pincode-centre-card';
+
+          const name = document.createElement('h3');
+          name.className = 'pincode-centre-card__name';
+          name.textContent = centre.name || '';
+
+          const badge = document.createElement('span');
+          badge.className = 'pincode-centre-card__badge';
+          badge.textContent = 'FREE FITMENT';
+          name.appendChild(badge);
+          card.appendChild(name);
+
+          if (centre.address) {
+            const address = document.createElement('p');
+            address.className = 'pincode-centre-card__address';
+            address.textContent = centre.address;
+            card.appendChild(address);
+          }
+
+          const actions = document.createElement('div');
+          actions.className = 'pincode-centre-card__actions';
+
+          if (centre.phone) {
+            const call = document.createElement('a');
+            call.className = 'pincode-centre-card__call link';
+            call.href = `tel:${String(centre.phone).replace(/[^+\d]/g, '')}`;
+            call.textContent = 'Call';
+            actions.appendChild(call);
+          }
+
+          if (centre.maps && /^https?:\/\//i.test(centre.maps)) {
+            const directions = document.createElement('a');
+            directions.className = 'pincode-centre-card__directions link';
+            directions.href = centre.maps;
+            directions.target = '_blank';
+            directions.rel = 'noopener';
+            directions.textContent = 'Get directions';
+            actions.appendChild(directions);
+          }
+
+          if (actions.childElementCount > 0) card.appendChild(actions);
+          list.appendChild(card);
+        });
+      }
+
+      savePin(pin) {
+        try {
+          window.localStorage.setItem(PincodeChecker.STORAGE_KEY, pin);
+        } catch (error) {
+          PincodeChecker.memPin = pin;
+        }
+      }
+
+      readPin() {
+        let pin = null;
+        try {
+          pin = window.localStorage.getItem(PincodeChecker.STORAGE_KEY);
+        } catch (error) {
+          pin = PincodeChecker.memPin;
+        }
+        if (pin && /^\d{6}$/.test(pin)) return pin;
+        if (pin) {
+          try {
+            window.localStorage.removeItem(PincodeChecker.STORAGE_KEY);
+          } catch (error) {
+            // storage unavailable — nothing to clean up
+          }
+          PincodeChecker.memPin = null;
+        }
+        return null;
+      }
+    }
+  );
+}
