@@ -188,7 +188,7 @@
             "image_desktop": "shopify://shop_images/Exterior_200_x_200_px.png",
             "image_alt": "EXTERIOR",
             "Car_text": "EXTERIOR",
-            "link_url": "shopify://collections/car-exterior",
+            "link_url": "shopify://collections/car-exterior-accessories",
             "open_in_new_tab": false
           }
         },
@@ -490,7 +490,7 @@
         "collection_tab_Cft3zK": {
           "type": "collection_tab",
           "settings": {
-            "collection": "car-exterior"
+            "collection": "car-exterior-accessories"
           }
         }
       },
