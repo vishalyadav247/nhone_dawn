@@ -434,7 +434,7 @@
             "category_image": "shopify://shop_images/Car_Perfume_1000X1000_px.png",
             "category_alt": "PERFUME",
             "category_title": "CAR PERFUME",
-            "category_url": "shopify://collections/perfume"
+            "category_url": "shopify://collections/car-perfume"
           }
         },
         "category_block_w3CjqT": {
@@ -478,7 +478,7 @@
         "collection_tab_qNwLpk": {
           "type": "collection_tab",
           "settings": {
-            "collection": "perfume"
+            "collection": "car-perfume"
           }
         },
         "collection_tab_pDnd7H": {
