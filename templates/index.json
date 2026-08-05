@@ -52,7 +52,7 @@
             "image_desktop": "shopify://shop_images/LED_Prepaid_1710_Banner_Revised.png",
             "image_mobile": "shopify://shop_images/LED_Festive_1710_Banner_1000_x_800_px_Revised.png",
             "image_alt": "Image description",
-            "image_url": "shopify://collections/car-led-headlights",
+            "image_url": "shopify://collections/car-led-headlight-bulbs",
             "open_in_new_tab": false
           }
         }
@@ -88,7 +88,7 @@
             "image_desktop": "shopify://shop_images/LED_Light_200_X_200_Px_-_1_-_Edited.png",
             "image_alt": "HEADLIGHT BULB",
             "Car_text": "HEADLIGHT BULB",
-            "link_url": "shopify://collections/car-led-headlights",
+            "link_url": "shopify://collections/car-led-headlight-bulbs",
             "open_in_new_tab": false
           }
         },
@@ -404,7 +404,7 @@
             "category_image": "shopify://shop_images/Clean_Care_1000X1000_Px_1.png",
             "category_alt": "Led Headlight bulb",
             "category_title": "LED HEADLIGHT BULB",
-            "category_url": "shopify://collections/car-led-headlights"
+            "category_url": "shopify://collections/car-led-headlight-bulbs"
           }
         },
         "category_block_MXDTFH": {
@@ -524,7 +524,7 @@
             "image": "shopify://shop_images/Headlight_bulb_offer_banner.png",
             "image_alt": "Check & Pay",
             "button_text": "",
-            "link": "shopify://collections/car-led-headlights"
+            "link": "shopify://collections/car-led-headlight-bulbs"
           }
         },
         "feature_xrEXCe": {
