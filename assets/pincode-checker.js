@@ -53,15 +53,25 @@ if (!customElements.get('pincode-checker')) {
 
       loadData() {
         if (!PincodeChecker.dataPromise) {
-          PincodeChecker.dataPromise = fetch(this.dataset.centresUrl)
-            .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
-            .then((data) =>
-              Array.isArray(data.centres) ? data.centres : Promise.reject(new Error('Malformed fitment centres data'))
-            )
-            .catch((error) => {
-              PincodeChecker.dataPromise = null;
-              throw error;
-            });
+          // Centres are rendered inline from the "fitment_centre" metaobject —
+          // no network request. Missing data means no entries exist yet
+          // (or the metaobject type/field keys don't match the snippet).
+          PincodeChecker.dataPromise = new Promise((resolve, reject) => {
+            const inline = this.querySelector('[data-fitment-centres]');
+            if (!inline) {
+              reject(new Error('No centres data — add "fitment_centre" metaobject entries in Shopify admin'));
+              return;
+            }
+            const data = JSON.parse(inline.textContent);
+            if (!Array.isArray(data.centres)) {
+              reject(new Error('Malformed fitment centres data'));
+              return;
+            }
+            resolve(data.centres);
+          }).catch((error) => {
+            PincodeChecker.dataPromise = null;
+            throw error;
+          });
         }
         return PincodeChecker.dataPromise;
       }
