@@ -1,6 +1,7 @@
 /* Pincode fitment checker block (main-product)
-   All states are fixed-height by design: the input/chip row is always 4rem tall
-   and the result slot is always 2.6rem tall, so the block never shifts layout. */
+   All states are fixed-height by design: the input/chip row is always 4.4rem
+   tall and the result slot is always 4rem tall, so the block never shifts
+   layout no matter which state is showing. */
 
 .pincode-checker {
   display: block;
@@ -9,22 +10,28 @@
 .pincode-checker__card {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
-  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
-  border-radius: 0.8rem;
-  padding: 1.2rem;
+  gap: 1.2rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  border-radius: 1.2rem;
+  padding: 1.6rem;
+  background-color: rgba(var(--color-foreground), 0.02);
 }
 
 .pincode-checker__icon {
-  flex: 0 0 2.4rem;
-  width: 2.4rem;
-  height: 2.4rem;
+  flex: 0 0 4rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: rgba(var(--color-foreground), 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: rgb(var(--color-foreground));
 }
 
 .pincode-checker__icon svg {
-  width: 100%;
-  height: 100%;
+  width: 2rem;
+  height: 2rem;
 }
 
 .pincode-checker__body {
@@ -34,23 +41,26 @@
 
 .pincode-checker__heading {
   margin: 0;
+  font-size: 1.5rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .pincode-checker__subtext {
-  margin: 0;
-  font-size: 1.2rem;
-  color: rgba(var(--color-foreground), 0.75);
+  margin: 0.1rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: rgba(var(--color-foreground), 0.7);
 }
 
 /* Input row and chip row share one slot with identical fixed height —
    JS toggles [hidden] between them, so swapping causes no layout shift. */
 .pincode-checker__row {
-  height: 4rem;
+  height: 4.4rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  margin-top: 0.6rem;
+  margin-top: 1rem;
 }
 
 .pincode-checker__row[hidden] {
@@ -63,20 +73,29 @@
   max-width: 24rem;
   height: 100%;
   font-size: 1.4rem;
-  padding: 0 1.2rem;
+  letter-spacing: 0.05em;
+  padding: 0 1.4rem;
   color: rgb(var(--color-foreground));
   background-color: rgb(var(--color-background));
-  border: 0.1rem solid rgba(var(--color-foreground), 0.55);
-  border-radius: 0.4rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.35);
+  border-radius: 0.8rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pincode-checker__input::placeholder {
+  letter-spacing: normal;
+  color: rgba(var(--color-foreground), 0.45);
 }
 
 .pincode-checker__input:focus {
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
-  outline-offset: 0.1rem;
+  outline: none;
+  border-color: rgba(var(--color-foreground), 0.9);
+  box-shadow: 0 0 0 0.2rem rgba(var(--color-foreground), 0.12);
 }
 
 .pincode-checker__input--invalid {
   border-color: #c8102e;
+  box-shadow: 0 0 0 0.2rem rgba(200, 16, 46, 0.15);
   animation: pincode-shake 0.3s linear;
 }
 
@@ -97,27 +116,35 @@
   height: 100%;
   min-height: 0;
   min-width: 0;
-  padding: 0 1.6rem;
+  padding: 0 1.8rem;
   font-size: 1.3rem;
   flex-shrink: 0;
+  border-radius: 0.8rem;
 }
 
+/* Chip state: shown after a successful check, in place of the input row. */
 .pincode-checker__chip {
   display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
   min-width: 0;
-  background-color: rgba(var(--color-foreground), 0.06);
-  border-radius: 2rem;
-  padding: 0.6rem 1.2rem;
-  font-size: 1.3rem;
+  background-color: rgba(var(--color-foreground), 0.05);
+  border: 0.1rem solid rgba(var(--color-foreground), 0.1);
+  border-radius: 2.2rem;
+  padding: 0.8rem 1.4rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.pincode-checker__chip [data-chip-pin] {
-  margin-left: 0.4rem;
-  font-weight: 600;
+.pincode-checker__chip-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  color: rgba(var(--color-foreground), 0.7);
 }
 
 .pincode-checker__change {
@@ -128,15 +155,16 @@
   cursor: pointer;
   font-size: 1.3rem;
   text-decoration: underline;
+  text-underline-offset: 0.2rem;
   color: rgb(var(--color-link));
 }
 
 /* Result slot: fixed height across idle / loading / found / notfound. */
 .pincode-checker__result {
-  height: 2.6rem;
+  height: 4rem;
+  margin-top: 0.8rem;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -149,14 +177,14 @@
 }
 
 .pincode-checker__shimmer {
-  width: 70%;
-  height: 1.4rem;
-  border-radius: 0.4rem;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.8rem;
   background: linear-gradient(
     90deg,
-    rgba(var(--color-foreground), 0.08) 25%,
-    rgba(var(--color-foreground), 0.18) 50%,
-    rgba(var(--color-foreground), 0.08) 75%
+    rgba(var(--color-foreground), 0.06) 25%,
+    rgba(var(--color-foreground), 0.14) 50%,
+    rgba(var(--color-foreground), 0.06) 75%
   );
   background-size: 200% 100%;
   animation: pincode-shimmer 1.2s ease-in-out infinite;
@@ -171,36 +199,84 @@
   }
 }
 
-.pincode-checker__strip {
-  display: inline-flex;
-  align-items: center;
+/* Status bars fill the whole result slot. The "found" bar is a real button:
+   tapping anywhere on it opens the centres popup. */
+.pincode-checker__bar {
+  width: 100%;
+  height: 100%;
   min-width: 0;
-  padding: 0.2rem 0.8rem;
-  border-radius: 0.4rem;
-  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0 1.2rem;
+  border-radius: 0.8rem;
+  border: 0.1rem solid transparent;
+  font-family: inherit;
+  font-size: 1.3rem;
+  text-align: left;
+}
+
+.pincode-checker__bar--found {
+  cursor: pointer;
+  color: #0a6c3c;
+  background-color: #e9f7ef;
+  border-color: #c3e7d1;
+  transition: background-color 0.15s ease;
+}
+
+.pincode-checker__bar--found:hover {
+  background-color: #dcf2e5;
+}
+
+.pincode-checker__bar--found:focus-visible {
+  outline: 0.2rem solid #0a6c3c;
+  outline-offset: 0.1rem;
+}
+
+.pincode-checker__bar--notfound {
+  color: #8a5a00;
+  background-color: #fdf4e3;
+  border-color: #f0ddb0;
+}
+
+.pincode-checker__bar-icon {
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.pincode-checker__bar--found .pincode-checker__bar-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a6c3c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.pincode-checker__bar--notfound .pincode-checker__bar-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a5a00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 8h.01'/%3E%3Cpath d='M12 12v4'/%3E%3C/svg%3E");
+}
+
+.pincode-checker__bar-text {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.pincode-checker__strip--found {
-  color: #067d47;
-  background-color: #e6f6ee;
-}
-
-.pincode-checker__strip--notfound {
-  color: #8a5a00;
-  background-color: #fdf3e0;
-}
-
-.pincode-checker__view {
+.pincode-checker__bar-cta {
   flex-shrink: 0;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font-size: 1.2rem;
+  font-weight: 600;
   text-decoration: underline;
-  color: rgb(var(--color-link));
+  text-underline-offset: 0.2rem;
+}
+
+.pincode-checker__bar-cta::after {
+  content: '\203A';
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  text-decoration: none;
 }
 
 /* Fitment centres modal (ModalDialog moves it to document.body). */
@@ -223,10 +299,26 @@
   color: rgb(var(--color-foreground));
   width: min(48rem, 92vw);
   max-height: 80vh;
-  border-radius: 0.8rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 1.6rem 4rem rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.pincode-fitment-modal[open] .pincode-fitment-modal__content {
+  animation: pincode-pop 0.18s ease;
+}
+
+@keyframes pincode-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .pincode-fitment-modal__header {
@@ -234,8 +326,9 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 1.6rem;
-  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  gap: 0.8rem;
+  padding: 1.6rem 2rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.1);
 }
 
 .pincode-fitment-modal__header h2 {
@@ -254,9 +347,15 @@
   justify-content: center;
   background: none;
   border: none;
+  border-radius: 50%;
   padding: 0;
   cursor: pointer;
   color: rgb(var(--color-foreground));
+  transition: background-color 0.15s ease;
+}
+
+.pincode-fitment-modal__close:hover {
+  background-color: rgba(var(--color-foreground), 0.06);
 }
 
 .pincode-fitment-modal__close svg {
@@ -266,21 +365,41 @@
 
 .pincode-fitment-modal__list {
   overflow-y: auto;
-  padding: 1.6rem;
+  padding: 1.6rem 2rem 2rem;
   display: grid;
   gap: 1.2rem;
 }
 
 /* Centre cards inside the modal. */
 .pincode-centre-card {
+  display: flex;
+  gap: 1.2rem;
   border: 0.1rem solid rgba(var(--color-foreground), 0.12);
-  border-radius: 0.8rem;
-  padding: 1.2rem;
+  border-radius: 1rem;
+  padding: 1.4rem;
+}
+
+.pincode-centre-card__marker {
+  flex: 0 0 3.6rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background-color: #e9f7ef;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a6c3c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.8rem;
+}
+
+.pincode-centre-card__body {
+  flex: 1;
+  min-width: 0;
 }
 
 .pincode-centre-card__name {
   margin: 0;
   font-size: 1.5rem;
+  line-height: 1.3;
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -289,39 +408,60 @@
 
 .pincode-centre-card__badge {
   display: inline-block;
-  background-color: #e6f6ee;
-  color: #067d47;
+  background-color: #e9f7ef;
+  color: #0a6c3c;
   font-size: 1rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08rem;
   border-radius: 2rem;
-  padding: 0.2rem 0.8rem;
+  padding: 0.2rem 0.9rem;
 }
 
 .pincode-centre-card__address {
-  margin: 0.4rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 1.3rem;
-  color: rgba(var(--color-foreground), 0.8);
+  line-height: 1.5;
+  color: rgba(var(--color-foreground), 0.75);
 }
 
 .pincode-centre-card__actions {
   display: flex;
-  gap: 1.6rem;
-  margin-top: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1rem;
 }
 
 .pincode-centre-card__call,
 .pincode-centre-card__directions {
-  font-size: 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.4rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.25);
+  border-radius: 2rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.pincode-centre-card__call:hover,
+.pincode-centre-card__directions:hover {
+  background-color: rgba(var(--color-foreground), 0.05);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pincode-checker__shimmer {
     animation: none;
-    background: rgba(var(--color-foreground), 0.12);
+    background: rgba(var(--color-foreground), 0.1);
   }
 
   .pincode-checker__input--invalid {
+    animation: none;
+  }
+
+  .pincode-fitment-modal[open] .pincode-fitment-modal__content {
     animation: none;
   }
 }

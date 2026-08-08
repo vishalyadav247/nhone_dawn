@@ -25,6 +25,7 @@ if (!customElements.get('pincode-checker')) {
         this.lastCheckedPin = null;
         this.busy = false;
         this.prefetched = false;
+        this.resultBar = null;
 
         this.addEventListener('focusin', this.onFocusIn.bind(this));
         if (this.input) {
@@ -106,9 +107,11 @@ if (!customElements.get('pincode-checker')) {
       }
 
       onCheckClick() {
+        // Explicit "Check" (or Enter) means the shopper wants to SEE the centres:
+        // run the check and open the popup directly when the pincode is served.
         const value = this.input ? this.input.value : '';
         if (/^\d{6}$/.test(value)) {
-          this.check(value);
+          this.check(value, { openOnFound: true });
         } else {
           this.flagInvalid();
         }
@@ -123,18 +126,16 @@ if (!customElements.get('pincode-checker')) {
 
       onChangeClick() {
         const pin = this.lastCheckedPin || (this.chipPin ? this.chipPin.textContent.trim() : '');
-        if (this.chipRow) this.chipRow.hidden = true;
-        if (this.inputRow) this.inputRow.hidden = false;
+        this.lastCheckedPin = null;
+        this.setState('idle');
         if (this.input) {
           this.input.value = /^\d{6}$/.test(pin) ? pin : '';
           this.input.focus();
           this.input.select();
         }
-        this.lastCheckedPin = null;
-        this.setState('idle');
       }
 
-      onViewCentresClick(event) {
+      openModal(opener) {
         const modal = this.getModal();
         if (!modal || typeof modal.show !== 'function') return;
         this.buildCards(modal);
@@ -142,12 +143,13 @@ if (!customElements.get('pincode-checker')) {
         if (title) {
           title.textContent = (this.dataset.dialogTitle || '').replace('[pincode]', this.lastCheckedPin || '');
         }
-        modal.show(event.currentTarget);
+        modal.show(opener || this);
       }
 
-      async check(pin, { fromStorage = false } = {}) {
+      async check(pin, { fromStorage = false, openOnFound = false } = {}) {
         if (this.busy) return;
         if (pin === this.lastCheckedPin && (this.dataset.state === 'found' || this.dataset.state === 'notfound')) {
+          if (openOnFound && this.dataset.state === 'found') this.openModal(this.resultBar || this.checkButton);
           return;
         }
         this.busy = true;
@@ -159,11 +161,7 @@ if (!customElements.get('pincode-checker')) {
         } catch (error) {
           console.warn('pincode-checker: could not load fitment centres', error);
           this.setState('idle');
-          if (fromStorage) {
-            if (this.chipRow) this.chipRow.hidden = true;
-            if (this.inputRow) this.inputRow.hidden = false;
-            if (this.input) this.input.value = pin;
-          }
+          if (fromStorage && this.input) this.input.value = pin;
           this.busy = false;
           return;
         }
@@ -173,6 +171,7 @@ if (!customElements.get('pincode-checker')) {
         this.savePin(pin);
         this.setState(this.matches.length ? 'found' : 'notfound', pin);
         this.busy = false;
+        if (openOnFound && this.matches.length) this.openModal(this.resultBar || this.checkButton);
       }
 
       applySavedPin() {
@@ -188,8 +187,25 @@ if (!customElements.get('pincode-checker')) {
 
       setState(state, pin) {
         this.dataset.state = state;
+
+        // Row toggling: "found" collapses the input into the pincode chip;
+        // "idle"/"notfound" bring the input back so the shopper can edit.
+        // "loading" leaves whichever row is visible untouched.
+        if (state === 'found') {
+          if (this.inputRow) this.inputRow.hidden = true;
+          if (this.chipRow) {
+            this.chipRow.hidden = false;
+            if (this.chipPin) this.chipPin.textContent = pin || this.lastCheckedPin || '';
+          }
+        } else if (state === 'idle' || state === 'notfound') {
+          if (this.chipRow) this.chipRow.hidden = true;
+          if (this.inputRow) this.inputRow.hidden = false;
+          if (state === 'notfound' && this.input && this.input.value === '' && pin) this.input.value = pin;
+        }
+
         if (!this.result) return;
         this.result.textContent = '';
+        this.resultBar = null;
 
         if (state === 'idle') {
           const idle = document.createElement('span');
@@ -206,20 +222,32 @@ if (!customElements.get('pincode-checker')) {
           return;
         }
 
-        const strip = document.createElement('span');
-        strip.className = `pincode-checker__strip pincode-checker__strip--${state}`;
         const template = state === 'found' ? this.dataset.successText : this.dataset.notFoundText;
-        strip.textContent = (template || '').replace('[pincode]', pin || '');
-        this.result.appendChild(strip);
+        const icon = document.createElement('span');
+        icon.className = 'pincode-checker__bar-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        const text = document.createElement('span');
+        text.className = 'pincode-checker__bar-text';
+        text.textContent = (template || '').replace('[pincode]', pin || '');
 
         if (state === 'found') {
-          const view = document.createElement('button');
-          view.type = 'button';
-          view.className = 'pincode-checker__view link';
-          view.textContent = this.matches.length === 1 ? 'View centre' : `View ${this.matches.length} centres`;
-          view.setAttribute('aria-haspopup', 'dialog');
-          view.addEventListener('click', this.onViewCentresClick.bind(this));
-          this.result.appendChild(view);
+          // The whole success bar is the button that opens the centres popup.
+          const bar = document.createElement('button');
+          bar.type = 'button';
+          bar.className = 'pincode-checker__bar pincode-checker__bar--found';
+          bar.setAttribute('aria-haspopup', 'dialog');
+          const cta = document.createElement('span');
+          cta.className = 'pincode-checker__bar-cta';
+          cta.textContent = this.matches.length === 1 ? 'View centre' : `View ${this.matches.length} centres`;
+          bar.append(icon, text, cta);
+          bar.addEventListener('click', () => this.openModal(bar));
+          this.result.appendChild(bar);
+          this.resultBar = bar;
+        } else {
+          const bar = document.createElement('div');
+          bar.className = 'pincode-checker__bar pincode-checker__bar--notfound';
+          bar.append(icon, text);
+          this.result.appendChild(bar);
         }
       }
 
@@ -232,6 +260,14 @@ if (!customElements.get('pincode-checker')) {
           const card = document.createElement('div');
           card.className = 'pincode-centre-card';
 
+          const marker = document.createElement('span');
+          marker.className = 'pincode-centre-card__marker';
+          marker.setAttribute('aria-hidden', 'true');
+          card.appendChild(marker);
+
+          const body = document.createElement('div');
+          body.className = 'pincode-centre-card__body';
+
           const name = document.createElement('h3');
           name.className = 'pincode-centre-card__name';
           name.textContent = centre.name || '';
@@ -240,13 +276,13 @@ if (!customElements.get('pincode-checker')) {
           badge.className = 'pincode-centre-card__badge';
           badge.textContent = 'FREE FITMENT';
           name.appendChild(badge);
-          card.appendChild(name);
+          body.appendChild(name);
 
           if (centre.address) {
             const address = document.createElement('p');
             address.className = 'pincode-centre-card__address';
             address.textContent = centre.address;
-            card.appendChild(address);
+            body.appendChild(address);
           }
 
           const actions = document.createElement('div');
@@ -254,7 +290,7 @@ if (!customElements.get('pincode-checker')) {
 
           if (centre.phone) {
             const call = document.createElement('a');
-            call.className = 'pincode-centre-card__call link';
+            call.className = 'pincode-centre-card__call';
             call.href = `tel:${String(centre.phone).replace(/[^+\d]/g, '')}`;
             call.textContent = 'Call';
             actions.appendChild(call);
@@ -262,7 +298,7 @@ if (!customElements.get('pincode-checker')) {
 
           if (centre.maps && /^https?:\/\//i.test(centre.maps)) {
             const directions = document.createElement('a');
-            directions.className = 'pincode-centre-card__directions link';
+            directions.className = 'pincode-centre-card__directions';
             directions.href = centre.maps;
             directions.target = '_blank';
             directions.rel = 'noopener';
@@ -270,7 +306,8 @@ if (!customElements.get('pincode-checker')) {
             actions.appendChild(directions);
           }
 
-          if (actions.childElementCount > 0) card.appendChild(actions);
+          if (actions.childElementCount > 0) body.appendChild(actions);
+          card.appendChild(body);
           list.appendChild(card);
         });
       }
