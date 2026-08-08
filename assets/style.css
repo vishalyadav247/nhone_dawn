@@ -1813,14 +1813,6 @@ background-color: transparent !important;
   overflow:hidden;
 }
 
-.product-card-wrapper .button{
-  overflow: hidden;
-  padding: 0;
-  height: fit-content;
-  padding-bottom: 2px;
-  min-height: 40px;
-}
-
 .quick-add-modal{
   .quick-add-modal__content-info{
     padding:15px;
