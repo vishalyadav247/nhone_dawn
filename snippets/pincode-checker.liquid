@@ -15,7 +15,6 @@
 <pincode-checker
   class="pincode-checker quick-add-hidden"
   data-section-id="{{ section_id }}"
-  data-centres-url="{{ 'fitment-centres.json' | asset_url }}"
   data-modal="#PincodeFitmentModal-{{ section_id }}"
   data-success-text="{{ block.settings.success_text | escape }}"
   data-not-found-text="{{ block.settings.not_found_text | escape }}"
@@ -23,9 +22,9 @@
   {{ block.shopify_attributes }}
 >
   {%- liquid
-    # Centres come from the "fitment_centre" metaobject when entries exist
-    # (merchant-managed in admin: Settings > Custom data > Metaobjects).
-    # Otherwise the JS falls back to fetching assets/fitment-centres.json.
+    # Centres come from the "fitment_centre" metaobject, managed by the
+    # merchant in admin: Settings > Custom data > Metaobjects. This is the
+    # only data source — no entries means the checker stays idle.
     assign mo_centres = shop.metaobjects['fitment_centre'].values
   -%}
   {%- if mo_centres.size > 0 -%}
