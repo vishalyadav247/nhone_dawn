@@ -1141,8 +1141,10 @@ header {
   .card__content{
   
     .quick-add__submit{
-      background-color:#000;
-      color:#fff;
+      background-color:#000 !important;
+      &::before,&::after{
+        display:none;
+      }
     }
   }
   .card__information {
