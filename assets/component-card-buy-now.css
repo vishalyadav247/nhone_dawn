@@ -63,7 +63,7 @@
   min-width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 0.6rem 0.4rem;
+  padding: 0.8rem 0.4rem;
   border: none;
   border-radius: 7px;
   background-color: var(--gk-card-buynow-bg, #ff8a00) !important;
@@ -74,6 +74,8 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  min-height:fit-content;
+  height:100%;
 
   &::after,&::before{
   display:none;
