@@ -75,6 +75,10 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
+
+  &::after,&::before{
+  display:none;
+  }
 }
 
 @media screen and (max-width: 749px) {
