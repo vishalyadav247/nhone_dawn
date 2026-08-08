@@ -3,6 +3,10 @@ if (!customElements.get('pincode-checker')) {
     'pincode-checker',
     class PincodeChecker extends HTMLElement {
       static STORAGE_KEY = 'nhone-fitment-pincode';
+      // Minimum time the "checking..." shimmer stays visible for user-initiated
+      // checks, so the instant inline lookup still reads as a real check.
+      // Tune to taste; skipped entirely when restoring a saved pincode.
+      static MIN_LOADING_MS = 3000;
       static dataPromise = null;
       static rangeCache = new WeakMap();
       static memPin = null;
@@ -164,6 +168,7 @@ if (!customElements.get('pincode-checker')) {
         }
         this.busy = true;
         this.setState('loading');
+        const startedAt = Date.now();
 
         let centres;
         try {
@@ -175,6 +180,12 @@ if (!customElements.get('pincode-checker')) {
           this.busy = false;
           return;
         }
+
+        // Hold the shimmer so the check doesn't resolve instantly (skipped on
+        // silent restore-from-storage, which runs on every page load).
+        const minMs = fromStorage ? 0 : PincodeChecker.MIN_LOADING_MS;
+        const remaining = minMs - (Date.now() - startedAt);
+        if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining));
 
         this.matches = this.matchCentres(pin, centres);
         this.lastCheckedPin = pin;
