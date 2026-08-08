@@ -1138,14 +1138,16 @@ header {
 }
 
 .product-card-wrapper {
-  .card__information {
-    padding:0;
-    padding-bottom: 5px;
-
+  .card__content{
+  
     .quick-add__submit{
       background-color:#000;
       color:#fff;
     }
+  }
+  .card__information {
+    padding:0;
+    padding-bottom: 5px;
 
     .price-item{
       font-weight:600;
