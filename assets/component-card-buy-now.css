@@ -38,6 +38,7 @@
   min-width: 0;
   width: auto;
   margin: 0;
+  border-radius:0 !important;
 }
 
 /* Add-to-cart half of the pair: solid black. Dawn buttons are driven by these
