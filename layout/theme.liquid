@@ -339,14 +339,12 @@
       {{ 'quick-add.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'card-buy-now.js' | asset_url }}" defer="defer"></script>
       <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
-      {%- if settings.btnBClr != blank or settings.btnTextClr != blank -%}
-        <style>
-          :root {
-            {%- if settings.btnBClr != blank %} --gk-card-buynow-bg: {{ settings.btnBClr }};{%- endif %}
-            {%- if settings.btnTextClr != blank %} --gk-card-buynow-color: {{ settings.btnTextClr }};{%- endif %}
-          }
-        </style>
-      {%- endif -%}
+      <style>
+        :root {
+          --gk-card-buynow-bg: {{ settings.cardBuynowBgClr | default: '#FF8A00' }};
+          --gk-card-buynow-color: {{ settings.cardBuynowTextClr | default: '#FFFFFF' }};
+        }
+      </style>
     {%- endif -%}
 
     <script>

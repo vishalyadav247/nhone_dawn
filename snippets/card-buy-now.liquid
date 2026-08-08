@@ -19,9 +19,12 @@
     and the international flow hides `.gokwik-checkout` for non-India visitors.
   - Never use id "gokwik-buy-now" here — the vendor targets that single ID for
     the PDP Buy Now button.
-  - The FIRST CHILD of the button must be the loader element (.addloadr with a
-    .cir-loader inside, hidden inline); the vendor sets id="btn-loader" on
-    children[0] and shows it globally while the checkout screen loads.
+  - The FIRST CHILD of the button must be the loader element (.addloadr, hidden
+    inline); the vendor sets id="btn-loader" on children[0] while the checkout
+    screen loads. It contains Dawn's loading-spinner.svg (instead of the vendor
+    .cir-loader) so the loader matches the add-to-cart button's default spinner;
+    component-card-buy-now.css shows it when the button is :disabled with the
+    id applied.
   - Behavior lives in assets/card-buy-now.js; styles in assets/component-card-buy-now.css.
     Both are loaded site-wide from layout/theme.liquid when the feature is enabled,
     because related-products/search inject cards via innerHTML (scripts emitted
@@ -69,8 +72,8 @@
       id="CardBuyNow-{{ section_id }}-{{ card_product.id }}"
       aria-labelledby="CardBuyNow-{{ section_id }}-{{ card_product.id }} title-{{ section_id }}-{{ card_product.id }}"
     >
-      <div style="display:none" class="addloadr">
-        <div class="cir-loader">Loading..</div>
+      <div style="display:none" class="addloadr" aria-hidden="true">
+        {{- 'loading-spinner.svg' | inline_asset_content -}}
       </div>
       <span>{{ settings.cardBuynowText | default: 'Buy Now' | escape }}</span>
     </button>

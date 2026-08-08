@@ -1,12 +1,57 @@
 /* GoKwik Buy Now button on product cards (snippets/card-buy-now.liquid).
    Selectors are intentionally doubled up (.card-buy-now.gokwik-checkout) to beat
    the vendor `.gokwik-checkout` / `.gokwik-checkout button` rules injected by
-   snippets/gokwik.liquid (flex column wrapper, 45px button, priClr background). */
+   snippets/gokwik.liquid (flex column wrapper, 45px button, priClr background).
+
+   Layout: when a card's .quick-add contains a Buy Now, the add-to-cart and
+   Buy Now render side by side — add-to-cart black, Buy Now orange (colors from
+   the Gokwik theme settings via --gk-card-buynow-* set in layout/theme.liquid).
+   Browsers without :has() fall back to stacked full-width buttons. */
 
 .card-buy-now.gokwik-checkout {
   display: block;
   width: 100%;
   margin: 0.8rem 0 0;
+}
+
+.quick-add:has(> .card-buy-now) {
+  display: flex;
+  gap: 0.8rem;
+  align-items: stretch;
+}
+
+.quick-add:has(> .card-buy-now) > modal-opener,
+.quick-add:has(> .card-buy-now) > product-form {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+
+.quick-add:has(> .card-buy-now) > product-form .form,
+.quick-add:has(> .card-buy-now) > modal-opener,
+.quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit,
+.quick-add:has(> .card-buy-now) > product-form .quick-add__submit {
+  height: 100%;
+}
+
+.quick-add:has(> .card-buy-now) > .card-buy-now.gokwik-checkout {
+  flex: 1 1 50%;
+  min-width: 0;
+  width: auto;
+  margin: 0;
+}
+
+/* Add-to-cart half of the pair: solid black. Dawn buttons are driven by these
+   custom properties, so the loading spinner / borders follow automatically.
+   Direct-child paths only — never the fetched content inside quick-add-modal. */
+.quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit,
+.quick-add:has(> .card-buy-now) > product-form .quick-add__submit {
+  --color-button: 0, 0, 0;
+  --color-button-text: 255, 255, 255;
+  --alpha-button-background: 1;
+  --alpha-button-border: 0;
+  font-size: 1.3rem;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
 }
 
 .card-buy-now.gokwik-checkout button.card-buy-now__btn {
@@ -17,17 +62,31 @@
   min-width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  height: auto;
+  height: 100%;
   min-height: 4.2rem;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 0.4rem;
   border: none;
-  background: var(--gk-card-buynow-bg, #000);
+  border-radius: var(--buttons-radius-outset, 0);
+  background: var(--gk-card-buynow-bg, #ff8a00);
   color: var(--gk-card-buynow-color, #fff);
-  font-size: 1.4rem;
-  line-height: 1;
+  font-family: inherit;
+  font-size: 1.3rem;
+  line-height: 1.2;
   position: relative;
   overflow: hidden;
   cursor: pointer;
+}
+
+@media screen and (max-width: 749px) {
+  .quick-add:has(> .card-buy-now) {
+    gap: 0.5rem;
+  }
+
+  .quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit,
+  .quick-add:has(> .card-buy-now) > product-form .quick-add__submit,
+  .card-buy-now.gokwik-checkout button.card-buy-now__btn {
+    font-size: 1.2rem;
+  }
 }
 
 /* Vendor CSS sets `.gokwik-checkout button:focus { outline: none; }` —
@@ -41,4 +100,34 @@
 .card-buy-now.gokwik-checkout button.card-buy-now__btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* While the vendor loader is active the button is also :disabled — keep the
+   loading state fully opaque instead of faded. */
+.card-buy-now.gokwik-checkout button.card-buy-now__btn:disabled:has(.addloadr#btn-loader),
+.card-buy-now.gokwik-checkout button.card-buy-now__btn.disabled:has(.addloadr#btn-loader) {
+  opacity: 1;
+  cursor: wait;
+}
+
+/* Loader: the vendor sets id="btn-loader" on the button's first child
+   (.addloadr) when Buy Now is clicked and disables the button. Show the loader
+   overlay in that state, restyled to match Dawn's default add-to-cart spinner
+   (loading-spinner.svg animated by .spinner/.path rules in base.css). The
+   vendor's own #btn-loader rule paints it with priClr and a 2.5rem radius —
+   override both to match this button. */
+.card-buy-now.gokwik-checkout button.card-buy-now__btn:disabled .addloadr#btn-loader,
+.card-buy-now.gokwik-checkout button.card-buy-now__btn.disabled .addloadr#btn-loader {
+  display: flex !important;
+  background: var(--gk-card-buynow-bg, #ff8a00);
+  border-radius: 0;
+}
+
+.card-buy-now.gokwik-checkout button.card-buy-now__btn .addloadr svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.card-buy-now.gokwik-checkout button.card-buy-now__btn .addloadr .path {
+  stroke: var(--gk-card-buynow-color, #fff);
 }
