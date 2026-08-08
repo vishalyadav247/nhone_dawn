@@ -53,6 +53,20 @@ if (!customElements.get('pincode-checker')) {
 
       loadData() {
         if (!PincodeChecker.dataPromise) {
+          // Prefer merchant-managed centres rendered inline from the
+          // "fitment_centre" metaobject; the asset file is only a fallback.
+          const inline = this.querySelector('[data-fitment-centres]');
+          if (inline) {
+            try {
+              const data = JSON.parse(inline.textContent);
+              if (Array.isArray(data.centres)) {
+                PincodeChecker.dataPromise = Promise.resolve(data.centres);
+                return PincodeChecker.dataPromise;
+              }
+            } catch (error) {
+              console.warn('pincode-checker: malformed inline centres data, using asset fallback', error);
+            }
+          }
           PincodeChecker.dataPromise = fetch(this.dataset.centresUrl)
             .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
             .then((data) =>

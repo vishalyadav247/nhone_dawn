@@ -22,6 +22,29 @@
   data-dialog-title="{{ block.settings.dialog_title | escape }}"
   {{ block.shopify_attributes }}
 >
+  {%- liquid
+    # Centres come from the "fitment_centre" metaobject when entries exist
+    # (merchant-managed in admin: Settings > Custom data > Metaobjects).
+    # Otherwise the JS falls back to fetching assets/fitment-centres.json.
+    assign mo_centres = shop.metaobjects['fitment_centre'].values
+  -%}
+  {%- if mo_centres.size > 0 -%}
+    <script type="application/json" data-fitment-centres>
+      {
+        "centres": [
+          {%- for centre in mo_centres -%}
+            {
+              "name": {{ centre.name.value | json }},
+              "address": {{ centre.address.value | json }},
+              "phone": {{ centre.phone.value | json }},
+              "maps": {{ centre.maps_url.value | json }},
+              "pincodes": {{ centre.pincodes.value | json }}
+            }{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
+  {%- endif -%}
   <div class="pincode-checker__card">
     <span class="pincode-checker__icon" aria-hidden="true">
       <svg
