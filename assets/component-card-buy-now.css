@@ -67,7 +67,7 @@
   padding: 0.8rem 0.4rem;
   border: none;
   border-radius: var(--buttons-radius-outset, 0);
-  background: var(--gk-card-buynow-bg, #ff8a00);
+  background-color: var(--gk-card-buynow-bg, #ff8a00) !important;
   color: var(--gk-card-buynow-color, #fff);
   font-family: inherit;
   font-size: 1.3rem;
