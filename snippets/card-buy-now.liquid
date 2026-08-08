@@ -1,0 +1,78 @@
+{% comment %}
+  Renders a GoKwik "Buy Now" button for the shared product card.
+
+  Accepts:
+  - card_product: {Object} Product Liquid object (required)
+  - section_id: {String} The ID of the section that contains this card (used for aria wiring)
+
+  Renders nothing unless settings.goEnable AND settings.goCardBuynowEnable are on
+  and the selected/first available variant is purchasable. Products that need the
+  quick-add modal (multiple variants / quantity rules) additionally require
+  settings.goBuynowEnable, because the modal's Buy Now button comes from the
+  fetched PDP buy-buttons block.
+
+  Notes (intentional GoKwik vendor coupling — see snippets/gokwik.liquid):
+  - The <card-buy-now> wrapper carries the `gokwik-checkout` class ON PURPOSE:
+    the vendor glue in gokwik.liquid enables every `.gokwik-checkout button`
+    after the `gokwikLoaded` window event (and keeps re-enabling them via a
+    body-wide MutationObserver, which also covers Owl clones / fetched cards),
+    and the international flow hides `.gokwik-checkout` for non-India visitors.
+  - Never use id "gokwik-buy-now" here — the vendor targets that single ID for
+    the PDP Buy Now button.
+  - The FIRST CHILD of the button must be the loader element (.addloadr with a
+    .cir-loader inside, hidden inline); the vendor sets id="btn-loader" on
+    children[0] and shows it globally while the checkout screen loads.
+  - Behavior lives in assets/card-buy-now.js; styles in assets/component-card-buy-now.css.
+    Both are loaded site-wide from layout/theme.liquid when the feature is enabled,
+    because related-products/search inject cards via innerHTML (scripts emitted
+    with the cards would never execute there).
+
+  Usage:
+  {% render 'card-buy-now', card_product: card_product, section_id: section_id %}
+{% endcomment %}
+{%- liquid
+  assign variant = card_product.selected_or_first_available_variant
+  assign needs_modal = false
+  if card_product.variants.size > 1 or variant.quantity_rule.min > 1 or variant.quantity_rule.max != null or variant.quantity_rule.increment > 1
+    assign needs_modal = true
+  endif
+  assign render_buy_now = false
+  if settings.goEnable and settings.goCardBuynowEnable and card_product != blank and variant.available
+    assign render_buy_now = true
+  endif
+  comment
+    The modal path relies on the PDP Buy Now button (settings.goBuynowEnable +
+    dynamic checkout in buy-buttons.liquid) being present in the fetched
+    quick-add modal. Without it the modal would be a mislabeled dead end,
+    so skip rendering entirely for products that need the modal.
+  endcomment
+  if needs_modal and settings.goBuynowEnable != true
+    assign render_buy_now = false
+  endif
+-%}
+{%- if render_buy_now -%}
+  <card-buy-now
+    class="card-buy-now gokwik-checkout"
+    data-variant-id="{{ variant.id }}"
+    data-product-url="{{ card_product.url }}"
+    {% if needs_modal %}
+      data-modal="#QuickAdd-{{ card_product.id }}"
+    {% endif %}
+    {% if settings.hideFlow %}
+      style="display:none !important;"
+    {% endif %}
+  >
+    <button
+      type="button"
+      class="button card-buy-now__btn disabled"
+      disabled
+      id="CardBuyNow-{{ section_id }}-{{ card_product.id }}"
+      aria-labelledby="CardBuyNow-{{ section_id }}-{{ card_product.id }} title-{{ section_id }}-{{ card_product.id }}"
+    >
+      <div style="display:none" class="addloadr">
+        <div class="cir-loader">Loading..</div>
+      </div>
+      <span>{{ settings.cardBuynowText | default: 'Buy Now' | escape }}</span>
+    </button>
+  </card-buy-now>
+{%- endif -%}

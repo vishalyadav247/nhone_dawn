@@ -16,6 +16,7 @@
   - horizontal_class: {Boolean} Add a card--horizontal class if set to true. Default: false (optional)
   - horizontal_quick_add: {Boolean} Changes the quick add button styles when set to true. Default: false (optional)
   - placeholder_image: {String} The placeholder image to use when no product exists. Default: 'product-apparel-2' (optional)
+  - show_buy_now: {Boolean} Show the GoKwik card Buy Now button (also requires the theme settings goEnable and goCardBuynowEnable). Default: true (optional)
 
   Usage:
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
@@ -390,6 +391,9 @@
                 {%- endform -%}
               </product-form>
             {%- endif -%}
+            {%- unless show_buy_now == false or horizontal_quick_add -%}
+              {% render 'card-buy-now', card_product: card_product, section_id: section_id %}
+            {%- endunless -%}
           </div>
         {% elsif quick_add == 'bulk' %}
           {% if card_product.variants.size == 1 %}
@@ -648,6 +652,9 @@
                 {%- endform -%}
               </product-form>
             {%- endif -%}
+            {%- unless show_buy_now == false or horizontal_quick_add -%}
+              {% render 'card-buy-now', card_product: card_product, section_id: section_id %}
+            {%- endunless -%}
           </div>
         {% endif %}
         <div class="card__badge {{ settings.badge_position }}">

@@ -1,0 +1,44 @@
+/* GoKwik Buy Now button on product cards (snippets/card-buy-now.liquid).
+   Selectors are intentionally doubled up (.card-buy-now.gokwik-checkout) to beat
+   the vendor `.gokwik-checkout` / `.gokwik-checkout button` rules injected by
+   snippets/gokwik.liquid (flex column wrapper, 45px button, priClr background). */
+
+.card-buy-now.gokwik-checkout {
+  display: block;
+  width: 100%;
+  margin: 0.8rem 0 0;
+}
+
+.card-buy-now.gokwik-checkout button.card-buy-now__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: auto;
+  min-height: 4.2rem;
+  padding: 0.8rem 1rem;
+  border: none;
+  background: var(--gk-card-buynow-bg, #000);
+  color: var(--gk-card-buynow-color, #fff);
+  font-size: 1.4rem;
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Vendor CSS sets `.gokwik-checkout button:focus { outline: none; }` —
+   restore a visible focus indicator for keyboard users. */
+.card-buy-now.gokwik-checkout button.card-buy-now__btn:focus-visible {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline-offset: 0.3rem;
+}
+
+.card-buy-now.gokwik-checkout button.card-buy-now__btn.disabled,
+.card-buy-now.gokwik-checkout button.card-buy-now__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
