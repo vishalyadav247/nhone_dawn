@@ -120,6 +120,10 @@
   font-size: 1.3rem;
   flex-shrink: 0;
   border-radius: 0.8rem;
+
+  &::after,&::before{
+    display:none;
+  }
 }
 
 /* Chip state: shown after a successful check, in place of the input row. */
