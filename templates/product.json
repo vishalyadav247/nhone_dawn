@@ -59,7 +59,7 @@
         "pincode_checker_GUzJEV": {
           "type": "pincode_checker",
           "settings": {
-            "heading": "Free fitment & installation",
+            "heading": "Fitment & Installation Service",
             "subtext": "Professional installation at a centre near you",
             "idle_text": "Enter your delivery pincode to check availability",
             "success_text": "Free fitment available for [pincode]",
