@@ -63,7 +63,7 @@
             "subtext": "Professional installation",
             "idle_text": "Enter your pincode to check associated installation partner",
             "success_text": "Installation available for [pincode]",
-            "not_found_text": "Our Partner not available for [pincode]",
+            "not_found_text": "We don’t currently offer installation at this location, <b>Delivery is Available</b>",
             "dialog_title": "Installation centres for [pincode]"
           }
         },
