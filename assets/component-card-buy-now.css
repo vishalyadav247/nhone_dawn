@@ -90,7 +90,7 @@
   .quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit,
   .quick-add:has(> .card-buy-now) > product-form .quick-add__submit,
   .card-buy-now.gokwik-checkout button.card-buy-now__btn {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 }
 
