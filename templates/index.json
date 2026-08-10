@@ -655,7 +655,7 @@
       "settings": {
         "heading": "LATEST FROM OUR BLOGS",
         "content": "",
-        "blog": "news",
+        "blog": "blog",
         "article_limit": 6
       }
     },
