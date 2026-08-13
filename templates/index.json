@@ -638,17 +638,6 @@
         "button_link2": "shopify://collections"
       }
     },
-    "custom_blog_slider_pKWVym": {
-      "type": "custom-blog-slider",
-      "disabled": true,
-      "name": "Custom Blog Slider",
-      "settings": {
-        "heading": "",
-        "content": "",
-        "blog": "news",
-        "article_limit": 2
-      }
-    },
     "custom_blog_slider_q3PnbU": {
       "type": "custom-blog-slider",
       "name": "Custom Blog Slider",
@@ -872,7 +861,6 @@
     "home_page_tabbber_rjDEBe",
     "content_section_NJcANL",
     "shopping_guide_section_4KLxKh",
-    "custom_blog_slider_pKWVym",
     "custom_blog_slider_q3PnbU",
     "read_more_content_VTWaD8",
     "1757748884bdaad3ec",
