@@ -155,7 +155,7 @@ if (!customElements.get('pincode-checker')) {
         this.buildCards(modal);
         const title = modal.querySelector('[data-modal-title]');
         if (title) {
-          title.textContent = (this.dataset.dialogTitle || '').replace('[pincode]', this.lastCheckedPin || '');
+          title.innerHTML = (this.dataset.dialogTitle || '').replace('[pincode]', this.lastCheckedPin || '');
         }
         modal.show(opener || this);
       }
