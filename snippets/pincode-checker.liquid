@@ -62,7 +62,7 @@
     </span>
     <div class="pincode-checker__body">
       {%- if block.settings.heading != blank -%}
-        <p class="pincode-checker__heading">{{ block.settings.heading | strip_html }}</p>
+        <p class="pincode-checker__heading">{{ block.settings.heading }}</p>
       {%- endif -%}
       {%- if block.settings.subtext != blank -%}
         <p class="pincode-checker__subtext">{{ block.settings.subtext | escape }}</p>
