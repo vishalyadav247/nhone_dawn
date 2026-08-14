@@ -328,6 +328,25 @@
       >
     {%- endif -%}
 
+    {%- comment -%}
+      GoKwik Buy Now on product cards (snippets/card-buy-now.liquid). Loaded
+      site-wide (not from card-product.liquid) because related-products and
+      search results inject card HTML via innerHTML, which never executes
+      <script> tags emitted alongside the cards.
+    {%- endcomment -%}
+    {%- if settings.goEnable and settings.goCardBuynowEnable -%}
+      {{ 'component-card-buy-now.css' | asset_url | stylesheet_tag }}
+      {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'card-buy-now.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+      <style>
+        :root {
+          --gk-card-buynow-bg: {{ settings.cardBuynowBgClr | default: '#FF8A00' }};
+          --gk-card-buynow-color: {{ settings.cardBuynowTextClr | default: '#FFFFFF' }};
+        }
+      </style>
+    {%- endif -%}
+
     <script>
       if (Shopify.designMode) {
         document.documentElement.classList.add('shopify-design-mode');

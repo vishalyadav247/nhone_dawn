@@ -1581,6 +1581,35 @@
     },
     {
       "type": "header",
+      "content": "Buy Now on product cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "goCardBuynowEnable",
+      "label": "Show Buy Now button on product cards",
+      "info": "Requires 'Enable Checkout Button' (goEnable). Products with multiple variants also require 'Enable Buynow Button' (goBuynowEnable) so the quick-add modal shows a Buy Now button; otherwise the card button is hidden for them. Uses GoKwik buy-now flow.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "cardBuynowText",
+      "label": "Card Buy Now button text",
+      "default": "Buy Now"
+    },
+    {
+      "type": "color",
+      "id": "cardBuynowBgClr",
+      "label": "Card Buy Now Background Color",
+      "default": "#FF8A00"
+    },
+    {
+      "type": "color",
+      "id": "cardBuynowTextClr",
+      "label": "Card Buy Now Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
       "content": "Other Settings"
     },
     {

@@ -155,7 +155,7 @@ if (!customElements.get('pincode-checker')) {
         this.buildCards(modal);
         const title = modal.querySelector('[data-modal-title]');
         if (title) {
-          title.textContent = (this.dataset.dialogTitle || '').replace('[pincode]', this.lastCheckedPin || '');
+          title.innerHTML = (this.dataset.dialogTitle || '').replace('[pincode]', this.lastCheckedPin || '');
         }
         modal.show(opener || this);
       }
@@ -249,7 +249,7 @@ if (!customElements.get('pincode-checker')) {
         icon.setAttribute('aria-hidden', 'true');
         const text = document.createElement('span');
         text.className = 'pincode-checker__bar-text';
-        text.textContent = (template || '').replace('[pincode]', pin || '');
+        text.innerHTML = (template || '').replace('[pincode]', pin || '');
 
         if (state === 'found') {
           // The whole success bar is the button that opens the centres popup.
