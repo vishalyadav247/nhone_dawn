@@ -18,7 +18,7 @@
   data-modal="#PincodeFitmentModal-{{ section_id }}"
   data-success-text="{{ block.settings.success_text }}"
   data-not-found-text="{{ block.settings.not_found_text }}"
-  data-dialog-title="{{ block.settings.dialog_title }}"
+  data-dialog-title="{{ block.settings.dialog_title | strip_html }}"
   {{ block.shopify_attributes }}
 >
   {%- liquid
