@@ -16,7 +16,7 @@
 
 .quick-add:has(> .card-buy-now) {
   display: flex;
-  gap: 0.8rem;
+  gap: 0.6rem;
   align-items: stretch;
 }
 
@@ -38,6 +38,7 @@
   min-width: 0;
   width: auto;
   margin: 0;
+  border-radius:0 !important;
 }
 
 /* Add-to-cart half of the pair: solid black. Dawn buttons are driven by these
@@ -62,12 +63,10 @@
   min-width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  height: 100%;
-  min-height: 4.2rem;
   padding: 0.8rem 0.4rem;
   border: none;
-  border-radius: var(--buttons-radius-outset, 0);
-  background: var(--gk-card-buynow-bg, #ff8a00);
+  border-radius: 4px;
+  background-color: var(--gk-card-buynow-bg, #ff8a00) !important;
   color: var(--gk-card-buynow-color, #fff);
   font-family: inherit;
   font-size: 1.3rem;
@@ -75,17 +74,23 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  min-height:36px;
+  height:fit-content;
+
+  &::after,&::before{
+  display:none;
+  }
 }
 
 @media screen and (max-width: 749px) {
   .quick-add:has(> .card-buy-now) {
-    gap: 0.5rem;
+    gap: 0.2rem;
   }
 
   .quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit,
   .quick-add:has(> .card-buy-now) > product-form .quick-add__submit,
   .card-buy-now.gokwik-checkout button.card-buy-now__btn {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 }
 

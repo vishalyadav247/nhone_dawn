@@ -1138,6 +1138,17 @@ header {
 }
 
 .product-card-wrapper {
+  .card__content{
+  
+    .quick-add__submit{
+      background-color:#2b2b2c !important;
+      min-height:36px;
+      border-radius:4px;
+      &::before,&::after{
+        display:none;
+      }
+    }
+  }
   .card__information {
     padding:0;
     padding-bottom: 5px;
@@ -1811,15 +1822,6 @@ background-color: transparent !important;
 .gokwik-checkout{
   border-radius:30px !important;
   overflow:hidden;
-}
-
-.product-card-wrapper .button{
-  border-radius: 30px !important;
-  overflow: hidden;
-  padding: 0;
-  height: fit-content;
-  padding-bottom: 2px;
-  min-height: 40px;
 }
 
 .quick-add-modal{
