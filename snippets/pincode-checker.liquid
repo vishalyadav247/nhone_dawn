@@ -16,9 +16,9 @@
   class="pincode-checker quick-add-hidden"
   data-section-id="{{ section_id }}"
   data-modal="#PincodeFitmentModal-{{ section_id }}"
-  data-success-text="{{ block.settings.success_text | escape }}"
-  data-not-found-text="{{ block.settings.not_found_text | escape }}"
-  data-dialog-title="{{ block.settings.dialog_title | escape }}"
+  data-success-text="{{ block.settings.success_text }}"
+  data-not-found-text="{{ block.settings.not_found_text }}"
+  data-dialog-title="{{ block.settings.dialog_title }}"
   {{ block.shopify_attributes }}
 >
   {%- liquid
@@ -65,7 +65,7 @@
         <p class="pincode-checker__heading">{{ block.settings.heading }}</p>
       {%- endif -%}
       {%- if block.settings.subtext != blank -%}
-        <p class="pincode-checker__subtext">{{ block.settings.subtext | escape }}</p>
+        <p class="pincode-checker__subtext">{{ block.settings.subtext }}</p>
       {%- endif -%}
       <div class="pincode-checker__row pincode-checker__row--input">
         <input
@@ -105,7 +105,7 @@
       </div>
       <div class="pincode-checker__result" role="status" aria-live="polite" data-result>
         {%- if block.settings.idle_text != blank -%}
-          <span class="pincode-checker__idle">{{ block.settings.idle_text | escape }}</span>
+          <span class="pincode-checker__idle">{{ block.settings.idle_text }}</span>
         {%- endif -%}
       </div>
     </div>
