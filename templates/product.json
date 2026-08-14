@@ -52,20 +52,20 @@
           "type": "quantity_selector",
           "settings": {}
         },
+        "pincode_checker_mbPpHC": {
+          "type": "pincode_checker",
+          "settings": {
+            "heading": "<p><strong>Check Installation Service Near You</strong></p>",
+            "subtext": "<p><strong>Product Delivery Available PAN India</strong></p>",
+            "idle_text": "<p>Enter your pincode to check associated installation partner</p>",
+            "success_text": "<p><strong>Installation & Delivery available for [pincode]</strong></p>",
+            "not_found_text": "<p><strong>Delivery is Available</strong> We don’t currently offer installation at this location</p>",
+            "dialog_title": "<p>Installation centres for [pincode]</p>"
+          }
+        },
         "essential_estimated_app_block_k7r8nG": {
           "type": "shopify://apps/essential-estimated/blocks/app-block/02a895dd-b5b5-4103-8966-c6914aa8309e",
           "settings": {}
-        },
-        "pincode_checker_GUzJEV": {
-          "type": "pincode_checker",
-          "settings": {
-            "heading": "Check Installation Service Near You",
-            "subtext": "Professional installation",
-            "idle_text": "Enter your pincode to check associated installation partner",
-            "success_text": "Installation available for [pincode]",
-            "not_found_text": "We don’t currently offer installation at this location, <strong>Delivery is Available</strong>",
-            "dialog_title": "Installation centres for [pincode]"
-          }
         },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -122,8 +122,8 @@
         "offers_yYyidD",
         "sold_quantity_FNKy8A",
         "quantity_selector",
+        "pincode_checker_mbPpHC",
         "essential_estimated_app_block_k7r8nG",
-        "pincode_checker_GUzJEV",
         "buy_buttons",
         "icon_with_text_HW7HbH",
         "share",
