@@ -249,7 +249,7 @@ if (!customElements.get('pincode-checker')) {
         icon.setAttribute('aria-hidden', 'true');
         const text = document.createElement('span');
         text.className = 'pincode-checker__bar-text';
-        text.textContent = (template || '').replace('[pincode]', pin || '');
+        text.innerHTML = (template || '').replace('[pincode]', pin || '');
 
         if (state === 'found') {
           // The whole success bar is the button that opens the centres popup.
