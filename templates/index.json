@@ -16,8 +16,8 @@
           "type": "image",
           "name": "Excellence Motion",
           "settings": {
-            "image_desktop": "shopify://shop_images/Black_and_Orange_Banner_5290_X1590_042311fb-d245-45b4-8148-21db2071a7e8.png",
-            "image_mobile": "shopify://shop_images/Black_and_Orange_Banner_1000_x_800_px_d32b8bb0-7ea8-410d-ab7a-c7e4a011e9b9.png",
+            "image_desktop": "shopify://shop_images/ChatGPT_Image_Aug_11_2026_07_09_40_PM.png",
+            "image_mobile": "shopify://shop_images/ChatGPT_Image_Aug_11_2026_07_14_06_PM.png",
             "image_alt": "Image description",
             "image_url": "/",
             "open_in_new_tab": false
@@ -638,24 +638,13 @@
         "button_link2": "shopify://collections"
       }
     },
-    "custom_blog_slider_pKWVym": {
-      "type": "custom-blog-slider",
-      "disabled": true,
-      "name": "Custom Blog Slider",
-      "settings": {
-        "heading": "",
-        "content": "",
-        "blog": "news",
-        "article_limit": 2
-      }
-    },
     "custom_blog_slider_q3PnbU": {
       "type": "custom-blog-slider",
       "name": "Custom Blog Slider",
       "settings": {
         "heading": "LATEST FROM OUR BLOGS",
         "content": "",
-        "blog": "news",
+        "blog": "blog",
         "article_limit": 6
       }
     },
@@ -872,7 +861,6 @@
     "home_page_tabbber_rjDEBe",
     "content_section_NJcANL",
     "shopping_guide_section_4KLxKh",
-    "custom_blog_slider_pKWVym",
     "custom_blog_slider_q3PnbU",
     "read_more_content_VTWaD8",
     "1757748884bdaad3ec",

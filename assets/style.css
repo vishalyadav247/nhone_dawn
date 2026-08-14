@@ -1839,3 +1839,14 @@ background-color: transparent !important;
   text-align: center;
   margin-top: 40px;
 }
+.contactform-container{
+  .contact__button{
+    button{
+      border-radius:40px;
+
+      &::after,&::before{
+        border-radius:40px;
+      }
+    }
+  }
+}

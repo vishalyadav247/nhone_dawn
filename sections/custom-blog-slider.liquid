@@ -49,6 +49,7 @@
                 {% if article.image %}
                   <div class="blog-image">
                     <picture>
+                      {% comment %}
                       {% if article.metafields.custom.mobile_cover_image != blank %}
                         <source
                           media="(max-width: 749px)"
@@ -62,9 +63,10 @@
                           srcset="{{ article.metafields.custom.desktop_cover_image | image_url: width: 500 }}"
                         >
                       {% endif %}
+                       {% endcomment %}
 
                       <img
-                        src="{{ article.metafields.custom.desktop_cover_image | image_url: width: 500 }}"
+                        src="{{ article.metafields.custom.mobile_cover_image | image_url: width: 500 }}"
                         alt="{{ article.title }}"
                         loading="lazy"
                         width="1200"
@@ -214,7 +216,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     const $carousel = $('.blog-slider');
     $carousel.owlCarousel({
-      loop: true,
+      loop: false,
       margin: 20,
       nav: false,
       dots: true,
