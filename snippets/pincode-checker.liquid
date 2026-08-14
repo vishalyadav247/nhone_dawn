@@ -62,10 +62,10 @@
     </span>
     <div class="pincode-checker__body">
       {%- if block.settings.heading != blank -%}
-        <p class="pincode-checker__heading">{{ block.settings.heading }}</p>
+        <div class="pincode-checker__heading">{{ block.settings.heading }}</div>
       {%- endif -%}
       {%- if block.settings.subtext != blank -%}
-        <p class="pincode-checker__subtext">{{ block.settings.subtext }}</p>
+        <div class="pincode-checker__subtext">{{ block.settings.subtext }}</div>
       {%- endif -%}
       <div class="pincode-checker__row pincode-checker__row--input">
         <input
@@ -105,7 +105,7 @@
       </div>
       <div class="pincode-checker__result" role="status" aria-live="polite" data-result>
         {%- if block.settings.idle_text != blank -%}
-          <span class="pincode-checker__idle">{{ block.settings.idle_text }}</span>
+          <div class="pincode-checker__idle">{{ block.settings.idle_text }}</div>
         {%- endif -%}
       </div>
     </div>
