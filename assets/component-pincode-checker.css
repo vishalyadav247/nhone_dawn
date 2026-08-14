@@ -37,6 +37,9 @@
 .pincode-checker__body {
   flex: 1;
   min-width: 0;
+  p{
+    margin:0;
+  }
 }
 
 .pincode-checker__heading {
