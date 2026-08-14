@@ -45,8 +45,10 @@
 .pincode-checker__heading {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 600;
   line-height: 1.3;
+  strong{
+    font-weight:600;
+  }
 }
 
 .pincode-checker__subtext {
