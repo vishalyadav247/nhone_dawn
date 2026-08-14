@@ -59,7 +59,7 @@
             "subtext": "<p>Product Delivery Available PAN India</p>",
             "idle_text": "<p>Enter your pincode to check associated installation partner</p>",
             "success_text": "<p><strong>Installation & Delivery available for [pincode]</strong></p>",
-            "not_found_text": "<p><strong>Delivery is Available</strong> We don’t currently offer installation at this location</p>",
+            "not_found_text": "<p><strong>Delivery is Available We don’t currently offer installation at this location</strong></p>",
             "dialog_title": "<p>Installation centres for [pincode]</p>"
           }
         },
