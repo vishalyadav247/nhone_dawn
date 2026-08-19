@@ -1,41 +1,21 @@
-/* Pincode fitment checker block (main-product)
-   All states are fixed-height by design: the input/chip row is always 4.4rem
-   tall and the result slot is always 4rem tall, so the block never shifts
-   layout no matter which state is showing. */
+/* Pincode fitment checker block (main-product) — tooltip design.
+   ONE row in every state: [pin-icon | input | Check/Change] pill on the left,
+   and a tooltip-style bubble on the right holding the status text (up to two
+   lines, clamped). The pill never changes shape between states — only the
+   button label flips Check <-> Change. Fixed heights, no layout shift. */
 
 .pincode-checker {
   display: block;
 }
 
 .pincode-checker__card {
-  display: flex;
-  flex-direction: row;
-  gap: 1.2rem;
   border: 0.1rem solid rgba(var(--color-foreground), 0.12);
-  border-radius: 1.2rem;
-  padding: 1.6rem;
+  border-radius: 0.8rem;
+  padding: 1.2rem;
   background-color: rgba(var(--color-foreground), 0.02);
 }
 
-.pincode-checker__icon {
-  flex: 0 0 4rem;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  background-color: rgba(var(--color-foreground), 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgb(var(--color-foreground));
-}
-
-.pincode-checker__icon svg {
-  width: 2rem;
-  height: 2rem;
-}
-
 .pincode-checker__body {
-  flex: 1;
   min-width: 0;
   p{
     margin:0;
@@ -44,7 +24,7 @@
 
 .pincode-checker__heading {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   line-height: 1.4;
   strong{
     font-weight:600;
@@ -52,39 +32,81 @@
 }
 
 .pincode-checker__subtext {
-  margin: 0.1rem 0 0;
-  font-size: 1.2rem;
+  margin: 0;
+  font-size: 1.15rem;
   line-height: 1.4;
-  color: rgba(var(--color-foreground), 0.7);
+  color: rgba(var(--color-foreground), 0.65);
 }
 
-/* Input row and chip row share one slot with identical fixed height —
-   JS toggles [hidden] between them, so swapping causes no layout shift. */
-.pincode-checker__row {
-  height: 4.4rem;
+/* Single line: pill left, tooltip bubble right. */
+.pincode-checker__line {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-top: 1rem;
+  gap: 1.1rem;
+  margin-top: 0.7rem;
+}
+
+.pincode-checker__row {
+  height: 3.4rem;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
 }
 
 .pincode-checker__row[hidden] {
   display: none;
 }
 
-.pincode-checker__input {
-  flex: 1;
-  min-width: 0;
-  max-width: 24rem;
+/* Fused pill: pin icon + input + button share one border. */
+.pincode-checker__group {
+  display: flex;
+  align-items: stretch;
   height: 100%;
-  font-size: 1.4rem;
-  letter-spacing: 0.05em;
-  padding: 0 1.4rem;
-  color: rgb(var(--color-foreground));
+  border: 0.1rem solid rgba(var(--color-foreground), 0.3);
+  border-radius: 0.6rem;
+  overflow: hidden;
   background-color: rgb(var(--color-background));
-  border: 0.1rem solid rgba(var(--color-foreground), 0.35);
-  border-radius: 0.8rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pincode-checker__group:focus-within {
+  border-color: rgba(var(--color-foreground), 0.85);
+  box-shadow: 0 0 0 0.15rem rgba(var(--color-foreground), 0.1);
+}
+
+.pincode-checker__group:has(.pincode-checker__input--invalid) {
+  border-color: #c8102e;
+  box-shadow: 0 0 0 0.15rem rgba(200, 16, 46, 0.15);
+  animation: pincode-shake 0.3s linear;
+}
+
+/* Map pin icon — always visible inside the input pill. */
+.pincode-checker__group-icon {
+  display: flex;
+  align-items: center;
+  padding-left: 0.9rem;
+  color: rgba(var(--color-foreground), 0.55);
+}
+
+.pincode-checker__group-icon svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.pincode-checker__input {
+  width: 9rem;
+  min-width: 0;
+  height: 100%;
+  font-size: 1.3rem;
+  letter-spacing: 0.05em;
+  padding: 0 0.8rem;
+  color: rgb(var(--color-foreground));
+  background: none;
+  border: none;
+}
+
+.pincode-checker__input:read-only {
+  font-weight: 600;
 }
 
 .pincode-checker__input::placeholder {
@@ -92,16 +114,10 @@
   color: rgba(var(--color-foreground), 0.45);
 }
 
-.pincode-checker__input:focus {
+.pincode-checker__input:focus,
+.pincode-checker__input:focus-visible {
   outline: none;
-  border-color: rgba(var(--color-foreground), 0.9);
-  box-shadow: 0 0 0 0.2rem rgba(var(--color-foreground), 0.12);
-}
-
-.pincode-checker__input--invalid {
-  border-color: #c8102e;
-  box-shadow: 0 0 0 0.2rem rgba(200, 16, 46, 0.15);
-  animation: pincode-shake 0.3s linear;
+  box-shadow: none;
 }
 
 @keyframes pincode-shake {
@@ -118,82 +134,87 @@
 }
 
 .pincode-checker__button {
+  position: relative;
   height: 100%;
   min-height: 0;
+  width: 8rem;
   min-width: 0;
-  padding: 0 1.8rem;
-  font-size: 1.3rem;
+  padding: 0;
+  font-size: 1.2rem;
   flex-shrink: 0;
-  border-radius: 0.8rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 
   &::after,&::before{
     display:none;
   }
 }
 
-/* Chip state: shown after a successful check, in place of the input row. */
-.pincode-checker__chip {
-  display: inline-flex;
+/* While checking: hide the label, Dawn's spinner (base.css) overlays centered. */
+.pincode-checker__button.loading .pincode-checker__button-label,
+.pincode-checker__button.loading .pincode-checker__button-icon {
+  visibility: hidden;
+}
+
+/* Icon-only button variants — shown on mobile instead of the text label. */
+.pincode-checker__button-icon {
+  display: none;
   align-items: center;
-  gap: 0.6rem;
-  min-width: 0;
-  background-color: rgba(var(--color-foreground), 0.05);
-  border: 0.1rem solid rgba(var(--color-foreground), 0.1);
-  border-radius: 2.2rem;
-  padding: 0.8rem 1.4rem;
-  font-size: 1.35rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  justify-content: center;
 }
 
-.pincode-checker__chip-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-  color: rgba(var(--color-foreground), 0.7);
+.pincode-checker__button-icon svg {
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
-.pincode-checker__change {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font-size: 1.3rem;
-  text-decoration: underline;
-  text-underline-offset: 0.2rem;
-  color: rgb(var(--color-link));
-}
-
-/* Result slot: fixed height across idle / loading / found / notfound. */
+/* Tooltip bubble: the status area itself is the bubble, same height as the
+   input pill. Its tint follows the checker's state. Fits two clamped lines
+   of 1.1rem text. */
 .pincode-checker__result {
-  height: 4rem;
-  margin-top: 0.8rem;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 3.4rem;
   display: flex;
   align-items: center;
+  padding: 0.3rem 1rem;
+  border-radius: 0.6rem;
+  background-color: rgba(var(--color-foreground), 0.06);
+  color: rgba(var(--color-foreground), 0.65);
+  font-size: 1.1rem;
   overflow: hidden;
-  white-space: nowrap;
 }
 
+pincode-checker[data-state='found'] .pincode-checker__result {
+  background-color: #e9f7ef;
+  color: #0a6c3c;
+}
+
+pincode-checker[data-state='notfound'] .pincode-checker__result {
+  background-color: #fdf4e3;
+  color: #8a5a00;
+}
+
+/* Text clamps at two lines. */
 .pincode-checker__idle {
-  font-size: 1.2rem;
-  color: rgba(var(--color-foreground), 0.6);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .pincode-checker__shimmer {
   width: 100%;
-  height: 100%;
-  border-radius: 0.8rem;
+  height: 1rem;
+  border-radius: 0.5rem;
   background: linear-gradient(
     90deg,
-    rgba(var(--color-foreground), 0.06) 25%,
-    rgba(var(--color-foreground), 0.14) 50%,
-    rgba(var(--color-foreground), 0.06) 75%
+    rgba(var(--color-foreground), 0.08) 25%,
+    rgba(var(--color-foreground), 0.18) 50%,
+    rgba(var(--color-foreground), 0.08) 75%
   );
   background-size: 200% 100%;
   animation: pincode-shimmer 1.2s ease-in-out infinite;
@@ -208,50 +229,44 @@
   }
 }
 
-/* Status bars fill the whole result slot. The "found" bar is a real button:
-   tapping anywhere on it opens the centres popup. */
+/* Status content inside the bubble: icon and text sit on ONE row — icon
+   left, text beside it (clamped at two lines). The "found" line is a real
+   button: tapping anywhere on the bubble text opens the centres popup. */
 .pincode-checker__bar {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0 1.2rem;
-  border-radius: 0.8rem;
-  border: 0.1rem solid transparent;
+  gap: 0.6rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
   font-family: inherit;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
+  line-height: 1.25;
   text-align: left;
+  white-space: normal;
 }
 
 .pincode-checker__bar--found {
   cursor: pointer;
-  color: #0a6c3c;
-  background-color: #e9f7ef;
-  border-color: #c3e7d1;
-  transition: background-color 0.15s ease;
 }
 
-.pincode-checker__bar--found:hover {
-  background-color: #dcf2e5;
+.pincode-checker__bar--found:hover .pincode-checker__bar-cta {
+  text-decoration-thickness: 0.15rem;
 }
 
 .pincode-checker__bar--found:focus-visible {
   outline: 0.2rem solid #0a6c3c;
-  outline-offset: 0.1rem;
-}
-
-.pincode-checker__bar--notfound {
-  color: #8a5a00;
-  background-color: #fdf4e3;
-  border-color: #f0ddb0;
+  outline-offset: 0.2rem;
+  border-radius: 0.2rem;
 }
 
 .pincode-checker__bar-icon {
   flex-shrink: 0;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.3rem;
+  height: 1.3rem;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -266,10 +281,11 @@
 }
 
 .pincode-checker__bar-text {
-  flex: 1;
   min-width: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .pincode-checker__bar-cta {
@@ -277,15 +293,76 @@
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 0.2rem;
+  white-space: nowrap;
+  margin-left:15px;
 }
 
 .pincode-checker__bar-cta::after {
   content: '\203A';
   display: inline-block;
-  margin-left: 0.4rem;
-  font-size: 1.5rem;
+  margin-left: 0.3rem;
+  font-size: 1.25rem;
   line-height: 1;
   text-decoration: none;
+}
+
+/* Small screens: pill and tooltip stay on the SAME row. The button drops its
+   text label and shows an icon instead (magnifier = Check, pencil = Change)
+   to free up space for the bubble. */
+@media screen and (max-width: 480px) {
+  .pincode-checker__line {
+    gap: 0.7rem;
+  }
+
+  /* No map icon on mobile — the input pill is as slim as possible. */
+  .pincode-checker__group-icon {
+    display: none;
+  }
+
+  .pincode-checker__input {
+    width: 7.2rem;
+    padding: 0 0.8rem;
+  }
+
+  .pincode-checker__button {
+    width: 3.8rem;
+  }
+
+  .pincode-checker__button-label {
+    display: none;
+  }
+
+  .pincode-checker__button-icon {
+    display: flex;
+  }
+
+  pincode-checker[data-state='found'] .pincode-checker__button-icon--check {
+    display: none;
+  }
+
+  pincode-checker:not([data-state='found']) .pincode-checker__button-icon--change {
+    display: none;
+  }
+
+  /* No status icon either — every pixel of the bubble goes to the text,
+     so the full message is visible (wrapping onto two lines). */
+  .pincode-checker__bar-icon {
+    display: none;
+  }
+
+  .pincode-checker__bar-cta {
+    margin-left: 0.5rem;
+  }
+
+  /* 10px tooltip text on mobile. */
+  .pincode-checker__result,
+  .pincode-checker__bar {
+    font-size: 1rem;
+  }
+
+  .pincode-checker__result {
+    padding: 0.3rem 0.8rem;
+  }
 }
 
 /* Fitment centres modal (ModalDialog moves it to document.body). */
@@ -463,10 +540,10 @@
 @media (prefers-reduced-motion: reduce) {
   .pincode-checker__shimmer {
     animation: none;
-    background: rgba(var(--color-foreground), 0.1);
+    background: rgba(var(--color-foreground), 0.12);
   }
 
-  .pincode-checker__input--invalid {
+  .pincode-checker__group:has(.pincode-checker__input--invalid) {
     animation: none;
   }
 
@@ -478,8 +555,7 @@
 /* Fallback while the component is not defined (JS still loading, disabled, or
    failed): visually hide the interactive rows but KEEP their reserved height
    (visibility, not display), so the block does not collapse then expand —
-   i.e. no layout shift — when the deferred script upgrades the element.
-   The chip row stays display:none via its [hidden] attribute either way. */
+   i.e. no layout shift — when the deferred script upgrades the element. */
 pincode-checker:not(:defined) .pincode-checker__row,
 pincode-checker:not(:defined) .pincode-checker__result {
   visibility: hidden;
