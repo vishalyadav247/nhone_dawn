@@ -17,10 +17,8 @@ if (!customElements.get('pincode-checker')) {
 
         this.input = this.querySelector('.pincode-checker__input');
         this.checkButton = this.querySelector('.pincode-checker__button');
-        this.inputRow = this.querySelector('.pincode-checker__row--input');
-        this.chipRow = this.querySelector('.pincode-checker__row--chip');
-        this.chipPin = this.querySelector('[data-chip-pin]');
-        this.changeButton = this.querySelector('.pincode-checker__change');
+        this.buttonLabel = this.querySelector('.pincode-checker__button-label');
+        this.buttonSpinner = this.querySelector('.pincode-checker__button .loading__spinner');
         this.result = this.querySelector('[data-result]');
         const idleElement = this.querySelector('.pincode-checker__idle');
         this.idleText = idleElement ? idleElement.textContent.trim() : '';
@@ -42,7 +40,6 @@ if (!customElements.get('pincode-checker')) {
           });
         }
         if (this.checkButton) this.checkButton.addEventListener('click', this.onCheckClick.bind(this));
-        if (this.changeButton) this.changeButton.addEventListener('click', this.onChangeClick.bind(this));
 
         this.applySavedPin();
       }
@@ -121,6 +118,12 @@ if (!customElements.get('pincode-checker')) {
       }
 
       onCheckClick() {
+        // In the "found" state the same button reads "Change": unlock the
+        // input instead of re-checking.
+        if (this.dataset.state === 'found') {
+          this.onChangeClick();
+          return;
+        }
         // Explicit "Check" (or Enter) means the shopper wants to SEE the centres:
         // run the check and open the popup directly when the pincode is served.
         const value = this.input ? this.input.value : '';
@@ -139,7 +142,7 @@ if (!customElements.get('pincode-checker')) {
       }
 
       onChangeClick() {
-        const pin = this.lastCheckedPin || (this.chipPin ? this.chipPin.textContent.trim() : '');
+        const pin = this.lastCheckedPin || (this.input ? this.input.value : '');
         this.lastCheckedPin = null;
         this.setState('idle');
         if (this.input) {
@@ -198,30 +201,35 @@ if (!customElements.get('pincode-checker')) {
       applySavedPin() {
         const pin = this.readPin();
         if (!pin) return;
-        if (this.inputRow) this.inputRow.hidden = true;
-        if (this.chipRow) {
-          this.chipRow.hidden = false;
-          if (this.chipPin) this.chipPin.textContent = pin;
-        }
+        if (this.input) this.input.value = pin;
         this.check(pin, { fromStorage: true });
       }
 
       setState(state, pin) {
         this.dataset.state = state;
 
-        // Row toggling: "found" collapses the input into the pincode chip;
-        // "idle"/"notfound" bring the input back so the shopper can edit.
-        // "loading" leaves whichever row is visible untouched.
+        // Dawn-style button spinner while checking (same pattern as add-to-cart).
+        if (this.checkButton) this.checkButton.classList.toggle('loading', state === 'loading');
+        if (this.buttonSpinner) this.buttonSpinner.classList.toggle('hidden', state !== 'loading');
+
+        // The input row keeps the SAME design in every state. "found" just
+        // locks the input and relabels the button to "Change"; "idle" and
+        // "notfound" unlock it and restore "Check". "loading" is untouched.
         if (state === 'found') {
-          if (this.inputRow) this.inputRow.hidden = true;
-          if (this.chipRow) {
-            this.chipRow.hidden = false;
-            if (this.chipPin) this.chipPin.textContent = pin || this.lastCheckedPin || '';
+          if (this.input) {
+            this.input.readOnly = true;
+            const lockedPin = pin || this.lastCheckedPin;
+            if (lockedPin) this.input.value = lockedPin;
           }
+          if (this.buttonLabel) this.buttonLabel.textContent = 'Change';
+          if (this.checkButton) this.checkButton.setAttribute('aria-label', 'Change pincode');
         } else if (state === 'idle' || state === 'notfound') {
-          if (this.chipRow) this.chipRow.hidden = true;
-          if (this.inputRow) this.inputRow.hidden = false;
-          if (state === 'notfound' && this.input && this.input.value === '' && pin) this.input.value = pin;
+          if (this.input) {
+            this.input.readOnly = false;
+            if (state === 'notfound' && this.input.value === '' && pin) this.input.value = pin;
+          }
+          if (this.buttonLabel) this.buttonLabel.textContent = 'Check';
+          if (this.checkButton) this.checkButton.setAttribute('aria-label', 'Check');
         }
 
         if (!this.result) return;

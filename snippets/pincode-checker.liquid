@@ -45,21 +45,6 @@
     </script>
   {%- endif -%}
   <div class="pincode-checker__card">
-    <span class="pincode-checker__icon" aria-hidden="true">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        focusable="false"
-      >
-        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-        <circle cx="12" cy="10" r="3"/>
-      </svg>
-    </span>
     <div class="pincode-checker__body">
       {%- if block.settings.heading != blank -%}
         <div class="pincode-checker__heading">{{ block.settings.heading }}</div>
@@ -67,46 +52,77 @@
       {%- if block.settings.subtext != blank -%}
         <div class="pincode-checker__subtext">{{ block.settings.subtext }}</div>
       {%- endif -%}
-      <div class="pincode-checker__row pincode-checker__row--input">
-        <input
-          class="pincode-checker__input"
-          type="text"
-          inputmode="numeric"
-          autocomplete="postal-code"
-          pattern="[0-9]{6}"
-          maxlength="6"
-          placeholder="Enter 6-digit pincode"
-          aria-label="Delivery pincode"
-          id="PincodeInput-{{ section_id }}"
-        >
-        <button type="button" class="pincode-checker__button button button--secondary">Check</button>
-      </div>
-      <div class="pincode-checker__row pincode-checker__row--chip" hidden>
-        <span class="pincode-checker__chip">
-          <svg
-            class="pincode-checker__chip-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <span class="visually-hidden">Showing fitment centres for pincode</span>
-          <span data-chip-pin></span>
-        </span>
-        <button type="button" class="pincode-checker__change link">Change</button>
-      </div>
-      <div class="pincode-checker__result" role="status" aria-live="polite" data-result>
-        {%- if block.settings.idle_text != blank -%}
-          <div class="pincode-checker__idle">{{ block.settings.idle_text }}</div>
-        {%- endif -%}
+      <div class="pincode-checker__line">
+        <div class="pincode-checker__row pincode-checker__row--input">
+          <div class="pincode-checker__group">
+            <span class="pincode-checker__group-icon" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                focusable="false"
+              >
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </span>
+            <input
+              class="pincode-checker__input"
+              type="text"
+              inputmode="numeric"
+              autocomplete="postal-code"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              placeholder="Pincode"
+              aria-label="Delivery pincode"
+              id="PincodeInput-{{ section_id }}"
+            >
+            <button type="button" class="pincode-checker__button button button--secondary" aria-label="Check">
+              <span class="pincode-checker__button-label">Check</span>
+              <span class="pincode-checker__button-icon pincode-checker__button-icon--check" aria-hidden="true">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  focusable="false"
+                >
+                  <circle cx="11" cy="11" r="7"/>
+                  <path d="m21 21-4.3-4.3"/>
+                </svg>
+              </span>
+              <span class="pincode-checker__button-icon pincode-checker__button-icon--change" aria-hidden="true">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  focusable="false"
+                >
+                  <path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                </svg>
+              </span>
+              <div class="loading__spinner hidden">
+                {{- 'loading-spinner.svg' | inline_asset_content -}}
+              </div>
+            </button>
+          </div>
+        </div>
+        <div class="pincode-checker__result" role="status" aria-live="polite" data-result>
+          {%- if block.settings.idle_text != blank -%}
+            <div class="pincode-checker__idle">{{ block.settings.idle_text }}</div>
+          {%- endif -%}
+        </div>
       </div>
     </div>
   </div>
