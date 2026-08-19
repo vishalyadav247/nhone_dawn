@@ -10,7 +10,7 @@
 
 .pincode-checker__card {
   border: 0.1rem solid #f78641;
-  border-radius: 0.8rem;
+  border-radius: 13px;
   padding: 1.2rem;
   background-color: rgba(var(--color-foreground), 0.02);
 }
