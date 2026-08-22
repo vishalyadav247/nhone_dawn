@@ -12,6 +12,17 @@
     "banner_section_4ipiEf": {
       "type": "banner-section",
       "blocks": {
+        "image_NtLWxx": {
+          "type": "image",
+          "name": "Banner - Drive in Style",
+          "settings": {
+            "image_desktop": "shopify://shop_images/ChatGPT_Image_Aug_22_2026_01_18_18_PM.png",
+            "image_mobile": "shopify://shop_images/ChatGPT_Image_Aug_22_2026_01_28_01_PM.png",
+            "image_alt": "Image description",
+            "image_url": "",
+            "open_in_new_tab": false
+          }
+        },
         "image_rULdyn": {
           "type": "image",
           "name": "Excellence Motion",
@@ -34,17 +45,6 @@
             "open_in_new_tab": false
           }
         },
-        "image_NtLWxx": {
-          "type": "image",
-          "name": "Banner - Drive in Style",
-          "settings": {
-            "image_desktop": "shopify://shop_images/ChatGPT_Image_Aug_22_2026_01_18_18_PM.png",
-            "image_mobile": "shopify://shop_images/ChatGPT_Image_Aug_22_2026_01_28_01_PM.png",
-            "image_alt": "Image description",
-            "image_url": "",
-            "open_in_new_tab": false
-          }
-        },
         "image_wbH8x3": {
           "type": "image",
           "name": "Banner - Provision led",
@@ -58,9 +58,9 @@
         }
       },
       "block_order": [
+        "image_NtLWxx",
         "image_rULdyn",
         "image_qbPDUU",
-        "image_NtLWxx",
         "image_wbH8x3"
       ],
       "settings": {
