@@ -22,19 +22,19 @@
           align-items:center;
           text-decoration:none;
           svg{
-            fill:#757575;
+            fill:var(--nh-muted);
           }
           > span{
           font-size:10px;
-          color:#757575;
+          color:var(--nh-muted);
           }
           &.active{
             svg{
-              fill:#7b059f;
+              fill:var(--nh-brand);
             }
             > span{
             font-size:10px;
-            color:#7b059f;
+            color:var(--nh-brand);
             }
 
             {% comment %} &:before{
@@ -42,7 +42,7 @@
               display: block;
               width: 76px;
               height: 2px;
-              background: #7b059f;
+              background: var(--nh-brand);
               top: -7px;
               position: absolute;
             } {% endcomment %}
@@ -50,11 +50,11 @@
         }
         #cart-icon-bubble{
           svg{
-            stroke:#757575;
+            stroke:var(--nh-muted);
           }
           &.active{
             svg{
-              stroke:#7b059f;
+              stroke:var(--nh-brand);
             }
           }
         }

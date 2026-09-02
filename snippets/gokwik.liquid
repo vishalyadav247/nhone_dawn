@@ -121,7 +121,7 @@ gokwikCheckoutButtons.forEach(function(button) {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: {{ settings.priClr }};
+    background: var(--nh-brand);
     position: relative;
     cursor: pointer;
     padding: 5px 10px;
@@ -186,7 +186,7 @@ gokwikCheckoutButtons.forEach(function(button) {
   {% endif %}
   {% if settings.goBuynowEnable %}
    #gokwik-buy-now {
-    background: {{ settings.btnBClr }};
+    background: var(--nh-brand);
     width: 100%;
     color: {{ settings.btnTextClr }};
     cursor: pointer;
@@ -271,7 +271,7 @@ gokwikCheckoutButtons.forEach(function(button) {
       right: 0;
       justify-content: center;
       align-items: center;
-      background:{{ settings.priClr }};
+      background:var(--nh-brand);
       border-radius:2.5rem;
     }
   .cir-loader,

@@ -8,6 +8,118 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "color",
+        "id": "nh_brand_color",
+        "label": "Brand colour (primary / CTA)",
+        "info": "The main NH ONE orange. Drives the announcement bar, the product-page pincode button, link hover, outline-button hover, and every button that has no colour of its own set below.",
+        "default": "#E99A2B"
+      },
+      {
+        "type": "color",
+        "id": "nh_brand_secondary_color",
+        "label": "Brand colour — secondary",
+        "info": "Accent colour: the \"Hot\" offer badge on product cards, the section-heading underline, and the breadcrumb separators and current page name.",
+        "default": "#F5A623"
+      },
+      {
+        "type": "header",
+        "content": "Primary button"
+      },
+      {
+        "type": "paragraph",
+        "content": "Leave these empty to follow the brand colour above. Set them to give the primary button its own colour, independent of the brand. Every button darkens itself on hover, so there is no hover colour to set."
+      },
+      {
+        "type": "color",
+        "id": "nh_btn_primary_bg",
+        "label": "Primary button background",
+        "info": "Empty = same as Brand colour."
+      },
+      {
+        "type": "color",
+        "id": "nh_btn_primary_label",
+        "label": "Primary button text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Secondary button"
+      },
+      {
+        "type": "paragraph",
+        "content": "Used for the footer \"Subscribe Us\" button, the cart line-item delete button and the blog \"Read more\" button."
+      },
+      {
+        "type": "color",
+        "id": "nh_btn_secondary_bg",
+        "label": "Secondary button background",
+        "default": "#171717"
+      },
+      {
+        "type": "color",
+        "id": "nh_btn_secondary_label",
+        "label": "Secondary button text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Outline button"
+      },
+      {
+        "type": "paragraph",
+        "content": "Used for Add to Cart on product cards. The border and text turn the brand colour on hover."
+      },
+      {
+        "type": "color",
+        "id": "nh_btn_outline_border",
+        "label": "Outline button border",
+        "default": "#E5E5E5"
+      },
+      {
+        "type": "color",
+        "id": "nh_btn_outline_label",
+        "label": "Outline button text",
+        "default": "#171717"
+      },
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "paragraph",
+        "content": "Applies to the light sections of the store. Text on the orange announcement bar and on dark sections stays white."
+      },
+      {
+        "type": "color",
+        "id": "nh_heading_color",
+        "label": "Headings",
+        "info": "All headings (h1–h6) and section titles.",
+        "default": "#171717"
+      },
+      {
+        "type": "color",
+        "id": "nh_body_color",
+        "label": "Body text",
+        "info": "Paragraphs, product titles, links and all other default text.",
+        "default": "#333333"
+      },
+      {
+        "type": "color",
+        "id": "nh_muted_color",
+        "label": "Secondary / muted text",
+        "info": "Small print: captions, vendor, review counts, tax note, SKU, slider counters and the mobile bottom menu labels.",
+        "default": "#7A7A7A"
+      },
+      {
+        "type": "paragraph",
+        "content": "Links have no separate setting: they use the body text colour and turn the brand colour on hover."
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.logo.name",
     "settings": [
       {
@@ -36,6 +148,10 @@
   {
     "name": "t:settings_schema.colors.name",
     "settings": [
+      {
+        "type": "paragraph",
+        "content": "Brand colours, buttons and text are set in the Brand section above — change them there. The schemes below still control section backgrounds, links and shadows. The \"Button\" and \"Button label\" pickers in schemes 1, 2, 4 and 5 have no effect: those follow the Brand settings."
+      },
       {
         "type": "color_scheme_group",
         "id": "color_schemes",
@@ -1537,6 +1653,7 @@
       "type": "color",
       "id": "priClr",
       "label": "Primary Color",
+      "info": "No longer used — the checkout button follows the brand colour (--nh-brand-rgb in assets/style.css).",
       "default": "#000000"
     },
     {
@@ -1565,6 +1682,7 @@
       "type": "color",
       "id": "btnBClr",
       "label": "Background Color",
+      "info": "No longer used — the Buy Now button follows the brand colour (--nh-brand-rgb in assets/style.css).",
       "default": "#000000"
     },
     {
@@ -1600,13 +1718,13 @@
       "type": "color",
       "id": "cardBuynowBgClr",
       "label": "Card Buy Now Background Color",
-      "default": "#FF8A00"
+      "info": "Leave empty to follow the brand colour (--nh-brand in style.css)."
     },
     {
       "type": "color",
       "id": "cardBuynowTextClr",
       "label": "Card Buy Now Text Color",
-      "default": "#FFFFFF"
+      "info": "Leave empty to follow the primary button text colour (Theme settings > Brand)."
     },
     {
       "type": "header",

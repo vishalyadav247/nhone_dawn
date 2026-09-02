@@ -143,7 +143,7 @@
   .blog-tag {
     font-size: 12px;
     font-weight: bold;
-    color: #001f4d;
+    color: var(--nh-heading);
     text-transform: uppercase;
     margin-bottom: 6px;
   }
@@ -154,31 +154,38 @@
     text-transform: uppercase;
   }
 
+  /* The whole card is a link, so hovering it tints the title with the brand
+     colour — the same hover every other link on the site uses. */
+  .blog-slide a:hover .blog-heading {
+    color: var(--nh-link-hover);
+  }
+
   .blog-date {
     font-size: 13px;
-    color: #888;
+    color: var(--nh-muted);
     margin:5px 0 0 0;
   }
 
   .blog-excerpt {
     font-size: 14px;
-    color: #333;
+    color: var(--nh-body);
     margin-bottom:0;
   }
 
   .read-more {
     align-self: flex-start;
-    background: #001f4d;
-    color: #fff;
+    background: var(--nh-btn-secondary-bg);
+    color: var(--nh-btn-secondary-label);
     padding: 10px 20px;
     border-radius: 4px;
     text-decoration: none;
     font-weight: 500;
-    transition: background 0.3s;
+    transition: filter 0.3s ease;
   }
 
+  /* Same automatic darkening as every other button on the site. */
   .read-more:hover {
-    background: #003366;
+    filter: brightness(var(--nh-btn-hover-darken, 0.88));
   }
 
   /* Owl Carousel Custom Nav Placement */

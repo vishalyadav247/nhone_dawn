@@ -1,21 +1,316 @@
+/* ==========================================================================
+   NH ONE brand tokens
+   Single source of truth for brand colour. Change a value here and it
+   propagates everywhere that uses the tokens below.
+   Reference: .claude/resources/design_theme.jpeg (NH ONE COLOR PALETTE)
+   ========================================================================== */
 :root {
-  --theme-color: #7b059f;
-  --theme-color-secondary: #e9851e;
-  --theme-box-shadow: #b6a3bc;
+  /* --- Brand -------------------------------------------------------------
+     PREFERRED: change the brand colour in the theme editor at
+     Theme settings > NH ONE Brand. That emits an overriding :root block in
+     layout/theme.liquid (after this file loads) and needs no code change.
+
+     The values below are the FALLBACK defaults, used only when the matching
+     theme setting is left empty.
+
+     --nh-brand-rgb is R,G,B components (not hex) because Dawn's colour
+     schemes consume `rgb(var(--color-button))`; --nh-brand derives from it,
+     so both notations stay in sync automatically.
+     ---------------------------------------------------------------------- */
+  --nh-brand-rgb: 233, 154, 43;             /* #e99a2b - primary brand / CTA */
+  --nh-brand: rgb(var(--nh-brand-rgb));     /* derived - do not hand-edit    */
+
+  --nh-on-brand: #ffffff;         /* Text/icons sitting ON a brand-coloured
+                                     surface (footer subscribe, pincode Check).
+                                     Deliberately NOT --nh-btn-primary-label:
+                                     those surfaces follow the brand, so they
+                                     must not inherit the button's label colour. */
+  /* Secondary brand colour. ONE token covering every accent use: the "Hot"
+     offer badge on product cards, the section-heading underline and the
+     breadcrumb. (Was split into --nh-offer / --nh-accent; merged back on
+     request — they always held the same value.)                            */
+  --nh-brand-secondary: #f5a623;
+
+  /* Links have NO setting of their own, by design: a link is body text, and it
+     turns the brand colour on hover. Both tokens are DERIVED — change "Body
+     text" or "Brand colour" in the theme editor and links follow.
+     --nh-link-rgb stays R,G,B because it drives Dawn's --color-link, which is
+     consumed as rgb(var(--color-link)). Light sections only — links on the
+     orange bar and on dark sections stay white (see the scheme rules below). */
+  --nh-link-rgb: var(--nh-body-rgb);
+  --nh-link: rgb(var(--nh-link-rgb));
+  --nh-link-hover: var(--nh-brand);
+
+  /* --- Ink ---------------------------------------------------------------
+     --nh-body-rgb is R,G,B (not hex) because body text is applied by routing
+     Dawn's --color-foreground through it; --nh-body derives from it so both
+     notations stay in sync. Set these in Theme settings > Brand > Text.     */
+  --nh-heading: #171717;                   /* Headings (dark)               */
+  --nh-body-rgb: 51, 51, 51;               /* #333333 - body text           */
+  --nh-body: rgb(var(--nh-body-rgb));      /* derived - do not hand-edit    */
+  --nh-muted: #7a7a7a;                     /* Secondary / muted text        */
+
+  /* --- Surfaces ----------------------------------------------------------
+     Not merchant-settable (no theme setting): these are structural values,
+     not brand choices. Edit here if they ever need to change.              */
+  --nh-surface: #ffffff;          /* Cards / surfaces                       */
+  --nh-border: #e5e5e5;           /* Borders / dividers                     */
+
+  /* --- Status ------------------------------------------------------------
+     Not merchant-settable yet - these move into the badge settings when the
+     badge work is done.                                                    */
+  --nh-success: #168447;          /* Success / in stock                     */
+  --nh-error: #e53935;            /* Error / out of stock                   */
+
+  /* --- Button roles -----------------------------------------------------
+     The primary button can be set INDEPENDENTLY of the brand colour in
+     Theme settings > Brand > "Primary button". Each falls back to the brand
+     equivalent when its setting is left empty, so by default buttons still
+     track the brand and nothing changes.
+     --nh-btn-primary-bg-rgb is the single value theme.liquid emits: it feeds
+     both the CSS below and Dawn's --color-button (which needs R,G,B).
+
+     There is deliberately NO hover colour token. Every filled button darkens
+     itself on hover via --nh-btn-hover-darken (see "Button hover" below), so
+     a recoloured button always gets a matching hover shade for free.       */
+  --nh-btn-primary-bg: rgb(var(--nh-btn-primary-bg-rgb, var(--nh-brand-rgb)));
+  --nh-btn-primary-label: rgb(var(--nh-btn-primary-label-rgb, 255, 255, 255));
+
+  --nh-btn-secondary-bg: var(--nh-heading);
+  --nh-btn-secondary-label: #ffffff;
+
+  /* Hover darkening applied to every filled button. 1 = no change, 0 = black. */
+  --nh-btn-hover-darken: 0.88;
+
+  --nh-btn-outline-border: var(--nh-border);
+  --nh-btn-outline-border-hover: var(--nh-brand);
+  --nh-btn-outline-label: var(--nh-heading);
+
+  /* --- Badge roles ------------------------------------------------------ */
+  --nh-badge-offer-bg: var(--nh-brand-secondary);
+  --nh-badge-bestseller-bg: var(--nh-heading);
+  --nh-badge-instock-bg: var(--nh-success);
+  --nh-badge-outofstock-bg: var(--nh-error);
+
+  /* --- Legacy aliases ---------------------------------------------------
+     Pre-existing names kept so the ~16 current var() call sites in this
+     file (and site-map.liquid / breadcrumb.liquid) pick up the new brand
+     without edits. Retired once Phase 3 sweeps the hardcoded hexes.       */
+  --theme-color: var(--nh-brand);
+  --theme-color-secondary: var(--nh-brand-secondary);
+  --theme-box-shadow: var(--nh-border);
+
   --font-heading-weight: 600;
+}
+
+/* ==========================================================================
+   Dawn colour-scheme override
+   Dawn builds `--color-button` per scheme from config/settings_data.json in
+   layout/theme.liquid (inline <style>, ~line 128). style.css loads AFTER that
+   block, so these same-specificity rules win on source order and route Dawn's
+   buttons back through --nh-brand-rgb.
+
+   Effect: button colour and button text are controlled ONLY from Theme
+   settings > Brand. The theme editor's per-scheme "Button" and "Button label"
+   pickers no longer have a visible effect for these schemes - that is
+   intentional, not a bug. Everything else in a scheme (background, text,
+   links, shadows) still works normally.
+
+   scheme-3 is deliberately excluded: it is the announcement bar, which is
+   orange-on-white (inverted), so its button must stay white.
+   ========================================================================== */
+.color-scheme-1,
+.color-scheme-2,
+.color-scheme-4,
+.color-scheme-5 {
+  --color-button: var(--nh-btn-primary-bg-rgb, var(--nh-brand-rgb));
+  --color-button-text: var(--nh-btn-primary-label-rgb, 255, 255, 255);
+}
+
+/* Dawn's `.button--secondary` is its OUTLINE variant, and this theme does not
+   use it as one — the PDP Add to Cart gets the class automatically whenever the
+   dynamic checkout button is shown (snippets/buy-buttons.liquid), which is why
+   it looked bordered next to Buy Now.
+
+   Dawn applies it in two ways, and BOTH have to be undone:
+   1. It swaps the button tokens to the scheme's secondary pair — `--color-button`
+      becomes the scheme BACKGROUND (white) and `--color-button-text` its
+      secondary label. Restored to the primary-button tokens below, so the
+      loading spinner and any other consumer stay correct.
+   2. `.button::after` paints a 1px ring built from TWO box-shadow layers —
+      `rgba(--color-button-text, --border-opacity)` and
+      `rgba(--color-button, --alpha-button-background)`. Zeroing --border-opacity
+      only removes the first; the second still drew a white hairline. Removing
+      the whole box-shadow is the only complete fix, hover state included.
+
+   Buttons that genuinely need a border draw a real one — see the card Add to
+   Cart in component-card-buy-now.css, which also overrides the tokens below at
+   a higher specificity, so its outline style is unaffected.
+
+   `.button--tertiary` is deliberately left alone: it already resolves to a
+   fully transparent ring (--alpha-button-background is 0 for it), and it is
+   used for small icon buttons, not CTAs. */
+.button--secondary {
+  --color-button: var(--nh-btn-primary-bg-rgb, var(--nh-brand-rgb));
+  --color-button-text: var(--nh-btn-primary-label-rgb, 255, 255, 255);
+}
+
+.button--secondary::after,
+.button--secondary:not([disabled]):hover::after {
+  box-shadow: none;
+}
+
+/* Link colour. Dawn's --color-link is taken from each scheme's "Secondary
+   button label" picker; this routes it to the body-text colour instead.
+   Light schemes only — schemes 3/4/5 are the orange bar and the dark bands,
+   whose links must stay white.
+   `:root:root` (0,2,0) is needed as well because Dawn emits scheme 1 as
+   `:root, .color-scheme-1`, so links outside a section wrapper inherit from
+   :root and a plain `:root` rule here would only tie, not win. */
+:root:root,
+.color-scheme-1,
+.color-scheme-2 {
+  --color-link: var(--nh-link-rgb);
+}
+
+/* Link hover. Dawn's own `.link--text:hover` just fades the text to 75%; this
+   replaces it with the brand colour. Same specificity as Dawn's rule, and
+   style.css loads after base.css, so it wins on source order — no !important. */
+.link:hover,
+.link--text:hover,
+.list-menu__item--link:hover,
+.customer a:hover {
+  color: var(--nh-link-hover);
 }
 
 .header__menu-item{
   font-size:1.5rem;
 }
 
-.utility-bar,
+/* Announcement / utility bar is ALWAYS the brand colour — it has no setting of
+   its own by design. Deliberately not the primary button colour: it is a bar,
+   not a button, and must not drift when the button is recoloured.
+   `.gradient` (0,1,0) paints it via --gradient-background, so this uses 0,2,0
+   to win regardless of stylesheet order. */
+.utility-bar.gradient {
+  background: var(--nh-brand);
+}
+
+/* NOTE: .utility-bar is deliberately NOT in the button list below — it used to be,
+   which made the announcement bar take the primary button's colour. */
 .button,
 .shopify-challenge__button,
 .customer .button,
 .page-content button {
-  background: #7b059f;
-  color: #fff;
+  background: var(--nh-btn-primary-bg);
+  color: var(--nh-btn-primary-label);
+}
+
+/* ==========================================================================
+   Button hover
+   One rule for every filled button: fade to a darker shade of whatever colour
+   the button already has. There is no hover colour setting to keep in sync —
+   recolour a button in the theme editor and its hover follows automatically.
+   Tune the depth with --nh-btn-hover-darken above.
+
+   Covers the GoKwik checkout / Buy Now buttons too: the vendor snippet
+   (snippets/gokwik.liquid) paints them but defines no hover state, and these
+   selectors outrank the vendor's (`.gokwik-checkout button` = 0,1,1,
+   `#gokwik-buy-now` = 1,0,0) so cascade order does not matter.
+
+   .utility-bar is excluded on purpose: it is a bar, not a button.
+   ========================================================================== */
+.button,
+.shopify-challenge__button,
+.customer .button,
+.page-content button,
+.shopify-payment-button__button--unbranded,
+.gokwik-checkout button,
+#gokwik-buy-now,
+.newsletter-form__field-wrapper button,
+.pincode-checker__group .pincode-checker__button {
+  transition: filter var(--duration-short, 0.1s) ease, box-shadow var(--duration-short, 0.1s) ease;
+}
+
+.button:hover,
+.shopify-challenge__button:hover,
+.customer .button:hover,
+.page-content button:hover,
+.shopify-payment-button__button--unbranded:hover,
+.gokwik-checkout button:hover,
+#gokwik-buy-now:hover,
+.newsletter-form__field-wrapper button:hover,
+.pincode-checker__group .pincode-checker__button:hover {
+  filter: brightness(var(--nh-btn-hover-darken));
+}
+
+/* Outline buttons are white — darkening them would just turn them grey.
+   They signal hover with a brand-coloured border and label instead. */
+.quick-add__submit:hover {
+  filter: none;
+}
+
+/* ==========================================================================
+   Text colours
+   Dawn has no separate heading token: every piece of text is painted from the
+   colour scheme's --color-foreground. So body text is applied by routing
+   --color-foreground through --nh-body-rgb (schemes 1 and 2 only — 3/4/5 are
+   the inverted orange and dark schemes, whose text must stay white), and
+   headings/muted text get explicit rules on top.
+   Set all three in Theme settings > Brand > Text.
+   ========================================================================== */
+/* Body text. Dawn emits scheme 1 as `:root, .color-scheme-1 {...}`, so content
+   that sits outside a section wrapper inherits --color-foreground straight from
+   :root — hence the doubled `:root:root` (0,2,0), which outranks it. Sections
+   using schemes 3/4/5 re-declare --color-foreground on their own wrapper, so
+   they are unaffected and their text stays white. */
+:root:root {
+  --color-foreground: var(--nh-body-rgb);
+}
+
+.color-scheme-1,
+.color-scheme-2 {
+  --color-foreground: var(--nh-body-rgb);
+}
+
+/* Headings and muted text are applied through an inherited "ink" variable
+   rather than long per-scheme selector lists: light schemes resolve it to the
+   merchant's colour, inverted schemes resolve it back to their own foreground
+   so white-on-dark and white-on-orange keep working. */
+:root:root,
+.color-scheme-1,
+.color-scheme-2 {
+  --nh-heading-ink: var(--nh-heading);
+  --nh-muted-ink: var(--nh-muted);
+}
+
+.color-scheme-3,
+.color-scheme-4,
+.color-scheme-5 {
+  --nh-heading-ink: rgb(var(--color-foreground));
+  --nh-muted-ink: rgba(var(--color-foreground), 0.75);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h0, .h1, .h2, .h3, .h4, .h5,
+.sectionHeading {
+  color: var(--nh-heading-ink);
+}
+
+/* Secondary / muted text — deliberately a NARROW list of genuine small print.
+   Do not add the bare .caption / .caption-large classes here: Dawn also puts
+   them on the header navigation, form status messages and the cart footer,
+   which are primary text and would turn grey. */
+.card__information .caption-with-letter-spacing,
+.card__information .rating-count,
+.rating-count,
+.product__tax,
+.product__sku,
+.tax-note,
+.quantity__rules,
+.slider-counter,
+.footer__content-bottom-wrapper small {
+  color: var(--nh-muted-ink);
 }
 
 .product-count-vertical,
@@ -58,7 +353,7 @@
 .all-products-collection p {
   margin: 0;
   text-decoration: none !important;
-  color: #7b059f;
+  color: var(--nh-brand);
 }
 
 .carousel-collections a,
@@ -73,7 +368,7 @@
 
 .cart-count-bubble {
   color: #fff !important;
-  background: #7b059f;
+  background: var(--nh-brand);
 }
 
 #short-description p {
@@ -81,7 +376,7 @@
 }
 
 .share-button__button {
-  color: #7b059f !important;
+  color: var(--nh-brand) !important;
 }
 
 .product-pages.payment-icons {
@@ -89,7 +384,7 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  border: 1px solid #7b059f;
+  border: 1px solid var(--nh-brand);
   flex-wrap:wrap;
 }
 
@@ -307,7 +602,7 @@ a.carousel-link {
 }
 
 h3.card__heading {
-  color: #7b059f;
+  color: var(--nh-brand);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -463,9 +758,12 @@ h3.card__heading {
 
   .button,
   .shopify-payment-button__button--unbranded {
-    background-color: #7b059f !important;
-    color: #fff !important;
+    background-color: var(--nh-btn-primary-bg) !important;
+    color: var(--nh-btn-primary-label) !important;
   }
+
+  /* No hover rule needed here: hover is a `filter`, which nothing above can
+     override, so the single rule near the top of this file covers desktop too. */
 
   .shopify-policy__container {
     max-width: 70%;
@@ -535,7 +833,7 @@ h3.card__heading {
   }
 
   .discount-badge {
-    background-color: rgb(123, 5, 159);
+    background-color: var(--nh-brand);
     color: #fff;
     font-weight: 600;
   }
@@ -621,9 +919,12 @@ h3.card__heading {
   }
 
   .newsletter-form__field-wrapper {
+    /* "Subscribe Us" is a SECONDARY button (Theme settings > Brand >
+       Secondary button). !important is needed to beat the desktop .button
+       block further down this file. Hover darkening is handled globally. */
     button {
-      background-color:var(--theme-color-secondary) !important;
-      color: #fff;
+      background-color: var(--nh-btn-secondary-bg) !important;
+      color: var(--nh-btn-secondary-label) !important;
     }
   }
 
@@ -942,7 +1243,7 @@ header {
         }
 
         .header__menu-item:hover {
-          color: var(--theme-color);
+          color: var(--nh-link-hover);
         }
 
         details[open]:hover>.header__menu-item {
@@ -1128,8 +1429,10 @@ header {
    z-index:2 !important;
 }
 
+/* Footer link hover. The normal state is set in assets/section-footer.css —
+   that file loads after this one, so it must own the non-hover colour. */
 .footer-block__details-content .list-menu__item--link:hover {
-  color: var(--theme-color-secondary) !important;
+  color: var(--nh-link-hover) !important;
   font-weight: 500;
 }
 
@@ -1140,12 +1443,22 @@ header {
 .product-card-wrapper {
   .card__content{
   
+    /* Outline button per the NH ONE design spec: white fill, hairline border,
+       dark label, brand-coloured border + label on hover. Dawn's ::before /
+       ::after border pseudo-elements are hidden, so the hairline is a real
+       `border` rather than Dawn's box-shadow trick. */
     .quick-add__submit{
-      background-color:#2b2b2c !important;
+      background-color: var(--nh-surface) !important;
+      color: var(--nh-btn-outline-label) !important;
+      border: 1px solid var(--nh-btn-outline-border) !important;
       min-height:36px;
       border-radius:4px;
       &::before,&::after{
         display:none;
+      }
+      &:hover{
+        border-color: var(--nh-btn-outline-border-hover) !important;
+        color: var(--nh-brand) !important;
       }
     }
   }
@@ -1545,49 +1858,91 @@ predictive-search:not([loading]) .predictive-search__loading-state{
 }
 
 .header__submenu.list-menu{
-  /* Width */
+  /* Narrower than the site-wide scrollbar because the submenu is a tight
+     column; the colours come from the global rules further down this file. */
   .child-navitem::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
   }
 
-  /* Track */
-  .child-navitem::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  /* Thumb */
   .child-navitem::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 5px;
-    transition: 0.3s ease;
-  }
-
-  /* Hover Effect */
-  .child-navitem::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    border-width: 1px;
   }
 }
 
+
+/* ==========================================================================
+   Equal-height product cards in sliders
+   Owl lays its items out as floats, so each card was only as tall as its own
+   content and cards sitting side by side came out ragged. Making the stage a
+   flex row lets every item stretch to the tallest one; Dawn's card CSS already
+   does the rest (`.card-wrapper { height: 100% }`, `.card:not(.ratio)` is a
+   flex column, `.card__content { flex-grow: 1 }`), so prices and buttons line
+   up along the bottom.
+
+   Scoped with :has() so it only touches sliders that actually contain product
+   cards — the banner, car-logo and blog sliders keep their own layout. This
+   also means any future product slider is covered without another rule.
+   `.owl-item > *` covers both shapes in use: the card rendered directly into
+   the item (home-page-tabbber, tabber-top-selling-product) and the card wrapped
+   in an <li> (featured-collection, related-products).
+   ========================================================================== */
+.owl-carousel .owl-stage:has(.product-card-wrapper) {
+  display: flex;
+  align-items: stretch;
+}
+
+.owl-carousel .owl-stage:has(.product-card-wrapper) .owl-item {
+  display: flex;
+  height: auto;
+}
+
+.owl-carousel .owl-stage:has(.product-card-wrapper) .owl-item > * {
+  width: 100%;
+}
+
+/* No horizontal page scroll. Carousel sections are briefly wider than the
+   viewport while jQuery/Owl are still loading (the nav arrows sit at
+   left/right: -30px, and Owl only wraps the track in an overflow:hidden stage
+   once it initialises), which flashes a horizontal scrollbar on load.
+   `clip` rather than `hidden` on purpose: `hidden` would turn the root into a
+   scroll container and break `position: sticky` (the sticky header). Vertical
+   scrolling is untouched. */
+html {
+  overflow-x: clip;
+}
+
+/* ==========================================================================
+   Scrollbars
+   One quiet, neutral scrollbar everywhere — page and inner scrollers alike.
+   Deliberately NOT brand-coloured: a scrollbar is chrome, not branding, and
+   tinting it fights whatever the page content is doing.
+   The thumb is drawn inside a transparent border via background-clip, so the
+   visible bar is a slim rounded 4px pill sitting in a 10px gutter.
+   ========================================================================== */
+html {
+  scrollbar-width: thin;                              /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;   /* thumb / track */
+}
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #fedeffff;
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-/* Thumb */
 ::-webkit-scrollbar-thumb {
-  background: #250b2bff;
-  border-radius: 2px;
-  transition: 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.25);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 10px;
 }
 
-/* Hover Effect */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background-color: rgba(0, 0, 0, 0.45);
 }
 
 body{
@@ -1630,11 +1985,11 @@ body{
 
 /* Individual Tag Styles */
 .sale-badge {
-  background:#e53935; /* red */
+  background: var(--nh-badge-outofstock-bg); /* --nh-error, same value as before */
 }
 
 .hot-badge {
-  background:#ff9800; /* orange */
+  background: var(--nh-badge-offer-bg); /* --nh-brand-secondary */
 }
 
 .new-badge {
@@ -1808,9 +2163,13 @@ background-color: transparent !important;
     height: 36px !important;
     margin-left:10px;
 
+    /* Cart line-item delete is a SECONDARY button (Theme settings > Brand >
+       Secondary button). !important beats the desktop .button block. */
     .button{
       min-width:100% !important;
       min-height:100% !important;
+      background-color: var(--nh-btn-secondary-bg) !important;
+      color: var(--nh-btn-secondary-label) !important;
     }
   }
 }

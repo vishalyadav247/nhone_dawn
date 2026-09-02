@@ -9,7 +9,7 @@
 }
 
 .pincode-checker__card {
-  border: 0.1rem solid #f78641;
+  border: 0.1rem solid var(--nh-brand);
   border-radius: 13px;
   padding: 1.2rem;
   background-color: rgba(var(--color-foreground), 0.02);
@@ -76,7 +76,7 @@
 }
 
 .pincode-checker__group:has(.pincode-checker__input--invalid) {
-  border-color: #c8102e;
+  border-color: var(--nh-error);
   box-shadow: 0 0 0 0.15rem rgba(200, 16, 46, 0.15);
   animation: pincode-shake 0.3s linear;
 }
@@ -134,6 +134,18 @@
   }
 }
 
+/* The Check/Change button carries Dawn's `.button` class, so without this it
+   picks up the PRIMARY button colour from style.css. It should follow the BRAND.
+   `!important` is required because the desktop `@media (min-width:991px)` rule in
+   style.css paints `.button` with `!important`. */
+.pincode-checker__group .pincode-checker__button {
+  background-color: var(--nh-brand) !important;
+  color: var(--nh-on-brand) !important;
+}
+
+/* Hover is the site-wide `filter: brightness()` darkening declared in
+   style.css — nothing colour-specific is needed here. */
+
 .pincode-checker__button {
   position: relative;
   height: 100%;
@@ -190,7 +202,7 @@
 
 pincode-checker[data-state='found'] .pincode-checker__result {
   background-color: #e9f7ef;
-  color: #0a6c3c;
+  color: var(--nh-success);
 }
 
 pincode-checker[data-state='notfound'] .pincode-checker__result {
@@ -259,7 +271,7 @@ pincode-checker[data-state='notfound'] .pincode-checker__result {
 }
 
 .pincode-checker__bar--found:focus-visible {
-  outline: 0.2rem solid #0a6c3c;
+  outline: 0.2rem solid var(--nh-success);
   outline-offset: 0.2rem;
   border-radius: 0.2rem;
 }
@@ -496,7 +508,7 @@ pincode-checker[data-state='notfound'] .pincode-checker__result {
 .pincode-centre-card__badge {
   display: inline-block;
   background-color: #e9f7ef;
-  color: #0a6c3c;
+  color: var(--nh-success);
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;

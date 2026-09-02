@@ -302,7 +302,7 @@ a.product__text {
 }
 
 .product__info-container > *:first-child {
-  color:#ff6f05;
+  color:var(--nh-brand);
   font-weight:700;
 }
 
