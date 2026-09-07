@@ -378,7 +378,7 @@
       ],
       "name": "Brand Carousel",
       "settings": {
-        "section-heading": "Shop By Brand",
+        "section-heading": "Shop By | Brand",
         "reverse_direction": false,
         "color_scheme": "",
         "secondary_background": false
@@ -503,7 +503,7 @@
       ],
       "name": "Tabber Section",
       "settings": {
-        "title": "FEATURED PRODUCTS"
+        "title": "FEATURED | PRODUCTS"
       }
     },
     "featured_box_section_W7xpeT": {
