@@ -220,7 +220,7 @@
       ],
       "name": "Category Carousel",
       "settings": {
-        "section-heading": "Shop By Category",
+        "section-heading": "Shop By | Category",
         "reverse_direction": true,
         "color_scheme": "",
         "secondary_background": false
