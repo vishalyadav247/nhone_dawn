@@ -53,7 +53,11 @@
   /* --- Surfaces ----------------------------------------------------------
      Not merchant-settable (no theme setting): these are structural values,
      not brand choices. Edit here if they ever need to change.              */
-  --nh-surface: #ffffff;          /* Cards / surfaces                       */
+  /* --nh-surface-rgb is R,G,B components so translucent surfaces (the frosted
+     mobile tab bar, for one) can set their own alpha. --nh-surface keeps the
+     exact value it always had; it is now derived from it. */
+  --nh-surface-rgb: 255, 255, 255;
+  --nh-surface: rgb(var(--nh-surface-rgb));  /* Cards / surfaces            */
   --nh-border: #e5e5e5;           /* Borders / dividers                     */
 
   /* --- Status ------------------------------------------------------------
@@ -1008,12 +1012,15 @@ h3.card__heading {
   }
 
   .newsletter-form__field-wrapper {
-    /* "Subscribe Us" is a SECONDARY button (Theme settings > Brand >
-       Secondary button). !important is needed to beat the desktop .button
-       block further down this file. Hover darkening is handled globally. */
+    /* "Subscribe Us" is a PRIMARY button (Theme settings > Brand > Primary
+       button), so the footer's only call to action carries the brand colour
+       rather than sitting dark. !important is needed to beat the desktop
+       .button block further down this file. Hover darkening is handled
+       globally — see "Button hover" near the top of this file, which already
+       lists `.newsletter-form__field-wrapper button:hover`. */
     button {
-      background-color: var(--nh-btn-secondary-bg) !important;
-      color: var(--nh-btn-secondary-label) !important;
+      background-color: var(--nh-btn-primary-bg) !important;
+      color: var(--nh-btn-primary-label) !important;
     }
   }
 
@@ -2436,4 +2443,216 @@ background-color: transparent !important;
 
 .section-heading--display .section-heading__accent {
   color: var(--nh-brand);
+}
+
+/* --- Mobile header rails --------------------------------------------------
+   The left of the header carries one 4.4rem control (the drawer button); the
+   right carries two (search + wishlist). Dawn sizes those two grid tracks from
+   their own content, so the left rail collapsed to 32px while the right stayed
+   at 88px — and the logo, which sits in the middle track, ended up ~28px left
+   of the screen's centre. That is the mismatch you see on a phone.
+
+   Giving both rails the same `1fr` track with a floor wide enough for the icon
+   cluster centres the logo at every width. When the screen is too narrow for a
+   full-size logo, the middle track shrinks instead of the rails, and the logo
+   follows it down (it is already `max-width: 100%`), so the icons never
+   collide with it.
+
+   --nh-header-rail is that floor: two 4.4rem icons, no gap. Raise it if the
+   header ever grows a third icon on the right. */
+@media screen and (max-width: 989px) {
+  .header {
+    --nh-header-rail: 8.8rem;
+  }
+
+  /* `header--mobile-left` is the merchant's "logo on the left" option in the
+     theme editor. That layout is deliberately asymmetric — leave it alone. */
+  .header:not(.header--mobile-left) {
+    grid-template-columns:
+      minmax(var(--nh-header-rail), 1fr)
+      auto
+      minmax(var(--nh-header-rail), 1fr);
+  }
+
+  /* Dawn pulls the drawer button 1.2rem to the left (the inline <style> in
+     sections/header.liquid) so its glyph lines up with page text. Once the two
+     rails are symmetric that just parks the burger ~12px further out than the
+     icons on the right sit in, so the rails align on their boxes instead and
+     both glyphs end up the same distance from their own edge. */
+  .header:not(.header--mobile-left) header-drawer {
+    justify-self: start;
+    margin-left: 0;
+  }
+
+  .header:not(.header--mobile-left) .header__icons {
+    justify-self: end;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  /* 3rem of gutter is right for page content but leaves the header cramped:
+     with it a 390px screen has only 330px for two 8.8rem rails plus the logo,
+     which forces the logo to shrink. A tighter gutter is also the better
+     phone header — the tap targets sit nearer the edges, where thumbs are. */
+  .header.page-width {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* --- Mobile bottom tab bar -------------------------------------------------
+   Markup: snippets/mobile-bottom-menu.liquid (these rules used to live in an
+   inline <style> there, shipping on every page view).
+
+   The five glyphs were previously a mix of filled and outlined icons at five
+   different sizes, which is most of why the bar read as unfinished. They are
+   now one solid set, all 2rem tall, all painted with `currentColor` — so a
+   single colour change moves icon and label together.
+
+   The bar itself is frosted rather than flat white, matching the mobile menu
+   drawer's masthead and footer, and the active tab gets a brand-tinted pill
+   behind its icon (the Material-style indicator) instead of the old bare
+   colour swap. */
+.mobile-bottom-menu {
+  display: none;
+}
+
+@media screen and (max-width: 767px) {
+  .mobile-bottom-menu {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 11;
+    display: flex;
+    align-items: stretch;
+    min-height: 5.6rem;
+    padding: 0 0.4rem;
+    /* Keeps the row clear of the iPhone home indicator. Falls back to 0 on
+       every browser that doesn't know env(). */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: rgba(var(--nh-surface-rgb), 0.88);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-top: 1px solid rgba(var(--nh-body-rgb), 0.08);
+    box-shadow: 0 -0.4rem 2rem rgba(0, 0, 0, 0.06);
+  }
+
+  /* Frosting needs something behind it. Where it isn't supported the bar has
+     to be opaque or the footer shows through the text. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .mobile-bottom-menu {
+      background-color: var(--nh-surface);
+    }
+  }
+
+  .mobile-bottom-menu__item {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.6rem 0.2rem;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-bottom-menu__item:hover,
+  .mobile-bottom-menu__item:focus {
+    text-decoration: none;
+  }
+
+  .mobile-bottom-menu__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 2.6rem;
+    border-radius: 999px;
+    color: var(--nh-muted);
+    transition: color var(--duration-short, 0.1s) ease,
+                background-color var(--duration-short, 0.1s) ease,
+                transform var(--duration-short, 0.1s) ease;
+  }
+
+  /* Sized by height so the five different viewBox ratios still read as one
+     set: every glyph lands 2rem tall, and the wider ones (the truck) simply
+     get wider. */
+  .mobile-bottom-menu__icon svg {
+    display: block;
+    height: 2rem;
+    width: auto;
+    max-width: 2.6rem;
+    fill: currentColor;
+  }
+
+  /* Home, Account and Contact are outline glyphs drawn as filled paths; Basket
+     and Track Order are line icons. `1.7` in a 24-unit viewBox rendered 2rem
+     tall lands on ~1.4px, which is the weight the filled outlines already
+     have, so the five read as one set. */
+  .mobile-bottom-menu__icon svg.icon--line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-bottom-menu__label {
+    font-size: 1rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: var(--nh-muted);
+    white-space: nowrap;
+    transition: color var(--duration-short, 0.1s) ease;
+  }
+
+  .mobile-bottom-menu__item.is-active .mobile-bottom-menu__icon {
+    color: var(--nh-brand);
+    background-color: rgba(var(--nh-brand-rgb), 0.12);
+  }
+
+  .mobile-bottom-menu__item.is-active .mobile-bottom-menu__label {
+    color: var(--nh-brand);
+    font-weight: 500;
+  }
+
+  /* Touch feedback — the bar has no hover state to lean on. */
+  .mobile-bottom-menu__item:active .mobile-bottom-menu__icon {
+    transform: scale(0.92);
+  }
+
+  /* The badge is appended to the <a> by assets/main.js, not to the icon, so it
+     is positioned from the centre of the item rather than from the icon box.
+     `bottom`/`left` undo the header placement in base.css. */
+  .mobile-bottom-menu .cart-count-bubble {
+    top: 0.4rem;
+    bottom: auto;
+    left: 50%;
+    margin-left: 0.4rem;
+    height: 1.7rem;
+    min-width: 1.7rem;
+    width: auto;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background-color: var(--nh-brand);
+    color: var(--nh-on-brand);
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 0.2rem rgba(var(--nh-surface-rgb), 0.88);
+  }
+
+  /* Clears the fixed bar so the last of the footer is reachable. */
+  footer {
+    margin-bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media screen and (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .mobile-bottom-menu__item:active .mobile-bottom-menu__icon {
+    transform: none;
+  }
 }

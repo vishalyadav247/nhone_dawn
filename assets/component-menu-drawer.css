@@ -24,7 +24,7 @@
   left: -100%;
   top: 0;
   width: 100%;
-  max-width: var(--nh-drawer-width, 310px);
+  max-width: var(--nh-drawer-width, 340px);
   transition:all 0.2s ease-out;
   z-index: 3;
   background-color: rgb(var(--color-background));
@@ -260,7 +260,7 @@ header-drawer {
   /* Drawer width, and the two heights the sticky offsets are built from: the
      masthead, and one level-one row (1.6rem text + 1.3rem padding either
      side), so an open brand parks directly under the category above it. */
-  --nh-drawer-width: 310px;
+  --nh-drawer-width: 340px;
   --nh-drawer-header-height: 5.6rem;
   --nh-drawer-row-height: 4.9rem;
 
@@ -437,7 +437,7 @@ header-drawer .icon.icon-close {
   display: block;
   position: fixed;
   top: 0;
-  left: calc(min(100vw, var(--nh-drawer-width, 310px)) - 4.6rem);
+  left: calc(min(100vw, var(--nh-drawer-width, 340px)) - 4.6rem);
   width: 2.2rem;
   height: var(--nh-drawer-header-height);
   padding: 0 0.4rem;
