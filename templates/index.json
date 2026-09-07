@@ -220,7 +220,7 @@
       ],
       "name": "Category Carousel",
       "settings": {
-        "section-heading": "Shop By Category",
+        "section-heading": "Shop By | Category",
         "reverse_direction": true,
         "color_scheme": "",
         "secondary_background": false
@@ -378,7 +378,7 @@
       ],
       "name": "Brand Carousel",
       "settings": {
-        "section-heading": "Shop By Brand",
+        "section-heading": "Shop By | Brand",
         "reverse_direction": false,
         "color_scheme": "",
         "secondary_background": false
@@ -503,7 +503,7 @@
       ],
       "name": "Tabber Section",
       "settings": {
-        "title": "FEATURED PRODUCTS"
+        "title": "FEATURED | PRODUCTS"
       }
     },
     "featured_box_section_W7xpeT": {
@@ -609,7 +609,7 @@
       ],
       "name": "Tabber Section",
       "settings": {
-        "title": "TOP-SELLING  PRODUCTS"
+        "title": "TOP SELLING | PRODUCTS"
       }
     },
     "content_section_NJcANL": {
@@ -642,7 +642,7 @@
       "type": "custom-blog-slider",
       "name": "Custom Blog Slider",
       "settings": {
-        "heading": "LATEST FROM OUR BLOGS",
+        "heading": "LATEST FROM | OUR BLOGS",
         "content": "",
         "blog": "blog",
         "article_limit": 6
