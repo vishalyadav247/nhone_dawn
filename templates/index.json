@@ -642,7 +642,7 @@
       "type": "custom-blog-slider",
       "name": "Custom Blog Slider",
       "settings": {
-        "heading": "LATEST FROM OUR BLOGS",
+        "heading": "LATEST FROM | OUR BLOGS",
         "content": "",
         "blog": "blog",
         "article_limit": 6
