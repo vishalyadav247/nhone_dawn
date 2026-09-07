@@ -92,6 +92,27 @@
   --nh-badge-instock-bg: var(--nh-success);
   --nh-badge-outofstock-bg: var(--nh-error);
 
+  /* --- Navigation panels -------------------------------------------------
+     Shared shape for the desktop dropdown panel and its second-level flyout.
+     Structural, not brand: the merchant's global popup radius/shadow settings
+     are 0 and 5% here, which left the menu looking like an unstyled box, so
+     the navigation carries its own depth. Colours still come from the brand
+     tokens above, so recolouring the theme recolours the menu.             */
+  --nh-nav-panel-width: 25rem;
+  --nh-nav-flyout-width: 23rem;
+  /* Width of the hover bridge over the category list's scrollbar, so the
+     pointer never crosses a dead strip on its way into the flyout. Must clear
+     the widest scrollbar in play — 8px in Chromium (set with the panel rules),
+     ~11px for Firefox's `thin`. */
+  --nh-nav-flyout-reach: 1.4rem;
+  /* One height for every dropdown, so the header behaves the same wherever you
+     hover; longer menus scroll rather than growing. Capped against the window
+     so it never runs off the bottom of a short laptop screen — the header
+     bottom sits at roughly 18rem, leaving a margin below. */
+  --nh-nav-panel-height: min(52rem, calc(100vh - 23rem));
+  --nh-nav-panel-pad: 0.8rem;
+  --nh-nav-panel-shadow: 0 1.2rem 3.2rem rgba(0, 0, 0, 0.12), 0 0.2rem 0.6rem rgba(0, 0, 0, 0.06);
+
   /* --- Legacy aliases ---------------------------------------------------
      Pre-existing names kept so the ~16 current var() call sites in this
      file (and site-map.liquid / breadcrumb.liquid) pick up the new brand
@@ -779,27 +800,95 @@ h3.card__heading {
     text-align: center;
   }
 
-  .child-navitem {
+  /* Second-level flyout — the panel that opens to the RIGHT of a category.
+
+     It used to be `position: fixed` with a hardcoded `right: -171px` and a
+     FIXED `height: 500px`, so a category with five links still drew a
+     500px-tall empty white box, and the placement only worked by accident
+     (the open animation leaves a transform on the parent panel, which is what
+     was containing the "fixed" element — remove that transform and the flyout
+     would jump to the top of the viewport).
+
+     Now it starts level with the category it belongs to and is only as tall as
+     its own links, growing at most to the panel's height — never above its top
+     or below its bottom. A brand with 30 models fills that height and scrolls;
+     one with five is a short box beside its row.
+
+     Starting level with the row is also what makes it reachable. The menu
+     opens on hover (assets/main.js, "js for open submenu on hover") and that
+     code closes a category the moment the pointer leaves its <details>. A
+     flyout pinned to the top of the panel forces a diagonal trip up and across
+     the other categories, and every one the pointer crosses opens itself and
+     closes the one you were aiming at.
+
+     The `top` below is the no-JS fallback. The real offset is set by
+     `positionNavFlyout` in assets/main.js, which cannot be done in CSS: the
+     flyout is positioned against the PANEL (it has to be — its containing
+     block must sit outside the scrolling list, or the list's overflow would
+     clip it away), so CSS has no way to express "level with my row". */
+  /* Scoped through .header__inline-menu on purpose: Dawn's
+     `.header__submenu .header__submenu` (0,2,0) sets a grey wash, vertical
+     padding and `margin: 1rem 0` on a nested submenu, and a bare
+     `.child-navitem` (0,1,0) loses to it — the margin would inset the flyout
+     from the panel's top and bottom edges. */
+  .header__inline-menu .child-navitem {
     position: absolute;
-    right: -171px;
-    background-color: #fff !important;
-    top: -10px;
-    width: 170px;
-    height: 500px;
-    overflow-y: scroll;
-    border-radius: var(--popup-corner-radius);
-    border-color: rgba(var(--color-foreground), var(--popup-border-opacity));
-    border-style: solid;
-    border-width: 0 1px 1px 0;
-    box-shadow: var(--popup-shadow-horizontal-offset) var(--popup-shadow-vertical-offset) var(--popup-shadow-blur-radius) rgba(var(--color-shadow), var(--popup-shadow-opacity));
+    /* Flush against the panel's outer edge, so the pair reads as one wide menu
+       with a single divider between the columns. */
+    left: 100%;
+    right: auto;
+    top: 0;
+    bottom: auto;
+    height: auto;
+    /* Never taller than the panel it hangs off. 100% resolves against the
+       panel's padding box, which has a definite height. */
+    max-height: 100%;
+    width: var(--nh-nav-flyout-width);
+    /* Dawn gives a nested .header__submenu `margin: 1rem 0` and a grey wash. */
+    margin: 0;
+    padding: var(--nh-nav-panel-pad) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-color: var(--nh-surface) !important;
+    border: 1px solid var(--nh-border);
+    border-radius: 0;
+    box-shadow: var(--nh-nav-panel-shadow);
   }
 
-  .nav-item {
-    position: relative;
+  /* Hover bridge across the category list's scrollbar.
+
+     A row stops where the list's content box stops, so the scrollbar sits in
+     between the row and the flyout it opens. Crossing it leaves the row's
+     <details> and the hover code closes the flyout before the pointer gets
+     there. This strip belongs to that <details>, so the scrollbar stops being
+     a dead zone while the flyout is open.
+
+     It is positioned against the panel — `.nav-item` and its <details> are
+     both static — which also means the list's `overflow` does not clip it and
+     it does not scroll away. `--nh-fly-top` / `--nh-fly-height` are set by
+     `positionNavFlyout` in assets/main.js so the strip covers exactly the
+     flyout's own span and nothing above or below it. */
+  .nav-item > details[open]::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: var(--nh-fly-top, 0);
+    height: var(--nh-fly-height, 0);
+    width: var(--nh-nav-flyout-reach);
   }
 
-  .nav-item details[open]>.header__menu-item .icon-caret {
-    transform: rotate(270deg);
+  /* A category that opens sideways always points sideways. The caret used to
+     hang down when closed and swing right only once open, which read as
+     "expands downwards". */
+  .nav-item > details > .header__menu-item .icon-caret {
+    transform: rotate(-90deg);
+    opacity: 0.45;
+    transition: opacity var(--duration-short, 0.1s) ease;
+  }
+
+  .nav-item > details[open] > .header__menu-item .icon-caret,
+  .nav-item > details > .header__menu-item:hover .icon-caret {
+    opacity: 1;
   }
 }
 
@@ -1755,14 +1844,9 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   }
 }
 
-@media (min-width: 991px) {
-    .child-navitem {
-        position: fixed;
-        height: 100%;
-        max-height: 517px;
-        overflow-y:auto;
-    }
-}
+/* The flyout used to be re-declared `position: fixed; height: 100%` here, which
+   is what produced the tall empty panel. Its sizing now lives with the rest of
+   its rules in the min-width:768px block above — one place, content-sized. */
 
 /* collection */
 .list-collect-product-grid-wrapper{
@@ -1857,17 +1941,129 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   }
 }
 
-.header__submenu.list-menu{
-  /* Narrower than the site-wide scrollbar because the submenu is a tight
-     column; the colours come from the global rules further down this file. */
-  .child-navitem::-webkit-scrollbar {
-    width: 6px;
+/* ==========================================================================
+   Desktop navigation panels
+
+   The header runs in "dropdown" mode (Theme editor > Header > Desktop menu),
+   so the two panels below are what shoppers actually see:
+
+     .parent-navitem  the first-level panel that drops under a nav item
+     .child-navitem   the second-level flyout that opens to its right
+
+   Dawn styles both from the merchant's global Popup settings, which are set to
+   radius 0 / 5% shadow on this store — the result was a hard-edged white
+   rectangle with no visible depth and no hover feedback beyond an underline.
+   These rules give the panels one consistent shape and a brand-tinted hover,
+   without touching how the menu opens (still a <details> click).
+
+   Widths matter here: the first-level panel was 20rem, narrow enough that
+   "WIRE KIT / CONNECTOR", "WINDOW SUN SHADES" and "MOBILE / LAPTOP CHARGER"
+   each wrapped onto two lines and pushed the panel to ~684px tall — past the
+   fold on a 768px laptop. At 25rem they fit on one line and the panel loses
+   roughly 90px of height.
+   ========================================================================== */
+@media screen and (min-width: 990px) {
+  /* The panel box. Every menu gets the SAME height whatever it contains, so
+     the header behaves identically wherever you hover; entries past that
+     height scroll. The height is capped against the window as well so it never
+     reaches the bottom of a short screen. */
+  .header__inline-menu .parent-navitem-panel {
+    width: var(--nh-nav-panel-width);
+    height: var(--nh-nav-panel-height);
+    padding: 0;
+    background-color: var(--nh-surface);
+    border: 1px solid var(--nh-border);
+    border-radius: 0;
+    box-shadow: var(--nh-nav-panel-shadow);
+    /* Must stay visible: this box is the flyout's containing block, and the
+       flyout lives outside it. */
+    overflow: visible;
   }
 
-  .child-navitem::-webkit-scrollbar-thumb {
-    border-width: 1px;
+  /* The scrolling category list, edge to edge inside the panel. */
+  .header__inline-menu .parent-navitem {
+    height: 100%;
+    margin: 0;
+    padding: var(--nh-nav-panel-pad) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
+
+  /* Both lists show a real scrollbar when there is more below — a fade alone
+     did not read as "keep going". It is narrower than the site-wide one
+     because these are tight columns. */
+  .header__inline-menu .parent-navitem,
+  .header__inline-menu .child-navitem {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.28) transparent;
+  }
+
+  .header__inline-menu .parent-navitem::-webkit-scrollbar,
+  .header__inline-menu .child-navitem::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .header__inline-menu .parent-navitem::-webkit-scrollbar-track,
+  .header__inline-menu .child-navitem::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .header__inline-menu .parent-navitem::-webkit-scrollbar-thumb,
+  .header__inline-menu .child-navitem::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.28);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 8px;
+  }
+
+  .header__inline-menu .parent-navitem::-webkit-scrollbar-thumb:hover,
+  .header__inline-menu .child-navitem::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+
+  /* Rows. Full width of the panel, so the hover fill reaches the edge the
+     flyout opens from. */
+  .parent-navitem .header__menu-item,
+  .child-navitem .header__menu-item {
+    padding: 0.75rem 1.4rem;
+    color: var(--nh-link);
+    transition:
+      background-color var(--duration-short, 0.1s) ease,
+      color var(--duration-short, 0.1s) ease;
+  }
+
+  /* Hover replaces Dawn's underline with a brand-tinted pill — the same
+     language the rest of the site uses for an interactive surface. */
+  .parent-navitem .header__menu-item:hover,
+  .child-navitem .header__menu-item:hover,
+  .nav-item > details[open] > .header__menu-item {
+    background-color: rgba(var(--nh-brand-rgb), 0.1);
+    color: var(--nh-brand);
+    text-decoration: none;
+  }
+
+  /* The page you are on, marked by fill rather than an underline that competes
+     with the hover state. */
+  .parent-navitem .list-menu__item--active,
+  .child-navitem .list-menu__item--active {
+    color: var(--nh-brand);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  /* Top-level item whose panel is open: brand colour instead of the default
+     underline, so the trigger and the panel below it read as one thing. */
+  .header__inline-menu > ul > li > header-menu > details[open] > .header__menu-item {
+    color: var(--nh-brand);
+    text-decoration: none;
+  }
+
 }
+
+/* The navigation panels used to style their own scrollbars here. They now hide
+   them and use scroll shadows instead — a visible scrollbar sits in the few
+   pixels between a category row and the flyout it opens, and the pointer
+   crossing that strip closes the flyout before it can be reached. */
 
 
 /* ==========================================================================
@@ -2210,4 +2406,34 @@ background-color: transparent !important;
       }
     }
   }
+}
+
+/* --- Display section heading ---------------------------------------------
+   Matches the NH ONE design spec (.claude/resources/design_theme.jpeg): title
+   case, two-tone — the heading colour with the LAST word in the brand colour —
+   and no underline. Used by the car carousel, the product tabber, top
+   categories and the blog slider via snippets/section-heading.liquid, which
+   does the title-casing and wraps the accent word.
+
+   NOTE: font-size is deliberately NOT set. The heading keeps the size it has
+   always had (Dawn's `h2` — `calc(var(--font-heading-scale) * 2rem)`) at every
+   breakpoint. This rule only changes colour, case and alignment.
+
+   The three overrides below undo `.section-heading` rules further up this file
+   that would otherwise fight the design: `text-transform: uppercase` (which
+   would re-capitalise the title-cased text), the 2px `::after` underline on
+   desktop, and the centring on mobile. */
+.section-heading--display {
+  color: var(--nh-heading-ink);
+  text-transform: none;
+  text-align: left;
+  padding-bottom: 0;
+}
+
+.section-heading--display::after {
+  content: none;
+}
+
+.section-heading--display .section-heading__accent {
+  color: var(--nh-brand);
 }

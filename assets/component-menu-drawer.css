@@ -24,7 +24,7 @@
   left: -100%;
   top: 0;
   width: 100%;
-  max-width:310px;
+  max-width: var(--nh-drawer-width, 310px);
   transition:all 0.2s ease-out;
   z-index: 3;
   background-color: rgb(var(--color-background));
@@ -217,7 +217,7 @@ header-drawer{
   }
   .menu-drawer__utility-links{
     display:flex;
-    justify-content:space-between;
+    justify-content:end;
     padding-top: 0;
     padding-bottom: 0;
     align-items: center;
@@ -243,3 +243,354 @@ header-drawer{
 }
 
 
+
+/* ==========================================================================
+   Mobile drawer — level hierarchy
+
+   The drawer nests three levels deep (Shop By Car > Maruti Suzuki > ALTO K10),
+   but every row was rendered at the same size, the same indent and the same
+   full-width divider, so once two levels were open there was nothing on screen
+   telling you how deep you were or which parent you had opened. These rules
+   step the indent, size and weight down per level and tint the open branch, so
+   the path you took stays visible while you scroll a long model list.
+   ========================================================================== */
+header-drawer {
+  /* Indent step per level. */
+  --nh-drawer-indent: 1.6rem;
+  /* Drawer width, and the two heights the sticky offsets are built from: the
+     masthead, and one level-one row (1.6rem text + 1.3rem padding either
+     side), so an open brand parks directly under the category above it. */
+  --nh-drawer-width: 310px;
+  --nh-drawer-header-height: 5.6rem;
+  --nh-drawer-row-height: 4.9rem;
+
+  .menu-drawer__menu-item {
+    border-bottom-color: rgba(var(--color-foreground), 0.06);
+    transition: color var(--duration-short, 0.1s) ease, background-color var(--duration-short, 0.1s) ease;
+  }
+
+  /* Level one: the anchor of the whole drawer, so it stays the largest, the
+     heaviest and the roomiest. */
+  .level-one > li > a,
+  .level-one > li > details > summary {
+    font-size: 1.6rem;
+    font-weight: 600;
+    padding-top: 1.3rem;
+    padding-bottom: 1.3rem;
+  }
+
+  /* Level two and three step in and down. The indent is what makes the
+     hierarchy readable — the colours alone never did. Rows also get shorter
+     with depth: "Shop By Car" holds 15 brands, but Maruti Suzuki alone holds
+     ~30 models, and the shorter the row the less of that list is scrolling. */
+  .level-two > li > a,
+  .level-two > li > details > summary {
+    font-size: 1.5rem;
+    padding-left: calc(3rem + var(--nh-drawer-indent));
+    padding-top: 1.05rem;
+    padding-bottom: 1.05rem;
+  }
+
+  .level-three > li > a {
+    font-size: 1.4rem;
+    font-weight: 400;
+    padding-left: calc(3rem + var(--nh-drawer-indent) * 2);
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
+    /* Was a hardcoded rgba(0,0,0,0.5), which ignored the brand link colour. */
+    color: rgba(var(--nh-link-rgb), 0.6);
+  }
+
+  .level-three > li > a:hover {
+    color: var(--nh-link-hover);
+  }
+
+  /* The branch you opened: one brand rail down the left edge plus a faint
+     wash, so a long list of models still reads as "inside Maruti Suzuki".
+     Only level one carries the rail — the level-two panel sits inside it at
+     the same left edge, so a second rail would just overprint the first.
+     Depth is signalled by the wash instead, and the two washes stack. */
+  .level-one > li > details[open] > .menu-drawer__submenu {
+    background-color: rgba(var(--nh-brand-rgb), 0.025);
+    box-shadow: inset 0.3rem 0 0 rgba(var(--nh-brand-rgb), 0.35);
+  }
+
+  .level-two > li > details[open] > .menu-drawer__submenu {
+    background-color: rgba(var(--nh-brand-rgb), 0.03);
+  }
+
+  /* The row you tapped to get here, and the page you are on. */
+  .level-one > li > details[open] > summary,
+  .level-two > li > details[open] > summary {
+    color: var(--nh-brand);
+  }
+
+  .menu-drawer__menu-item--active {
+    color: var(--nh-brand);
+    font-weight: 600;
+  }
+
+  /* The caret already rotates between -90deg (closed) and 0deg (open) further
+     up this file; give it the same brand tint as its open row. */
+  details[open] > summary .svg-wrapper {
+    color: var(--nh-brand);
+  }
+}
+
+/* ==========================================================================
+   Mobile drawer — glass accents and app-style structure
+
+   The drawer covers the whole viewport on mobile, so it is the only thing on
+   screen while it is open and was carrying no branding, no way out, and no
+   sense of where you were 30 models deep in a list.
+
+   The glass is deliberately limited to the two bars — the masthead and the
+   utility footer — and to the scrim. `backdrop-filter` repaints whatever is
+   behind it every frame, so putting it on the scrolling list (240 entries on
+   this store) is exactly where a mid-range Android drops frames; and body text
+   over a blurred product photo is not reliably legible. Two small fixed bars
+   blur cheaply, and the list underneath stays on a solid surface.
+
+   Everything reuses what the theme already ships: the scrim is Dawn's own
+   `.header__icon--menu::before`, the close control is Dawn's hamburger-to-X
+   swap parked in the masthead, and the footer is Dawn's utility links block.
+   ========================================================================== */
+
+/* Scrim. Dawn already paints it in the scheme's foreground colour; this only
+   deepens it and drops the page out of focus behind the drawer. */
+.header__icon--menu[aria-expanded='true']:before {
+  background: rgba(var(--color-foreground), 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.menu-drawer {
+  /* The masthead supplies the top spacing now. */
+  padding-top: 0;
+  box-shadow: 0.4rem 0 3.2rem rgba(0, 0, 0, 0.18);
+}
+
+/* The drawer is the scroll container (`overflow-x: hidden` computes overflow-y
+   to auto), so `position: sticky` inside it sticks to the drawer's own top and
+   bottom. These two need to grow past 100% for that to work over the full
+   scroll — at exactly 100% the sticky range stops where the viewport does. */
+#menu-drawer .menu-drawer__inner-container {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 100%;
+}
+
+/* Grows to fill whatever the masthead leaves, so the utility footer sits on
+   the bottom edge on a short menu and is pushed down by a long one. A second
+   `min-height: 100%` here would not work — it would resolve against a parent
+   that is now auto-height, and it would overflow by the masthead's height
+   anyway. */
+#menu-drawer .menu-drawer__navigation-container {
+  height: auto;
+  flex: 1 0 auto;
+}
+
+/* --- Masthead ----------------------------------------------------------- */
+.menu-drawer__header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  min-height: var(--nh-drawer-header-height);
+  padding: 0 1.6rem 0 3rem;
+  /* Kept close to opaque on purpose. The store's logo is a JPG, so it carries
+     a baked-in white block; against a more transparent bar that block reads as
+     a visible rectangle once tinted content scrolls behind it. A transparent
+     PNG or SVG logo would allow a much glassier bar here. */
+  background-color: rgba(var(--color-background), 0.86);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+.menu-drawer__logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.menu-drawer__logo-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-height: 3.6rem;
+  max-width: 17rem;
+}
+
+.menu-drawer__logo-text {
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--nh-heading);
+}
+
+/* Dawn's close control. It lives in the header summary outside the drawer, so
+   it is positioned rather than moved — parked at the right of the masthead,
+   which is why the offset is measured from the drawer's own width. */
+header-drawer .icon.icon-close {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: calc(min(100vw, var(--nh-drawer-width, 310px)) - 4.6rem);
+  width: 2.2rem;
+  height: var(--nh-drawer-header-height);
+  padding: 0 0.4rem;
+  z-index: 111;
+  stroke: var(--nh-heading);
+  color: var(--nh-heading);
+}
+
+/* --- Sticky context ----------------------------------------------------- */
+/* Scrolling 30 models, the brand you opened would disappear off the top and
+   you would lose track of which one you were in. The open rows stack under the
+   masthead instead, so the trail stays on screen: NH ONE / Shop By Car /
+   Maruti Suzuki. They need an opaque background — content scrolls under them. */
+header-drawer .level-one > li > details[open] > summary {
+  position: sticky;
+  top: var(--nh-drawer-header-height);
+  z-index: 3;
+  background-color: rgb(var(--color-background));
+}
+
+/* An open submenu must stop clipping, or the brand row below sticks to the
+   wrong thing. `overflow: hidden` makes an element the sticky container for
+   everything inside it, so a level-two summary measured its `top` from the
+   submenu wrapper rather than from the drawer and ended up pushed down by the
+   offset twice over — rendering below its own model list. The wrapper only
+   needs to clip while it is closed (max-height: 0); open, it clips nothing. */
+header-drawer details[open] > .menu-drawer__submenu {
+  overflow: visible;
+}
+
+header-drawer .level-two > li > details[open] > summary {
+  position: sticky;
+  top: calc(var(--nh-drawer-header-height) + var(--nh-drawer-row-height));
+  z-index: 2;
+  /* Opaque, but tinted to match the branch wash it sits on top of — the tint
+     is layered over a solid background rather than being transparent, or the
+     models would scroll through it. */
+  background-color: rgb(var(--color-background));
+  background-image: linear-gradient(rgba(var(--nh-brand-rgb), 0.055), rgba(var(--nh-brand-rgb), 0.055));
+}
+
+/* --- Icons -------------------------------------------------------------- */
+.menu-drawer__label {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  min-width: 0;
+}
+
+.menu-drawer__icon {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nh-brand);
+}
+
+.menu-drawer__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Several of Dawn's icons (icon-washing and icon-truck among them) ship with
+   no `fill` attribute at all and rely on whatever context they are dropped
+   into, so they painted solid black here while the custom ones took the brand
+   colour. A CSS `fill` beats an SVG presentation attribute, so this brings the
+   whole set — theme icons and custom ones — onto `color`. */
+.menu-drawer__icon svg,
+.menu-drawer__icon svg * {
+  fill: currentColor;
+}
+
+/* Dawn's own icons carry their own viewBox proportions; normalise them so a
+   theme icon and a custom one sit on the same optical size. */
+.menu-drawer__icon .icon-padlock,
+.menu-drawer__icon .icon-discount,
+.menu-drawer__icon .icon-perfume {
+  width: 85%;
+  height: 85%;
+}
+
+/* --- Utility footer ----------------------------------------------------- */
+header-drawer .menu-drawer__utility-links {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  margin-top: auto;
+  padding: 0 2rem;
+  background-color: rgba(var(--color-foreground), 0.04);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-top: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+/* Where backdrop-filter is unavailable the bars must not go see-through. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .menu-drawer__header,
+  header-drawer .menu-drawer__utility-links {
+    background-color: rgb(var(--color-background));
+  }
+}
+
+/* --- Drawer ground ------------------------------------------------------ */
+/* Frosted panels only read as frosted when there is something behind them to
+   blur, and a flat white drawer gave the masthead and footer nothing to work
+   with. Two soft brand washes — warm at the top where the masthead sits, a
+   cooler echo down by the footer — give both bars something to pick up, and
+   give the drawer some depth of its own without putting any colour behind the
+   body text: at these alphas the ground stays above 10:1 against the row text.
+
+   `background-attachment: scroll` is doing real work here. The drawer is the
+   scroll container, and on a scroll container `scroll` pins the background to
+   the box while `local` would drag it along with the content — so the washes
+   stay put behind the list rather than sliding away on the first flick.
+
+   Addressed by id so it beats Dawn's `.gradient`, whose `background`
+   shorthand would otherwise wipe the image out. */
+#menu-drawer.menu-drawer {
+  background-color: rgb(var(--color-background));
+  background-image:
+    /* Warm corner behind the masthead. */
+    radial-gradient(135% 42% at 0% 0%, rgba(var(--nh-brand-rgb), 0.34), rgba(var(--nh-brand-rgb), 0) 72%),
+    /* Deeper pool behind the utility footer. */
+    radial-gradient(115% 34% at 100% 100%, rgba(var(--nh-brand-rgb), 0.26), rgba(var(--nh-brand-rgb), 0) 74%),
+    /* A quiet vertical tint so the middle of the list is not flat white
+       between the two corners. */
+    linear-gradient(to bottom, rgba(var(--nh-brand-rgb), 0.07), rgba(var(--nh-brand-rgb), 0.03));
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+/* The rows have to stop painting over that ground. Dawn gives an open submenu
+   an opaque background; these keep the wash and let the drawer show through,
+   so the list reads as sitting ON the ground rather than as a white slab. */
+header-drawer .menu-drawer__menu-item {
+  background-color: transparent;
+}
+
+/* The two sticky rows stay opaque — content scrolls underneath them — but they
+   pick up a blur so they read as the same glass as the masthead rather than as
+   flat white bars dropped on a coloured ground. */
+header-drawer .level-one > li > details[open] > summary,
+header-drawer .level-two > li > details[open] > summary {
+  background-color: rgba(var(--color-background), 0.82);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  header-drawer .level-one > li > details[open] > summary,
+  header-drawer .level-two > li > details[open] > summary {
+    background-color: rgb(var(--color-background));
+  }
+}

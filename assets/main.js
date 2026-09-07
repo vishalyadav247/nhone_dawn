@@ -236,6 +236,7 @@ detailsItems.forEach(item => {
 	item.addEventListener("mouseover", () => {
 
 		item.setAttribute("open", true);
+		positionNavFlyout(item);
 		ulElement.addEventListener("mouseleave", () => {
 			item.removeAttribute("open");
 		});
@@ -244,6 +245,60 @@ detailsItems.forEach(item => {
 			item.removeAttribute("open");
 		});
 
+	});
+});
+
+/* Line the second-level flyout up with the category it belongs to.
+
+   CSS cannot do this. The flyout has to be positioned against the panel
+   (.parent-navitem-panel) rather than against its own row: the category list
+   inside the panel scrolls, and an absolutely positioned box only escapes an
+   ancestor's overflow when its containing block sits outside that ancestor.
+   Positioned against the panel, "level with my row" is not something CSS can
+   express — so the offset is measured here.
+
+   The offset is clamped to the panel, which is what keeps a long flyout from
+   running above the menu's top or below its bottom; anything past that height
+   scrolls inside the flyout (max-height: 100% in the stylesheet). Clamping
+   also keeps the row inside the flyout's vertical span, so reaching it stays a
+   straight sideways move — the hover code above closes a category as soon as
+   the pointer leaves it, and a diagonal trip across the other categories would
+   open those instead. */
+function positionNavFlyout(details) {
+	const flyout = details.querySelector(":scope > .child-navitem");
+	if (!flyout) return;
+
+	const panel = details.closest(".parent-navitem-panel");
+	const row = details.querySelector(":scope > summary");
+	if (!panel || !row) return;
+
+	// Measure against the panel's padding box, which is what `top` resolves to.
+	const panelTop = panel.getBoundingClientRect().top + panel.clientTop;
+	const rowTop = row.getBoundingClientRect().top;
+	const height = flyout.offsetHeight;
+	const top = Math.max(0, Math.min(rowTop - panelTop, panel.clientHeight - height));
+
+	flyout.style.top = top + "px";
+
+	// The hover bridge over the list's scrollbar is a pseudo element, so it is
+	// handed the same span through custom properties. See `.nav-item >
+	// details[open]::after` in assets/style.css.
+	details.style.setProperty("--nh-fly-top", top + "px");
+	details.style.setProperty("--nh-fly-height", height + "px");
+}
+
+/* Scrolling the category list moves the rows but not the flyout, which is
+   anchored to the panel. Re-measure so the open one keeps its row. */
+inlineMenu.querySelectorAll(".parent-navitem").forEach(list => {
+	let queued = false;
+	list.addEventListener("scroll", () => {
+		if (queued) return;
+		queued = true;
+		requestAnimationFrame(() => {
+			queued = false;
+			const open = list.querySelector(".nav-item > details[open]");
+			if (open) positionNavFlyout(open);
+		});
 	});
 });
 
@@ -466,5 +521,71 @@ document.addEventListener('DOMContentLoaded', updateMobileCartBubble);
   observer.observe(document.body, {
     childList: true,
     subtree: true
+  });
+})();
+
+/* Mobile drawer: one branch open at a time.
+
+   Dawn's drawer lets every entry stay expanded, so opening three categories
+   left a scroll containing all of their children at once — on this store that
+   is 240 rows. Opening one entry now closes its siblings and scrolls it up to
+   the sticky slot under the masthead, which is where it is about to park
+   anyway, so the list you asked for starts at the top of the screen.
+
+   Applied at both levels: a single-open first level with a multi-open second
+   level would just move the same pile-up one step down.
+
+   `toggle` does not bubble, so the listener is bound per <details>. Closing a
+   sibling fires its own toggle, hence the early return on a closed element.
+   The classes cleared alongside the attribute are Dawn's own open-state
+   bookkeeping (see MenuDrawer.closeMenuDrawer in global.js). */
+(() => {
+  const drawer = document.querySelector('#menu-drawer');
+  if (!drawer) return;
+
+  const masthead = drawer.querySelector('.menu-drawer__header');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function closeBranch(details) {
+    details.removeAttribute('open');
+    details.classList.remove('menu-opening');
+    details.querySelectorAll('details').forEach((nested) => {
+      nested.removeAttribute('open');
+      nested.classList.remove('menu-opening');
+    });
+    details.querySelectorAll('.submenu-open').forEach((el) => el.classList.remove('submenu-open'));
+    details.querySelectorAll('summary').forEach((s) => s.setAttribute('aria-expanded', 'false'));
+  }
+
+  function revealBranch(details) {
+    const summary = details.querySelector(':scope > summary');
+    if (!summary) return;
+
+    // Scroll the branch to exactly where its own row is about to park, and no
+    // further. That target is the row's sticky `top` — 56px under the masthead
+    // for a category, 105px for a brand, because a brand parks below the
+    // category that is itself still stuck above it. Using the masthead height
+    // for both (as this did) left a brand 49px too high, so the first entry of
+    // its list started life hidden behind the row above it.
+    const stickyTop = parseFloat(getComputedStyle(summary).top);
+    const offset = Number.isNaN(stickyTop) ? masthead ? masthead.offsetHeight : 0 : stickyTop;
+
+    // Measure the <details>, not its <summary>: the summary is sticky, so its
+    // rect reports where it is parked rather than where the branch begins.
+    const top = drawer.scrollTop + details.getBoundingClientRect().top - drawer.getBoundingClientRect().top - offset;
+    drawer.scrollTo({ top: Math.max(0, Math.round(top)), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+  }
+
+  drawer.querySelectorAll('.level-one, .level-two').forEach((list) => {
+    list.querySelectorAll(':scope > li > details').forEach((details) => {
+      details.addEventListener('toggle', () => {
+        if (!details.open) return;
+        list.querySelectorAll(':scope > li > details').forEach((sibling) => {
+          if (sibling !== details && sibling.hasAttribute('open')) closeBranch(sibling);
+        });
+        // Let the closes reflow before measuring where this branch landed.
+        requestAnimationFrame(() => revealBranch(details));
+      });
+    });
   });
 })();

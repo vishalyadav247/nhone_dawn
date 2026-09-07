@@ -1,0 +1,105 @@
+{%- comment -%}
+  Display-style section heading, matching the NH ONE design spec
+  (.claude/resources/design_theme.jpeg): title case, two-tone — the heading
+  colour, with the accented part in the brand colour — and no underline.
+
+  MARKING THE BRAND-COLOURED PART
+  Put a pipe immediately before it in the heading text. Everything after the
+  pipe is brand-coloured; everything before it uses the heading colour:
+
+      "SHOP BY |CATEGORY"      ->  Shop by <brand>Category</brand>
+      "SHOP BY |CAR BRAND"     ->  Shop by <brand>Car Brand</brand>
+      "LATEST FROM |OUR BLOGS" ->  Latest from <brand>Our Blogs</brand>
+
+  The accent can be several words, and spaces around the pipe are optional.
+  A heading with no pipe simply renders entirely in the heading colour.
+
+  Merchants type these headings in caps in the theme editor, so the text is
+  down-cased and re-capitalised word by word here. Short connector words stay
+  lowercase — "Shop by Category", not "Shop By Category" — unless they open the
+  heading or the accented part.
+
+  Accepts:
+  - heading {String} - raw heading text from the section settings.
+
+  Usage:
+  {% render 'section-heading', heading: section.settings.title %}
+{%- endcomment -%}
+
+{%- comment -%}
+  Whitespace normalisation, and it is load-bearing. Headings pasted into the
+  theme editor routinely contain NON-BREAKING spaces (U+00A0) and runs of two
+  or more spaces — this store has both ("FEATURED<U+00A0>PRODUCTS",
+  "TOP-SELLING<U+00A0><U+00A0>PRODUCTS"). Liquid's `split: ' '` matches neither,
+  so without this the whole heading comes back as a single word.
+
+  The first `replace` below takes a LITERAL U+00A0. It looks like an ordinary
+  space in an editor — do not "tidy" it into one, or word splitting silently
+  breaks again. The second pads the pipe so it survives as its own token
+  whether the merchant wrote "BY |CATEGORY" or "BY|CATEGORY". The loop then
+  drops the empty tokens left behind by repeated spaces.
+{%- endcomment -%}
+{%- assign normalised_heading = heading | replace: ' ', ' ' | replace: '|', ' | ' | strip -%}
+{%- assign raw_words = normalised_heading | split: ' ' -%}
+
+{%- assign lead_words = '' -%}
+{%- assign accent_words = '' -%}
+{%- assign in_accent = false -%}
+
+{%- for raw_word in raw_words -%}
+  {%- unless raw_word == blank -%}
+    {%- if raw_word == '|' -%}
+      {%- assign in_accent = true -%}
+    {%- else -%}
+      {%- assign lower_word = raw_word | downcase -%}
+
+      {%- comment -%}
+        A connector keeps its lowercase form, except when it is the first word
+        of the heading or the first word of the accented part.
+      {%- endcomment -%}
+      {%- comment -%}
+        `assign` cannot hold a comparison in Liquid — `assign x = a == b` is a
+        syntax error — so the boolean is set through an if/else.
+      {%- endcomment -%}
+      {%- assign starts_part = false -%}
+      {%- if in_accent -%}
+        {%- if accent_words == blank -%}
+          {%- assign starts_part = true -%}
+        {%- endif -%}
+      {%- else -%}
+        {%- if lead_words == blank -%}
+          {%- assign starts_part = true -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- assign is_connector = false -%}
+      {%- unless starts_part -%}
+        {%- case lower_word -%}
+          {%- when 'by', 'of', 'and', 'the', 'for', 'to', 'in', 'a', 'on', 'with', 'from' -%}
+            {%- assign is_connector = true -%}
+        {%- endcase -%}
+      {%- endunless -%}
+
+      {%- if is_connector -%}
+        {%- assign display_word = lower_word -%}
+      {%- else -%}
+        {%- assign display_word = lower_word | capitalize -%}
+      {%- endif -%}
+
+      {%- if in_accent -%}
+        {%- assign accent_words = accent_words | append: display_word | append: ' ' -%}
+      {%- else -%}
+        {%- assign lead_words = lead_words | append: display_word | append: ' ' -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endunless -%}
+{%- endfor -%}
+
+{%- if lead_words != blank or accent_words != blank -%}
+  <h2 class="section-heading section-heading--display">
+    {{- lead_words -}}
+    {%- if accent_words != blank -%}
+      <span class="section-heading__accent">{{ accent_words | strip }}</span>
+    {%- endif -%}
+  </h2>
+{%- endif -%}

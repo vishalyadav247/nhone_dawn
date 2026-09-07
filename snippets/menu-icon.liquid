@@ -1,0 +1,94 @@
+{%- comment -%}
+  Renders the icon for a top-level menu entry in the mobile drawer.
+
+  Shopify menu links carry no image or icon of their own, and a link_list gives
+  a section no per-link settings to add one, so the icon is chosen from the
+  link's handle. Merchants control WHETHER icons show (Theme editor > Header >
+  Mobile layout > "Show icons in the mobile menu"); which icon a given entry
+  gets is matched here.
+
+  Theme icons are used wherever one fits — they are already in assets/ and are
+  the same solid-fill style. Dawn ships nothing for a car, a category grid, a
+  bulb or a music note, so those four are drawn below in that same style rather
+  than mixing a stroke icon set into a filled one. Anything unrecognised falls
+  back to a neutral dot, which keeps every label on the same left edge.
+
+  Matching order matters: "cleaning & care" contains "car", so it is tested
+  first.
+
+  Accepts:
+  - link {Object} - a link_list link.
+
+  Usage:
+  {% render 'menu-icon', link: link %}
+{%- endcomment -%}
+
+{%- assign key = link.handle | append: ' ' | append: link.title | downcase -%}
+
+{%- liquid
+  assign name = 'fallback'
+  if key contains 'clean' or key contains 'wash' or key contains 'care'
+    assign name = 'washing'
+  elsif key contains 'track' or key contains 'order' or key contains 'shipping'
+    assign name = 'truck'
+  elsif key contains 'warrant' or key contains 'register'
+    assign name = 'padlock'
+  elsif key contains 'offer' or key contains 'deal' or key contains 'sale' or key contains 'coupon'
+    assign name = 'discount'
+  elsif key contains 'perfume' or key contains 'fragrance'
+    assign name = 'perfume'
+  elsif key contains 'bulb' or key contains 'light' or key contains 'lamp' or key contains 'led'
+    assign name = 'bulb'
+  elsif key contains 'music' or key contains 'audio' or key contains 'speaker' or key contains 'sound'
+    assign name = 'music'
+  elsif key contains 'categor' or key contains 'accessor'
+    assign name = 'grid'
+  elsif key contains 'car' or key contains 'vehicle' or key contains 'brand' or key contains 'model'
+    assign name = 'car'
+  endif
+-%}
+
+<span class="menu-drawer__icon svg-wrapper" aria-hidden="true">
+  {%- case name -%}
+    {%- when 'washing' -%}
+      {{- 'icon-washing.svg' | inline_asset_content -}}
+    {%- when 'truck' -%}
+      {{- 'icon-truck.svg' | inline_asset_content -}}
+    {%- when 'padlock' -%}
+      {{- 'icon-padlock.svg' | inline_asset_content -}}
+    {%- when 'discount' -%}
+      {{- 'icon-discount.svg' | inline_asset_content -}}
+    {%- when 'perfume' -%}
+      {{- 'icon-perfume.svg' | inline_asset_content -}}
+    {%- when 'car' -%}
+      <svg class="icon icon-nh-car" viewBox="0 0 20 20" role="presentation" focusable="false">
+        <path fill="currentColor" d="M5.2 4.6A1.75 1.75 0 0 1 6.85 3.5h6.3c.75 0 1.42.48 1.65 1.1L16 8h.75c.69 0 1.25.56 1.25 1.25v3.5c0 .41-.34.75-.75.75H16a2 2 0 1 1-4 0H8a2 2 0 1 1-4 0H2.75a.75.75 0 0 1-.75-.75v-3.5C2 8.56 2.56 8 3.25 8H4zm1.65.4a.25.25 0 0 0-.24.16L5.55 8h8.9l-1.06-2.84a.25.25 0 0 0-.24-.16zM6 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5m8 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5"/>
+      </svg>
+    {%- when 'grid' -%}
+      <svg class="icon icon-nh-grid" viewBox="0 0 20 20" role="presentation" focusable="false">
+        <g fill="currentColor">
+          <rect x="2.5" y="2.5" width="6.5" height="6.5" rx="1.5"/>
+          <rect x="11" y="2.5" width="6.5" height="6.5" rx="1.5"/>
+          <rect x="2.5" y="11" width="6.5" height="6.5" rx="1.5"/>
+          <rect x="11" y="11" width="6.5" height="6.5" rx="1.5"/>
+        </g>
+      </svg>
+    {%- when 'bulb' -%}
+      <svg class="icon icon-nh-bulb" viewBox="0 0 20 20" role="presentation" focusable="false">
+        <path fill="currentColor" d="M10 2a5.5 5.5 0 0 0-3.2 9.97c.4.29.65.72.7 1.2l.06.58h4.88l.06-.58c.05-.48.3-.91.7-1.2A5.5 5.5 0 0 0 10 2M7.75 15.25h4.5V16a1.5 1.5 0 0 1-1.5 1.5h-1.5a1.5 1.5 0 0 1-1.5-1.5z"/>
+      </svg>
+    {%- when 'music' -%}
+      <svg class="icon icon-nh-music" viewBox="0 0 20 20" role="presentation" focusable="false">
+        <g fill="currentColor">
+          <path d="M8 4.9 16.5 3v1.9L8 6.8z"/>
+          <path d="M8 4.9h1.5v8.6H8zM15 3h1.5v7.5H15z"/>
+          <circle cx="6.25" cy="14.5" r="2.25"/>
+          <circle cx="13.25" cy="11.5" r="2.25"/>
+        </g>
+      </svg>
+    {%- else -%}
+      <svg class="icon icon-nh-dot" viewBox="0 0 20 20" role="presentation" focusable="false">
+        <circle cx="10" cy="10" r="3.25" fill="currentColor"/>
+      </svg>
+  {%- endcase -%}
+</span>

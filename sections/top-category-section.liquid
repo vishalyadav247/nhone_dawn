@@ -1,6 +1,6 @@
 <section class="top-categories-section">
   <div class="container page-width">
-    <h2 class="section-heading">Top Categories</h2>
+    {% render 'section-heading', heading: 'Top |Categories' %}
     <div class="top-categories-carousel">
       {% for category in section.blocks %}
         <div class="category-item text-center">

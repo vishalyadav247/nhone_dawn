@@ -8,7 +8,7 @@
     <!-- Tab Navigation -->
     <ul class="tab-nav">
       {% if section.settings.title != blank %}
-        <h2 class="section-heading">{{ section.settings.title }}</h2>
+        {% render 'section-heading', heading: section.settings.title %}
       {% endif %}
       <span class="tab-nav">
         {% for block in section.blocks %}
@@ -229,7 +229,8 @@
       "type": "text",
       "id": "title",
       "label": "Section Title",
-      "default": "Browse By Category"
+      "info": "Put a pipe before the words you want in the brand colour, e.g. \"FEATURED |PRODUCTS\". The pipe itself is not shown.",
+      "default": "Browse By |Category"
     }
   ],
   "blocks": [

@@ -5,7 +5,8 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Section Heading"
+      "label": "Section Heading",
+      "info": "Put a pipe before the words you want in the brand colour, e.g. \"LATEST FROM |OUR BLOGS\". The pipe itself is not shown."
     },
     {
       "type": "richtext",
@@ -35,7 +36,7 @@
 <div class="blog-slider-wrapper">
   <div class="page-width">
     <div class="blog-header">
-      <h2 class="section-heading">{{ section.settings.heading }}</h2>
+      {% render 'section-heading', heading: section.settings.heading %}
       <div class="blog-desc">{{ section.settings.content }}</div>
     </div>
 

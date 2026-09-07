@@ -1,5 +1,5 @@
 <section class="page-width color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
-  <h2 class="section-heading">{{ section.settings['section-heading'] }}</h2>
+  {% render 'section-heading', heading: section.settings['section-heading'] %}
   {% assign textFound = false %}
   <div class="CarCarousel owl-carousel" data-rtl="{{ section.settings.reverse_direction }}">
     {% for block in section.blocks %}
@@ -42,7 +42,8 @@
     {
       "type": "text",
       "id": "section-heading",
-      "label": "Section Heading"
+      "label": "Section Heading",
+      "info": "Put a pipe before the words you want in the brand colour, e.g. \"SHOP BY |CATEGORY\". The pipe itself is not shown."
     },
     {
       "type": "checkbox",
