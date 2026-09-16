@@ -340,9 +340,12 @@
   }
 }
 
+/* Footer menu links follow Theme settings > Brand > Links. This rule lives here
+   rather than in style.css because section-footer.css loads AFTER style.css, so
+   an equal-specificity rule there would lose on source order. */
 .footer-block__details-content .list-menu__item--link,
 .copyright__content a {
-  color: rgba(var(--color-foreground), 0.75);
+  color: var(--nh-link);
 }
 
 .footer-block__details-content .list-menu__item--active {
@@ -353,7 +356,7 @@
 @media screen and (min-width: 750px) {
   .footer-block__details-content .list-menu__item--link:hover,
   .copyright__content a:hover {
-    color: rgb(var(--color-foreground));
+    color: var(--nh-link-hover);
     text-decoration: underline;
     text-underline-offset: 0.3rem;
   }

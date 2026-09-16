@@ -7,8 +7,22 @@
           flex-wrap:wrap;
           gap: 5px;
 
+          /* Separators and the current page keep the secondary brand colour. */
           span{
               color:var(--theme-color-secondary);
+          }
+
+          /* The clickable crumbs (Home, collection, blog) are links: body text
+             colour, brand colour on hover — same as every other link on the
+             site. Theme settings > Brand > Text / Brand colour. */
+          a{
+              color:var(--nh-link);
+              text-decoration:none;
+
+              &:hover{
+                  color:var(--nh-link-hover);
+                  text-decoration:underline;
+              }
           }
 
           @media screen and (max-width:767px){

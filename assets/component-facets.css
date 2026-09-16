@@ -835,7 +835,7 @@ a.active-facets__button.focused .active-facets__button-inner {
   padding-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  color: #7b059f;
+  color: var(--nh-brand);
 }
 
 .mobile-facets__open:hover {

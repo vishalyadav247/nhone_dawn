@@ -341,8 +341,13 @@
       <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
       <style>
         :root {
-          --gk-card-buynow-bg: {{ settings.cardBuynowBgClr | default: '#FF8A00' }};
-          --gk-card-buynow-color: {{ settings.cardBuynowTextClr | default: '#FFFFFF' }};
+          {%- comment -%}
+            The card Buy Now is a PRIMARY call to action, so it defaults to the
+            primary-button tokens (which themselves fall back to the brand).
+            The Gokwik settings stay as an optional per-button override.
+          {%- endcomment -%}
+          --gk-card-buynow-bg: {{ settings.cardBuynowBgClr | default: 'var(--nh-btn-primary-bg)' }};
+          --gk-card-buynow-color: {{ settings.cardBuynowTextClr | default: 'var(--nh-btn-primary-label)' }};
         }
       </style>
     {%- endif -%}
@@ -461,6 +466,75 @@
     {{ 'owl.carousel.min.css' | asset_url | stylesheet_tag }}
     {{ 'owl.theme.default.css' | asset_url | stylesheet_tag }}
     {{ 'style.css' | asset_url | stylesheet_tag }}
+
+    {%- comment -%}
+      NH ONE brand tokens, driven by Theme settings > NH ONE Brand.
+      Emitted AFTER style.css on purpose: same specificity (:root), so source
+      order decides and the merchant's choice overrides the fallback defaults
+      in assets/style.css. --nh-brand-rgb must be R,G,B components because
+      Dawn consumes rgb(var(--color-button)); --nh-brand derives from it.
+    {%- endcomment -%}
+    <style>
+      :root {
+        {%- comment -%} Brand: emitted as R,G,B because Dawn consumes rgb(var(--color-button)). {%- endcomment -%}
+        {%- if settings.nh_brand_color != blank %}
+        --nh-brand-rgb: {{ settings.nh_brand_color.red }}, {{ settings.nh_brand_color.green }}, {{ settings.nh_brand_color.blue }};
+        {%- endif %}
+        {%- if settings.nh_brand_secondary_color != blank %}
+        --nh-brand-secondary: {{ settings.nh_brand_secondary_color }};
+        {%- endif %}
+
+        {%- comment -%}
+          Primary button. Each falls back to the brand equivalent when empty —
+          the fallback lives in the var() defaults in assets/style.css, so we
+          simply do not emit anything here when the setting is blank.
+          Background is emitted as R,G,B so it can also drive Dawn's
+          --color-button in the .color-scheme-* override.
+        {%- endcomment -%}
+        {%- if settings.nh_btn_primary_bg != blank %}
+        --nh-btn-primary-bg-rgb: {{ settings.nh_btn_primary_bg.red }}, {{ settings.nh_btn_primary_bg.green }}, {{ settings.nh_btn_primary_bg.blue }};
+        {%- endif %}
+        {%- if settings.nh_btn_primary_label != blank %}
+        --nh-btn-primary-label-rgb: {{ settings.nh_btn_primary_label.red }}, {{ settings.nh_btn_primary_label.green }}, {{ settings.nh_btn_primary_label.blue }};
+        {%- endif %}
+
+        {%- comment -%} Buttons. Outline border-hover stays derived from the brand. {%- endcomment -%}
+        {%- if settings.nh_btn_secondary_bg != blank %}
+        --nh-btn-secondary-bg: {{ settings.nh_btn_secondary_bg }};
+        {%- endif %}
+        {%- if settings.nh_btn_secondary_label != blank %}
+        --nh-btn-secondary-label: {{ settings.nh_btn_secondary_label }};
+        {%- endif %}
+        {%- if settings.nh_btn_outline_border != blank %}
+        --nh-btn-outline-border: {{ settings.nh_btn_outline_border }};
+        {%- endif %}
+        {%- if settings.nh_btn_outline_label != blank %}
+        --nh-btn-outline-label: {{ settings.nh_btn_outline_label }};
+        {%- endif %}
+
+        {%- comment -%}
+          Text. Body text is emitted as R,G,B because it drives Dawn's
+          --color-foreground (which is consumed as rgb(var(--color-foreground)))
+          for colour schemes 1 and 2 — see assets/style.css.
+          Surfaces and status colours are intentionally NOT settings: they stay
+          as fixed tokens in assets/style.css.
+        {%- endcomment -%}
+        {%- if settings.nh_heading_color != blank %}
+        --nh-heading: {{ settings.nh_heading_color }};
+        {%- endif %}
+        {%- if settings.nh_body_color != blank %}
+        --nh-body-rgb: {{ settings.nh_body_color.red }}, {{ settings.nh_body_color.green }}, {{ settings.nh_body_color.blue }};
+        {%- endif %}
+        {%- if settings.nh_muted_color != blank %}
+        --nh-muted: {{ settings.nh_muted_color }};
+        {%- endif %}
+
+        {%- comment -%}
+          Links have no settings of their own: --nh-link-rgb / --nh-link-hover
+          in assets/style.css derive from the body text and brand colours.
+        {%- endcomment -%}
+      }
+    </style>
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">

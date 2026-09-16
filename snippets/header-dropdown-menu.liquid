@@ -25,11 +25,31 @@
                 </span>
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </summary>
-              <ul
+              {%- comment -%}
+                The panel is a WRAPPER around the list, not the list itself.
+
+                Both are needed because the panel does two jobs that one element
+                cannot: the list scrolls when there are more entries than fit,
+                and the second-level flyout is positioned against the panel. Put
+                both on one element and `overflow-y: auto` clips the flyout out
+                of existence — an absolutely positioned box only escapes an
+                ancestor's overflow when its containing block sits OUTSIDE that
+                ancestor. So `.parent-navitem-panel` is the positioned box (and
+                the flyout's containing block) and `.parent-navitem` inside it
+                is the scroller.
+
+                The id and tabindex live on the wrapper because global.js reads
+                `summary.nextElementSibling` for `aria-controls`, and Dawn's
+                open/close animation targets `details > .header__submenu`.
+              {%- endcomment -%}
+              <div
                 id="HeaderMenu-MenuList-{{ forloop.index }}"
-                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup parent-navitem"
-                role="list"
+                class="header__submenu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup parent-navitem-panel"
                 tabindex="-1"
+              >
+              <ul
+                class="list-menu caption-large parent-navitem"
+                role="list"
               >
                 {%- for childlink in link.links -%}
                   <li class="nav-item">
@@ -77,6 +97,7 @@
                   </li>
                 {%- endfor -%}
               </ul>
+              </div>
             </details>
           </header-menu>
         {%- else -%}

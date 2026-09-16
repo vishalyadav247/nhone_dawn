@@ -18,6 +18,32 @@
     </summary>
     <div id="menu-drawer" class="gradient menu-drawer motion-reduce color-{{ section.settings.menu_color_scheme }}">
       <div class="menu-drawer__inner-container">
+        {%- comment -%}
+          Drawer masthead. Dawn has no equivalent — its drawer opens straight
+          into the link list — but the drawer covers the whole viewport on
+          mobile, header included, so without this there is nothing on screen
+          telling you whose store you are in. The close control is Dawn's own:
+          the hamburger summary swaps to an X while the drawer is open, and the
+          stylesheet parks that X in this bar rather than adding a second
+          button that would need wiring up.
+
+          Uses the global logo (Theme settings > Logo), so it follows whatever
+          the merchant has already set.
+        {%- endcomment -%}
+        <div class="menu-drawer__header">
+          <a href="{{ routes.root_url }}" class="menu-drawer__logo link focus-inset">
+            {%- if settings.logo != blank -%}
+              {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+              {{
+                settings.logo
+                | image_url: width: 300
+                | image_tag: class: 'menu-drawer__logo-image', widths: '150, 300', alt: logo_alt, loading: 'lazy'
+              }}
+            {%- else -%}
+              <span class="menu-drawer__logo-text">{{ shop.name }}</span>
+            {%- endif -%}
+          </a>
+        </div>
         <div class="menu-drawer__navigation-container">
           <nav class="menu-drawer__navigation">
             <ul class="menu-drawer__menu has-submenu list-menu level-one" role="list">
@@ -29,12 +55,17 @@
                         id="HeaderDrawer-{{ link.handle }}"
                         class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if link.child_active %} menu-drawer__menu-item--active{% endif %}"
                       >
-                        {{ link.title | escape }}
-                        {% comment %}
-                          <span class="svg-wrapper">
-                            {{- 'icon-arrow.svg' | inline_asset_content -}}
-                          </span>
-                        {% endcomment %}
+                        {%- comment -%}
+                          Icon and label are grouped so the row stays a
+                          two-part flex layout — label group on the left, caret
+                          on the right — rather than three items spread apart.
+                        {%- endcomment -%}
+                        <span class="menu-drawer__label">
+                          {%- if section.settings.drawer_menu_icons -%}
+                            {%- render 'menu-icon', link: link -%}
+                          {%- endif -%}
+                          {{ link.title | escape }}
+                        </span>
                         <span class="svg-wrapper">
                           {{- 'icon-caret.svg' | inline_asset_content -}}
                         </span>
@@ -137,7 +168,12 @@
                         aria-current="page"
                       {% endif %}
                     >
-                      {{ link.title | escape }}
+                      <span class="menu-drawer__label">
+                        {%- if section.settings.drawer_menu_icons -%}
+                          {%- render 'menu-icon', link: link -%}
+                        {%- endif -%}
+                        {{ link.title | escape }}
+                      </span>
                     </a>
                   {%- endif -%}
                 </li>

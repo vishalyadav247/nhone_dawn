@@ -8,7 +8,7 @@
     <!-- Tab Navigation -->
     <ul class="tab-nav">
       {% if section.settings.title != blank %}
-        <h2 class="section-heading">{{ section.settings.title }}</h2>
+        {% render 'section-heading', heading: section.settings.title %}
       {% endif %}
       <span class="tab-nav">
         {% for block in section.blocks %}
@@ -81,15 +81,15 @@
   }
   .shopify-tabber .tab-nav li {
     padding: 8px 16px;
-    border: 1px solid #7b059f;
+    border: 1px solid var(--nh-brand);
     cursor: pointer;
     border-radius: 4px;
     transition: 0.3s;
   }
   .shopify-tabber .tab-nav li.active {
-    background-color: #7b059f;
+    background-color: var(--nh-brand);
     color: #fff;
-    border-color: #7b059f;
+    border-color: var(--nh-brand);
   }
   .shopify-tabber .tab-pane {
     display: none;
@@ -229,7 +229,8 @@
       "type": "text",
       "id": "title",
       "label": "Section Title",
-      "default": "Browse By Category"
+      "info": "Put a pipe before the words you want in the brand colour, e.g. \"FEATURED |PRODUCTS\". The pipe itself is not shown.",
+      "default": "Browse By |Category"
     }
   ],
   "blocks": [

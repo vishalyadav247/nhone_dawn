@@ -87,6 +87,27 @@ document.querySelectorAll('[id^="Details-"] summary').forEach((summary) => {
 const trapFocusHandlers = {};
 
 function trapFocus(container, elementToFocus = container) {
+  // Callers pass an element they expect to exist, and several of them can come
+  // up empty in this theme — opening a drawer submenu calls
+  // `trapFocus(submenu, details.querySelector('button'))`, but the
+  // `.menu-drawer__close-button` that used to be that button is commented out
+  // of snippets/header-drawer.liquid, so the argument is null and
+  // `elementToFocus.focus()` below threw on every submenu tap. A default
+  // parameter only fills in for an OMITTED argument, never an explicit null,
+  // so the same fallback has to be applied here.
+  //
+  // The fallback focuses the container itself, and focusing scrolls an element
+  // into view — which in the drawer dragged the parent row ("Shop By Car") off
+  // the top of the screen the moment you opened a brand. `preventScroll` keeps
+  // the focus move for keyboard and screen-reader users without the jump. Only
+  // the fallback opts out; callers that named a specific element still get the
+  // scroll they asked for.
+  var preventScroll = false;
+  if (!elementToFocus) {
+    elementToFocus = container;
+    preventScroll = true;
+  }
+
   var elements = getFocusableElements(container);
   var first = elements[0];
   var last = elements[elements.length - 1];
@@ -121,7 +142,7 @@ function trapFocus(container, elementToFocus = container) {
   document.addEventListener('focusout', trapFocusHandlers.focusout);
   document.addEventListener('focusin', trapFocusHandlers.focusin);
 
-  elementToFocus.focus();
+  elementToFocus.focus({ preventScroll: preventScroll });
 
   if (
     elementToFocus.tagName === 'INPUT' &&
