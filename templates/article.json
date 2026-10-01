@@ -35,7 +35,7 @@
         "content": {
           "type": "content",
           "settings": {
-            "enable_toc": true,
+            "enable_toc": false,
             "toc_title": "In this article",
             "toc_position": "right",
             "toc_sticky": true,
@@ -68,7 +68,15 @@
           }
         }
       },
-      "block_order": ["breadcrumb", "featured_image", "title", "content", "tags", "share", "author_box"],
+      "block_order": [
+        "breadcrumb",
+        "featured_image",
+        "title",
+        "content",
+        "tags",
+        "share",
+        "author_box"
+      ],
       "settings": {
         "hero_layout": "stacked",
         "show_article_nav": true,
@@ -82,5 +90,7 @@
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

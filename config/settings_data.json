@@ -267,7 +267,9 @@
           "shadow": "#292929"
         }
       }
-    }
+    },
+    "blog_hub_url": "/pages/blogs",
+    "blog_hub_label": "Blogs"
   },
   "presets": {
     "Default": {

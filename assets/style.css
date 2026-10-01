@@ -583,6 +583,115 @@ h3.card__heading {
   opacity: 1 !important;
 }
 
+/* ==========================================================================
+   Carousel pre-init layout
+   jQuery + Owl load with defer, so for the first second or more of a page view
+   the carousels are plain HTML. Without this, their slides stack vertically
+   behind opacity:0 and then collapse into a row once Owl runs: the home banner
+   (the LCP image) can't paint until then, and the collapse is a large layout
+   shift. These rules lay the un-initialised track out as the same row Owl will
+   build — same item count and gap per Owl breakpoint (see assets/main.js and
+   sections/home-page-tabbber.liquid) — so it is visible and stable at once.
+   ========================================================================== */
+.bannerCarousel:not(.owl-loaded),
+.CarCarousel:not(.owl-loaded),
+.product-carousel:not(.owl-loaded) {
+  --pre-items: 1;
+  --pre-gap: 0px;
+  display: flex !important;
+  gap: var(--pre-gap);
+  overflow: hidden;
+  opacity: 1 !important;
+}
+
+/* No fade-in for these (they are visible from the start), and the generic
+   `transition: all` above would otherwise animate the pre-init padding/gap
+   away when Owl takes over, which is itself a layout shift. */
+.bannerCarousel,
+.CarCarousel,
+.product-carousel {
+  transition: none;
+}
+
+.bannerCarousel:not(.owl-loaded) > *,
+.CarCarousel:not(.owl-loaded) > *,
+.product-carousel:not(.owl-loaded) > * {
+  flex: 0 0 calc((100% - (var(--pre-items) - 1) * var(--pre-gap)) / var(--pre-items));
+  min-width: 0;
+}
+
+/* Owl sizes slide images to the slide (owl.carousel.min.css), but only once
+   initialised; until then the banner image would render at its natural size. */
+.bannerCarousel img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Owl appends a 2.1rem row of dots under the banner when it has more than one
+   slide (see "Banner carousel dots" below); hold that space ahead of time. */
+.bannerCarousel:not(.owl-loaded):has(> .carousel-item + .carousel-item) {
+  padding-bottom: 2.1rem;
+}
+
+/* Owl's rtl option runs the row from the right-hand edge by setting
+   direction: rtl (.owl-rtl). Use the same property rather than row-reverse:
+   layout-shift scoring measures an rtl element from its top-right corner, so
+   flipping direction at init would count as the whole track moving. */
+.CarCarousel[data-rtl='true']:not(.owl-loaded) {
+  direction: rtl;
+}
+
+/* Only the slides that fit are rendered, so the track never overflows. (An rtl
+   track overflowing to the left is scored as a layout shift when Owl builds
+   its stage, even though nothing visibly moves.) */
+.CarCarousel:not(.owl-loaded) > :nth-child(n + 5),
+.product-carousel:not(.owl-loaded) > :nth-child(n + 3) {
+  display: none;
+}
+
+.CarCarousel:not(.owl-loaded) {
+  --pre-items: 4;
+  --pre-gap: 12px;
+}
+
+.product-carousel:not(.owl-loaded) {
+  --pre-items: 2;
+  --pre-gap: 5px;
+}
+
+@media (min-width: 600px) {
+  .product-carousel:not(.owl-loaded) {
+    --pre-gap: 10px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .CarCarousel:not(.owl-loaded) {
+    --pre-items: 6;
+    --pre-gap: 15px;
+  }
+
+  .product-carousel:not(.owl-loaded) {
+    --pre-items: 6;
+  }
+
+  .CarCarousel:not(.owl-loaded) > :nth-child(-n + 6),
+  .product-carousel:not(.owl-loaded) > :nth-child(-n + 6) {
+    display: block;
+  }
+}
+
+@media (min-width: 1200px) {
+  .CarCarousel:not(.owl-loaded) {
+    --pre-items: 10;
+  }
+
+  .CarCarousel:not(.owl-loaded) > :nth-child(-n + 10) {
+    display: block;
+  }
+}
+
 .owl-carousel .owl-nav span {
   height: 8px !important;
   display: block;
@@ -2149,19 +2258,6 @@ background-color: transparent !important;
   margin: 0;
 }
 
-.main-blog__back {
-  display: inline-block;
-  margin-top: 1.2rem;
-  color: var(--nh-link);
-  font-size: 1.4rem;
-  text-decoration: none;
-}
-
-.main-blog__back:hover {
-  color: var(--nh-link-hover);
-  text-decoration: underline;
-}
-
 /* --- Tag chips ------------------------------------------------------------- */
 .main-blog__tags {
   display: flex;
@@ -3535,17 +3631,23 @@ background-color: transparent !important;
    Used by the blog hub (sections/blog-categories.liquid), the category page
    (sections/main-blog.liquid) and the article page's related row.
    ========================================================================== */
+/* --nh-blog-cols is set inline by whatever renders the row and says how many
+   cards it actually holds; 4 is the fallback and also the ceiling. auto-fill
+   was wrong here — it keeps making tracks to fill the width, so a row of four
+   cards in a wide container ended with two empty cells. */
 .nh-blog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  grid-template-columns: repeat(min(var(--nh-blog-cols, 4), 4), minmax(0, 1fr));
   gap: 2.4rem 2rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.nh-blog-grid--4 {
-  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+@media screen and (max-width: 989px) {
+  .nh-blog-grid {
+    grid-template-columns: repeat(min(var(--nh-blog-cols, 4), 2), minmax(0, 1fr));
+  }
 }
 
 .nh-blog-grid a {
@@ -3583,7 +3685,6 @@ background-color: transparent !important;
 
 @media screen and (max-width: 749px) {
   .nh-blog-grid {
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     gap: 1.8rem 1.2rem;
   }
 
@@ -4088,9 +4189,10 @@ background-color: transparent !important;
    that jump down the page, then one row per category (heading, view-all and
    the category's most recent articles as .nh-blog-card in .nh-blog-grid).
 
-   The tiles reuse the visual language of the top-categories grid: a rounded
-   4:5 photo, a dark bottom gradient and the title overlaid in white, with the
-   border warming to the brand colour on hover.
+   The quick-nav tiles are compact cards: a 3:2 cover over the category name
+   and its article count. The covers are wide banner art, which a tall tile
+   cropped to fragments, and the grid is capped so two categories do not
+   stretch into two half-screen slabs.
    ========================================================================== */
 .blog-hub__intro {
   max-width: 72rem;
@@ -4112,24 +4214,36 @@ background-color: transparent !important;
 }
 
 /* --- Category tiles -------------------------------------------------------- */
+/* auto-fill, not auto-fit, and a max track width: with two categories the
+   cards stay card-sized instead of stretching to half the viewport each. */
 .blog-hub__tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 26rem));
   gap: 2rem;
-  margin: 0 0 5.6rem;
+  margin: 0 0 4.8rem;
   padding: 0;
   list-style: none;
 }
 
 .blog-hub__tile-link {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.4rem;
+  background: var(--nh-surface);
+  text-decoration: none;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.blog-hub__tile-media {
   display: block;
   overflow: hidden;
-  aspect-ratio: 4 / 5;
-  border: 1px solid var(--nh-border);
-  border-radius: 1.6rem;
-  text-decoration: none;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  aspect-ratio: 3 / 2;
+  background: #f2f2f2;
 }
 
 .blog-hub__tile-img {
@@ -4143,33 +4257,32 @@ background-color: transparent !important;
 .blog-hub__tile-img--placeholder {
   fill: var(--nh-muted);
   opacity: 0.35;
-  background: #f2f2f2;
 }
 
-/* Gradient scrim so the overlaid title stays readable on any photo. */
-.blog-hub__tile-link::before {
-  content: '';
-  position: absolute;
-  inset: 40% 0 0;
-  z-index: 1;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.72) 100%);
-  pointer-events: none;
+.blog-hub__tile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1.2rem 1.4rem 1.4rem;
 }
 
 .blog-hub__tile-title {
-  position: absolute;
-  z-index: 2;
-  right: 1.6rem;
-  bottom: 1.6rem;
-  left: 1.6rem;
-  color: #fff;
-  font-size: 1.6rem;
+  font-family: var(--font-body-family);
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.3;
+  color: var(--nh-heading);
+  transition: color 0.2s ease;
+}
+
+.blog-hub__tile-count {
+  font-size: 1.2rem;
+  color: var(--nh-muted);
 }
 
 @media (hover: hover) {
   .blog-hub__tile-link:hover {
+    transform: translateY(-2px);
     border-color: rgba(var(--nh-brand-rgb), 0.45);
     box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.08);
   }
@@ -4177,6 +4290,15 @@ background-color: transparent !important;
   .blog-hub__tile-link:hover .blog-hub__tile-img {
     transform: scale(1.04);
   }
+
+  .blog-hub__tile-link:hover .blog-hub__tile-title {
+    color: var(--nh-brand);
+  }
+}
+
+.blog-hub__tile-link:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 3px;
 }
 
 /* --- Category rows --------------------------------------------------------- */

@@ -41,7 +41,12 @@
     {%- endif -%}
   </header>
 
-  {%- comment -%} Quick-nav tiles: one per category, anchored to its row below. {%- endcomment -%}
+  {%- comment -%}
+    Quick-nav tiles: one per category, anchored to its row below. Compact cards
+    (image over a title and article count) rather than full-bleed photo tiles —
+    the category covers are wide banners, which a tall tile crops to pieces,
+    and with only two or three categories a stretched grid filled the screen.
+  {%- endcomment -%}
   {%- if section.settings.show_tiles -%}
     {%- assign tile_count = 0 -%}
     <ul class="blog-hub__tiles list-unstyled">
@@ -70,21 +75,29 @@
               duplicate DOM id and send both tiles to the first row.
             {%- endcomment -%}
             <a href="#category-{{ block.id }}" class="blog-hub__tile-link">
-              {%- if tile_image != blank -%}
-                {{
-                  tile_image
-                  | image_url: width: 600
-                  | image_tag:
-                    widths: '200, 300, 400, 600',
-                    sizes: '(min-width: 990px) 20vw, (min-width: 750px) 30vw, 45vw',
-                    loading: 'lazy',
-                    alt: cat_title,
-                    class: 'blog-hub__tile-img'
-                }}
-              {%- else -%}
-                {{ 'image' | placeholder_svg_tag: 'blog-hub__tile-img blog-hub__tile-img--placeholder' }}
-              {%- endif -%}
-              <span class="blog-hub__tile-title">{{ cat_title | escape }}</span>
+              <span class="blog-hub__tile-media">
+                {%- if tile_image != blank -%}
+                  {{
+                    tile_image
+                    | image_url: width: 800
+                    | image_tag:
+                      widths: '300, 400, 600, 800',
+                      sizes: '(min-width: 990px) 24rem, (min-width: 750px) 30vw, 45vw',
+                      loading: 'lazy',
+                      alt: cat_title,
+                      class: 'blog-hub__tile-img'
+                  }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'blog-hub__tile-img blog-hub__tile-img--placeholder' }}
+                {%- endif -%}
+              </span>
+              <span class="blog-hub__tile-text">
+                <span class="blog-hub__tile-title">{{ cat_title | escape }}</span>
+                <span class="blog-hub__tile-count">
+                  {{- cat_blog.articles_count }}
+                  {%- if cat_blog.articles_count == 1 %} article{% else %} articles{% endif -%}
+                </span>
+              </span>
             </a>
           </li>
         {%- endif -%}
@@ -129,7 +142,19 @@
           </a>
         </div>
 
-        <div class="nh-blog-grid nh-blog-grid--4">
+        {%- comment -%}
+          The column count follows the number of cards this row will really
+          show — the "Articles per category" setting, or fewer when the
+          category has fewer articles. Without it the grid kept a fixed number
+          of tracks and left empty cells at the end of short rows.
+        {%- endcomment -%}
+        {%- liquid
+          assign shown = cat_blog.articles_count
+          if shown > section.settings.articles_per_category
+            assign shown = section.settings.articles_per_category
+          endif
+        -%}
+        <div class="nh-blog-grid" style="--nh-blog-cols: {{ shown }};">
           {%- for article in cat_blog.articles limit: section.settings.articles_per_category -%}
             {% render 'nh-blog-card',
               article: article,

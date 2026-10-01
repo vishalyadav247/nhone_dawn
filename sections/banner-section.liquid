@@ -11,17 +11,48 @@
               target="_blank"
             {% endif %}
           >
+            {%- liquid
+              assign img_desktop = block.settings.image_desktop | default: block.settings.image_mobile
+              assign img_mobile = block.settings.image_mobile | default: block.settings.image_desktop
+              # Slide 1 is the LCP element: load it immediately at high
+              # priority. Later slides are off-screen until Owl rotates them.
+              if forloop.first
+                assign img_loading = 'eager'
+                assign img_priority = 'high'
+              else
+                assign img_loading = 'lazy'
+                assign img_priority = 'auto'
+              endif
+            -%}
             <picture>
-              <!-- Mobile image for screens up to 749px -->
-              <source media="(max-width: 749px)" srcset="{{ block.settings.image_mobile | img_url: 'master' }}">
-              <!-- Desktop image for screens 750px and wider -->
-              <source media="(min-width: 750px)" srcset="{{ block.settings.image_desktop | img_url: 'master' }}">
-              <!-- Fallback image -->
+              <source
+                media="(max-width: 749px)"
+                srcset="
+                  {{ img_mobile | image_url: width: 375 }} 375w,
+                  {{ img_mobile | image_url: width: 550 }} 550w,
+                  {{ img_mobile | image_url: width: 750 }} 750w,
+                  {{ img_mobile | image_url: width: 1100 }} 1100w,
+                  {{ img_mobile | image_url: width: 1500 }} 1500w
+                "
+                sizes="100vw"
+                width="{{ img_mobile.width }}"
+                height="{{ img_mobile.height }}"
+              >
               <img
-                src="{{ block.settings.image_desktop | img_url: 'master' }}"
+                srcset="
+                  {{ img_desktop | image_url: width: 1100 }} 1100w,
+                  {{ img_desktop | image_url: width: 1500 }} 1500w,
+                  {{ img_desktop | image_url: width: 1920 }} 1920w,
+                  {{ img_desktop | image_url: width: 2560 }} 2560w
+                "
+                src="{{ img_desktop | image_url: width: 1920 }}"
+                sizes="100vw"
                 alt="{{ block.settings.image_alt | escape }}"
-                width="auto"
-                height="auto"
+                width="{{ img_desktop.width }}"
+                height="{{ img_desktop.height }}"
+                loading="{{ img_loading }}"
+                fetchpriority="{{ img_priority }}"
+                {% unless forloop.first %}decoding="async"{% endunless %}
               >
             </picture>
           </a>

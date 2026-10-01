@@ -96,8 +96,16 @@
       assign crumb_urls = crumb_urls | append: sep | append: ''
 
     # ---- Page ----------------------------------------------------------------
+    # The hub is an ordinary page, so it lands here. It names itself with the
+    # hub label rather than its own title, so the level reads the same word on
+    # the hub, the category pages and the articles.
     elsif template.name == 'page'
-      assign crumb_names = crumb_names | append: sep | append: page.title
+      assign hub_path = hub_url | split: '?' | first
+      if hub_url != blank and request.path == hub_path
+        assign crumb_names = crumb_names | append: sep | append: hub_label
+      else
+        assign crumb_names = crumb_names | append: sep | append: page.title
+      endif
       assign crumb_urls = crumb_urls | append: sep | append: ''
 
     # ---- Anything else -------------------------------------------------------

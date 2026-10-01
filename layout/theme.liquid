@@ -649,7 +649,34 @@
       var mid = '8916';
     </script>
 
-    <script src="https://checkout-merchant.snapmint.com/js/v1/8916" defer></script>
+    {%- comment -%}
+      Snapmint is a ~1 MB script that blocks the main thread for seconds while it
+      decorates every product card with an EMI line. Product and cart pages load
+      it straight away (the PDP widget and checkout button are above the fold).
+      Everywhere else it waits for the visitor's first interaction, so it never
+      competes with the initial render.
+    {%- endcomment -%}
+    {%- if template.name == 'product' or template.name == 'cart' -%}
+      <script src="https://checkout-merchant.snapmint.com/js/v1/8916" defer></script>
+    {%- else -%}
+      <script>
+        (function () {
+          var events = ['scroll', 'pointerdown', 'mousemove', 'touchstart', 'keydown'];
+          function loadSnapmint() {
+            events.forEach(function (e) {
+              window.removeEventListener(e, loadSnapmint, { passive: true });
+            });
+            var s = document.createElement('script');
+            s.src = 'https://checkout-merchant.snapmint.com/js/v1/8916';
+            s.async = true;
+            document.body.appendChild(s);
+          }
+          events.forEach(function (e) {
+            window.addEventListener(e, loadSnapmint, { passive: true, once: true });
+          });
+        })();
+      </script>
+    {%- endif -%}
     <!-- End Shopify-payment JavaScript -->
 
     {% render 'track-order-popup' %}

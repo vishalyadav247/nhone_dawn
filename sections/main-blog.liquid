@@ -32,9 +32,6 @@
 {% render 'breadcrumb' %}
 
 {%- liquid
-  assign hub_url = settings.blog_hub_url
-  assign hub_label = settings.blog_hub_label | default: 'Blogs'
-
   # Per-category intro, authored as a blog metafield so it travels with the
   # blog rather than the template. Falls back to the section setting.
   assign blog_intro = blog.metafields.custom.description.value
@@ -56,11 +53,6 @@
       <div class="main-blog__intro rte">{{ blog_intro }}</div>
     {%- endif -%}
 
-    {%- if hub_url != blank -%}
-      <a href="{{ hub_url }}" class="main-blog__back">
-        &larr; All {{ hub_label | escape | downcase }}
-      </a>
-    {%- endif -%}
   </header>
 
   {%- comment -%}
@@ -92,12 +84,7 @@
 
   {%- paginate blog.articles by section.settings.posts_per_page -%}
     {%- if blog.articles_count == 0 -%}
-      <p class="main-blog__empty">
-        There are no articles in this category yet.
-        {%- if hub_url != blank %}
-          <a href="{{ hub_url }}">Browse the other categories</a>.
-        {%- endif -%}
-      </p>
+      <p class="main-blog__empty">There are no articles in this category yet.</p>
     {%- else -%}
       {%- liquid
         # Feature the newest article as a wide card, but only on page 1 and

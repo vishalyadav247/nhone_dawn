@@ -75,6 +75,13 @@
     </ul>
 
     <!-- Tab Content -->
+    {%- comment -%}
+      Only the first tab's cards are live DOM on page load. The other tabs are
+      wrapped in <template>, which the browser parses but never lays out,
+      fetches images for, or exposes to scripts — this keeps ~100 product
+      cards out of the initial render. The script below moves a template's
+      cards into the page the first time its tab is clicked.
+    {%- endcomment -%}
     <div class="tab-content">
       {% for block in section.blocks %}
         {% assign collection = block.settings.collection %}
@@ -83,6 +90,7 @@
           id="tab-{{ section.id }}-{{ block.id }}"
           class="tab-pane {% if forloop.first %}active{% endif %}"
         >
+          {%- unless forloop.first -%}<template class="tab-pane__deferred">{%- endunless -%}
           {% if collection.products_count > 0 %}
             <div class="product-carousel owl-carousel carousel">
               {% assign available_count = 0 %}
@@ -112,122 +120,89 @@
           {% else %}
             <p>No products found in this collection.</p>
           {% endif %}
+          {%- unless forloop.first -%}</template>{%- endunless -%}
         </div>
       {% endfor %}
     </div>
   </div>
 </section>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.shopify-tabber').forEach(function (section) {
-      const tabLinks = section.querySelectorAll('.tab-nav li');
-      const tabPanes = section.querySelectorAll('.tab-pane');
+  (function () {
+    // Scoped to this section: the script is emitted once per tabber, so it
+    // must not also initialise the other tabbers on the page.
+    var section = document.getElementById('shopify-tabber-{{ section.id }}');
+    if (!section) return;
 
-      {% comment %} function initCarousel(scope) {
-        $(scope)
-          .find('.product-carousel')
-          .not('.owl-loaded')
-          .owlCarousel({
-            items: 5,
-            margin: 20,
-            loop: false,
-            nav: true,
-            dots: false,
-            navText: [
-              `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-              fill="none" stroke="currentColor" stroke-width="2" 
-              stroke-linecap="round" stroke-linejoin="round" 
-              class="feather feather-arrow-left">
-              <path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
-            </svg>`,
-              `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-              fill="none" stroke="currentColor" stroke-width="2" 
-              stroke-linecap="round" stroke-linejoin="round" 
-              class="feather feather-arrow-right">
-              <path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
-            </svg>`,
-            ],
-            responsive: {
-              0: {
-                items: 2,
-                margin: 5,
-              },
-              600: { items: 2 },
-              1000: { items: 6 },
-            },
-          });
-      } {% endcomment %}
-      function initCarousel(scope) {
-  const $carousel = $(scope).find('.product-carousel');
+    var NAV_ARROW_LEFT =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path></svg>';
+    var NAV_ARROW_RIGHT =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path></svg>';
 
-  if ($carousel.hasClass('owl-loaded')) {
-    $carousel.trigger('destroy.owl.carousel');
-    $carousel.removeClass('owl-loaded');
-    $carousel.find('.owl-stage-outer').children().unwrap();
-  }
+    // Move a deferred tab's cards out of its <template> into the page.
+    function hydrate(pane) {
+      var tpl = pane.querySelector('template.tab-pane__deferred');
+      if (!tpl) return;
+      pane.replaceChild(tpl.content, tpl);
 
-  $carousel.owlCarousel({
-    margin: 10,
-    loop: false,
-    nav: true,
-    dots: false,
-    navText: [
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
-      </svg>`,
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
-      </svg>`
-    ],
-    responsive: {
-      0: { items: 2, margin: 5,nav:false },
-      600: { items: 2 },
-      1000: { items: 6 }
+      // Snapmint adds its EMI line to product cards in a single pass when it
+      // loads, so cards added later need another pass. collectionList() is
+      // Snapmint's global and skips cards it has already decorated.
+      if (typeof window.collectionList === 'function') {
+        try {
+          window.collectionList('.product-card-wrapper');
+        } catch (e) {}
+      }
     }
-  });
-}
 
+    function initCarousel(pane) {
+      if (!pane || typeof window.jQuery !== 'function') return;
+      var $carousel = window.jQuery(pane).find('.product-carousel');
+      if (!$carousel.length || $carousel.hasClass('owl-loaded')) return;
+
+      $carousel.owlCarousel({
+        margin: 10,
+        loop: false,
+        nav: true,
+        dots: false,
+        navText: [NAV_ARROW_LEFT, NAV_ARROW_RIGHT],
+        responsive: {
+          0: { items: 2, margin: 5, nav: false },
+          600: { items: 2 },
+          1000: { items: 6 },
+        },
+      });
+    }
+
+    function init() {
+      var tabLinks = section.querySelectorAll('.tab-nav li');
+      var tabPanes = section.querySelectorAll('.tab-pane');
 
       initCarousel(section.querySelector('.tab-pane.active'));
 
-      tabLinks.forEach((tab) => {
-        {% comment %} tab.addEventListener('click', () => {
-          tabLinks.forEach((el) => el.classList.remove('active'));
-          tabPanes.forEach((el) => el.classList.remove('active'));
+      tabLinks.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var target = section.querySelector('#' + tab.getAttribute('data-tab'));
+          if (!target || target.classList.contains('active')) return;
 
+          tabLinks.forEach(function (el) { el.classList.remove('active'); });
+          tabPanes.forEach(function (el) { el.classList.remove('active'); });
           tab.classList.add('active');
-          const targetId = tab.getAttribute('data-tab');
-          const targetTab = section.querySelector('#' + targetId);
-          if (targetTab) {
-            targetTab.classList.add('active');
-            initCarousel(targetTab);
-          }
-        }); {% endcomment %}
-        tab.addEventListener('click', () => {
-  tabLinks.forEach(el => el.classList.remove('active'));
-  tabPanes.forEach(el => el.classList.remove('active'));
 
-  tab.classList.add('active');
-  const targetId = tab.getAttribute('data-tab');
-  const targetTab = section.querySelector('#' + targetId);
-
-  if (targetTab) {
-    targetTab.classList.add('active');
-
-    setTimeout(() => {
-      initCarousel(targetTab);
-    }, 50);
-  }
-});
-
-
+          hydrate(target);
+          target.classList.add('active');
+          // Owl measures its container, so wait until the pane is displayed.
+          requestAnimationFrame(function () { initCarousel(target); });
+        });
       });
-    });
-  });
+    }
+
+    // jQuery + Owl load with defer, so they are ready by DOMContentLoaded.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
 </script>
 
 {% schema %}

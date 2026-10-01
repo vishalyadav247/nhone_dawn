@@ -10,28 +10,154 @@
    author box, prev/next and the related-articles row.
    ========================================================================== */
 
-/* Dawn puts a 5rem top margin on the first child of .article-template unless
-   it's the hero. With a breadcrumb block first, that gap lands in the wrong
-   place. */
-.article-template > .breadcrumbs:first-child,
-.article-template > div:first-child > .breadcrumbs {
+/* Dawn puts 5rem + --page-width-margin above the first child of
+   .article-template unless it's the hero. The rule that used to live here
+   targeted .breadcrumbs, but Dawn's margin sits on the WRAPPING block div, so
+   it never applied and a ~7rem void opened above a 45px crumb trail. Same
+   selector as Dawn's, loaded later. */
+.article-template > *:first-child:not(.article-template__hero-container) {
+  margin-top: 1.6rem;
+}
+
+@media screen and (min-width: 750px) {
+  .article-template > *:first-child:not(.article-template__hero-container) {
+    margin-top: 2rem;
+  }
+}
+
+/* --- One measure for the whole page ---------------------------------------
+   Dawn gives each band its own wrapper (.page-width, .page-width--narrow, or
+   none at all), so the article used to change width four times on the way
+   down. Every band is pinned to one of two centred rails instead.
+
+   The overrides carry !important only where Dawn's own .page-width sets the
+   same property; the rails themselves are plain custom properties. */
+.article-template {
+  /* One 1280px rail for the whole page — breadcrumb, hero, title, copy,
+     tags, share, author, prev/next and the related row all share it. */
+  --nh-article-measure: 128rem;
+  --nh-article-wide: 128rem;
+  /* One gutter for every band. Dawn's wrappers carry different horizontal
+     padding (1.5rem, 5rem, none), which left the title, the breadcrumb and
+     the copy each starting on a different left edge inside the same column. */
+  --nh-article-gutter: 1.5rem;
+
+  /* Brand orange is 2.3:1 on white: it cannot carry text or a focus ring at
+     any size. Accented text and focus rings use a darkened mix of the SAME
+     token, so a merchant recolour still propagates. Without color-mix both
+     fall back to the existing inks — duller, but safe. */
+  --nh-article-accent-ink: var(--nh-heading);
+  --nh-article-label-ink: var(--nh-muted);
+}
+
+@supports (color: color-mix(in srgb, red, blue)) {
+  .article-template {
+    --nh-article-accent-ink: color-mix(in srgb, var(--nh-brand) 60%, #0a0a0a);
+    --nh-article-label-ink: color-mix(in srgb, var(--nh-muted) 78%, #000);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .article-template {
+    /* The rails already cap the width, so no inner padding is needed and
+       every band's text starts on exactly the same line. */
+    --nh-article-gutter: 0rem;
+  }
+}
+
+/* :not() keeps the picture rails out — they also carry .page-width, and a
+   descendant selector would otherwise outrank their own rule below. */
+.article-template .page-width:not(.nh-related):not(.article-template__hero-container),
+.article-template .page-width--narrow,
+.article-template__header,
+.nh-article-body,
+.nh-tags,
+.nh-share,
+.nh-author,
+.nh-article-nav {
+  max-width: var(--nh-article-measure) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: var(--nh-article-gutter) !important;
+  padding-right: var(--nh-article-gutter) !important;
+}
+
+/* The hero sits on the same rail as everything else. The related row is the
+   one exception: it keeps Dawn's full .page-width so four cards have room. */
+.article-template .article-template__hero-container {
+  max-width: var(--nh-article-wide) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* The trail follows the article's own rail, so its first crumb starts on the
+   same line as the headline and the copy. Elsewhere (collection, product, the
+   blog hub and category pages) it keeps the snippet's own full-bleed
+   .page-width — those templates' content is page-width too. */
+.article-template > *:first-child:has(.breadcrumbs) {
   margin-top: 0;
 }
 
-/* --- Header / hero --------------------------------------------------------- */
-.article-template__header {
+/* With a TOC the copy needs the wider rail to fit the rail beside it. */
+.nh-article-body--with-toc {
+  max-width: var(--nh-article-wide) !important;
+}
+
+/* --- Header / hero ---------------------------------------------------------
+   The child combinator is load-bearing: Dawn's `.article-template header` is
+   (0,1,1) and outranks a bare .article-template__header (0,1,0), which is why
+   the margin written here before never applied and the real gap stayed 5rem. */
+.article-template > .article-template__header {
   margin-top: 3.2rem;
-  margin-bottom: 2.4rem;
+  margin-bottom: 3.6rem;
+  line-height: 1.3;
   text-align: left;
 }
 
-.article-template__title {
-  margin: 0 0 1.2rem;
-  color: var(--nh-heading);
-  font-size: 3.2rem;
+/* Category kicker above the headline — which shelf of the blog this is.
+   Deliberately not a filled orange pill: white on the brand orange is 2.3:1.
+   Darkened ink plus a short brand rule reads as an accent and passes AA. */
+.nh-article-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 2.4rem;
+  margin: 0 0 1.6rem;
+  color: var(--nh-article-accent-ink);
+  font-size: 1.2rem;
   font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.nh-article-eyebrow::before {
+  content: '';
+  flex: 0 0 2rem;
+  height: 2px;
+  background: var(--nh-brand);
+}
+
+.nh-article-eyebrow:hover {
+  color: var(--nh-heading);
+}
+
+.nh-article-eyebrow--overlay {
+  color: #fff;
+}
+
+.article-template__title {
+  margin: 0 0 1.6rem;
+  color: var(--nh-heading);
+  font-size: clamp(2.6rem, 1.6rem + 2vw, 4rem);
+  font-weight: 600;
+  line-height: 1.15;
+  /* Negative tracking is what makes a large headline look set rather than
+     typed; base.css tracks headings OUT by default. */
+  letter-spacing: -0.015em;
+  text-wrap: balance;
   word-break: break-word;
 }
 
@@ -52,6 +178,21 @@
   height: 100%;
   object-fit: cover;
   object-position: center center;
+}
+
+/* "Adapt" keeps each cover's own proportions, which for these wide banner
+   graphics meant a 740px-tall hero that pushed the headline off the first
+   screen. Capped so the title and the opening paragraph are always visible,
+   with the image cropping from the centre. */
+/* Dawn's "adapt" media sets its height with a percentage padding-bottom, so
+   max-height cannot rein it in — the padding keeps growing. The ratio is
+   replaced with a real height instead; .media already positions the image
+   absolutely inside, so it simply crops from the centre. */
+.article-template__hero-container .article-template__hero-adapt {
+  padding-bottom: 0 !important;
+  height: min(48vh, 42rem);
+  overflow: hidden;
+  border-radius: 1.6rem;
 }
 
 .article-template__hero-container--overlay {
@@ -86,27 +227,44 @@
   color: #fff;
 }
 
-/* --- Meta line ------------------------------------------------------------- */
+/* --- Meta line -------------------------------------------------------------
+   Was one flat grey string. The date is the fact that matters (ink, 600),
+   reading time is secondary, and the separator is a hairline rather than an
+   orange dot — the orange is already spent on the eyebrow rule and the list
+   markers, and a third use in the same 200px turns accent into decoration. */
 .nh-article-meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 0.4rem 1.2rem;
   margin: 0;
-  color: var(--nh-muted);
-  font-size: 1.4rem;
+  color: var(--nh-article-label-ink);
+  font-size: 1.35rem;
+  font-weight: 500;
   line-height: 1.4;
 }
 
-.nh-article-meta--overlay {
-  color: rgba(255, 255, 255, 0.85);
+.nh-article-meta__item:first-child {
+  color: var(--nh-heading);
+  font-weight: 600;
 }
 
 .nh-article-meta__dot {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: var(--nh-brand);
+  width: 1.2rem;
+  height: 1px;
+  background: var(--nh-border);
+}
+
+.nh-article-meta--overlay {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.nh-article-meta--overlay .nh-article-meta__item:first-child {
+  color: #fff;
+}
+
+.nh-article-meta--overlay .nh-article-meta__dot {
+  background: rgba(255, 255, 255, 0.45);
 }
 
 /* --- Body + table of contents ---------------------------------------------- */
@@ -220,8 +378,27 @@
     grid-template-columns: 28rem minmax(0, 1fr);
   }
 
-  .nh-article-body--toc-left .nh-toc--desktop {
-    order: -1;
+  /* Both columns are placed explicitly rather than left to source order.
+     The wrapper has three children — the mobile TOC, the desktop TOC and the
+     copy — and the mobile one is display:none here, so auto-placement put the
+     desktop TOC in the wide column and squeezed the article into the 28rem
+     rail. Naming the cells keeps the copy wide whichever side the TOC is on. */
+  .nh-article-body--with-toc > .article-template__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .nh-article-body--with-toc > .nh-toc--desktop {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .nh-article-body--toc-left > .article-template__content {
+    grid-column: 2;
+  }
+
+  .nh-article-body--toc-left > .nh-toc--desktop {
+    grid-column: 1;
   }
 
   /* --header-height is set on <html> by the sticky-header component, but only
@@ -238,9 +415,215 @@
   }
 }
 
-/* Anchor jumps have to clear the header when it re-reveals on scroll-up. */
+/* ==========================================================================
+   Article prose
+   theme.liquid sets <body> to 1.4rem with 0.06rem letter-spacing, and nothing
+   ever raised it for .rte — so merchant-authored copy rendered at 14px with
+   tracked-out letters. That single fact was most of why the page read as
+   "basic". Three tokens drive the scale; the breakpoints only retune them.
+
+   No max-width here: every band on this page is one 1280px rail by request,
+   so the copy fills it. Capping the paragraph measure at ~72rem (≈73
+   characters) is the one change that would make long articles easier to read.
+   ========================================================================== */
+.article-template__content {
+  --nh-prose-size: 1.9rem;
+  --nh-prose-lead: 1.75;
+  --nh-prose-gap: 2.4rem;
+
+  margin-top: 4rem;
+  margin-bottom: 4.8rem;
+  font-size: var(--nh-prose-size);
+  line-height: var(--nh-prose-lead);
+  letter-spacing: 0;
+}
+
+/* base.css zeroes the first child's margin, but the heading rules below are
+   equally specific and load later, so a leading <h2> would pick its own
+   margin back up. */
+.article-template__content > *:first-child {
+  margin-top: 0;
+}
+
+.article-template__content p {
+  margin: 0 0 var(--nh-prose-gap);
+  text-wrap: pretty;
+}
+
+/* The opening paragraph one step up, as an editorial stand-first.
+   :first-of-type, so an article that opens with a heading or an image is
+   untouched. */
+.article-template__content > p:first-of-type {
+  margin-bottom: 2.8rem;
+  color: var(--nh-heading);
+  font-size: 2.2rem;
+  line-height: 1.6;
+}
+
+.article-template__content h2,
+.article-template__content h3,
+.article-template__content h4,
+.article-template__content h5,
+.article-template__content h6 {
+  color: var(--nh-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
 .article-template__content h2 {
+  margin: 5.6rem 0 1.6rem;
+  font-size: clamp(2.4rem, 1.9rem + 0.9vw, 2.9rem);
+  line-height: 1.25;
+}
+
+.article-template__content h3 {
+  margin: 3.6rem 0 1rem;
+  font-size: 2.1rem;
+  line-height: 1.35;
+}
+
+.article-template__content h4,
+.article-template__content h5,
+.article-template__content h6 {
+  margin: 2.8rem 0 0.8rem;
+  font-size: 1.8rem;
+  line-height: 1.4;
+}
+
+/* Anchor jumps have to clear the header when it re-reveals on scroll-up.
+   h3 needs it too, for merchant-authored #anchor links. */
+.article-template__content h2,
+.article-template__content h3 {
   scroll-margin-top: calc(var(--header-height, 9rem) + 2rem);
+}
+
+/* base.css ships list-style-position: inside, which runs wrapped bullet text
+   back under the marker — the clearest "typed, not typeset" tell in a long
+   list. */
+.article-template__content ul,
+.article-template__content ol {
+  margin: 0 0 var(--nh-prose-gap);
+  padding-left: 2.4rem;
+  list-style-position: outside;
+}
+
+.article-template__content li {
+  margin-bottom: 0.8rem;
+  padding-left: 0.4rem;
+  line-height: 1.7;
+}
+
+/* A marker is decoration, so the contrast floor for text does not apply —
+   this is the one place the raw brand orange appears inside the copy. */
+.article-template__content li::marker {
+  color: var(--nh-brand);
+  font-weight: 600;
+}
+
+.article-template__content li > ul,
+.article-template__content li > ol {
+  margin: 0.8rem 0 0;
+}
+
+/* base.css paints .rte links from --color-link, which on this theme resolves
+   to body grey — in-copy links were indistinguishable from the text. The text
+   stays ink (orange text is 2.3:1); the brand colour carries the underline. */
+.article-template__content a:not(.button) {
+  color: var(--nh-heading);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--nh-brand-rgb), 0.5);
+  text-decoration-thickness: 0.15rem;
+  text-underline-offset: 0.35rem;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.article-template__content a:not(.button):hover {
+  color: var(--nh-article-accent-ink);
+  text-decoration-color: var(--nh-article-accent-ink);
+}
+
+.article-template__content strong,
+.article-template__content b {
+  color: var(--nh-heading);
+  font-weight: var(--font-body-weight-bold, 700);
+}
+
+.article-template__content hr {
+  height: 0;
+  margin: 4.8rem 0;
+  border: 0;
+  border-top: 1px solid var(--nh-border);
+}
+
+/* base.css sets .rte blockquote to display: inline-flex with negative child
+   margins, so it renders as a shrink-wrapped blob with its text clipped top
+   and bottom. Reset to a block pull quote. */
+.article-template__content blockquote {
+  display: block;
+  margin: 4rem 0;
+  padding: 0 0 0 2.4rem;
+  border-left: 2px solid var(--nh-brand);
+  color: var(--nh-heading);
+  font-size: 2.2rem;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.article-template__content blockquote > * {
+  margin: 0 0 1.2rem;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.article-template__content blockquote > *:last-child {
+  margin-bottom: 0;
+}
+
+.article-template__content table {
+  width: 100%;
+  margin: 3.2rem 0;
+  border-collapse: collapse;
+  font-size: 1.6rem;
+  line-height: 1.6;
+}
+
+.article-template__content th,
+.article-template__content td {
+  padding: 1.2rem 1.4rem;
+  border-bottom: 1px solid var(--nh-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.article-template__content th {
+  color: var(--nh-heading);
+  font-weight: 600;
+}
+
+/* Pictures in the copy: base.css gives .rte img the theme's media border and
+   a 0px radius, which next to a 1.6rem hero reads as a mistake. */
+.article-template__content img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  border: 0;
+  border-radius: 1.2rem;
+  box-shadow: none;
+}
+
+.article-template__content figure {
+  margin: 4rem 0;
+}
+
+.article-template__content figcaption {
+  margin: 1.2rem 0 0;
+  color: var(--nh-article-label-ink);
+  font-size: 1.4rem;
+  line-height: 1.5;
+  text-align: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -249,18 +632,65 @@
   }
 }
 
-/* --- Tags ------------------------------------------------------------------ */
-.nh-tags {
-  margin-top: 3.2rem;
+/* --- End matter: tags, share, author ---------------------------------------
+   These three used to be separate blocks, one of them a bordered card. Three
+   frames in a row flatten the hierarchy, so nothing reads as more important
+   than anything else and the whole tail looks like filler. They are now one
+   column divided by hairlines, with a shared uppercase label gutter on the
+   left so the bands lock to a common vertical line.
+
+   Each band carries the divider by default and the adjacency rules strip it
+   from whichever band is not first. That is what makes the empty states work:
+   an article with no tags, or with the author block removed in the editor,
+   still produces exactly one rule and never a doubled one. */
+.nh-tags,
+.nh-share,
+.nh-author {
+  margin-top: 4rem;
+  padding-top: 3.2rem;
+  border-top: 1px solid var(--nh-border);
 }
 
-.nh-tags__title {
-  margin: 0 0 1rem;
-  color: var(--nh-muted);
-  font-size: 1.3rem;
+.nh-tags + .nh-share,
+.nh-tags + .nh-author,
+.nh-share + .nh-tags,
+.nh-share + .nh-author,
+.nh-author + .nh-tags,
+.nh-author + .nh-share {
+  margin-top: 2.4rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* The shared label gutter: one rule for three labels in three snippets. */
+.nh-tags__title,
+.nh-share__label,
+.nh-author__kicker {
+  flex: 0 0 9rem;
+  margin: 0;
+  color: var(--nh-article-label-ink);
+  font-size: 1.2rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
+  line-height: 1;
   text-transform: uppercase;
+}
+
+/* Optically centres each label against the row it labels. */
+.nh-tags__title {
+  line-height: 3.6rem;
+}
+
+.nh-share__label {
+  line-height: 4.4rem;
+}
+
+/* --- Tags ------------------------------------------------------------------ */
+.nh-tags {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
 }
 
 .nh-tags__list {
@@ -272,35 +702,32 @@
 }
 
 .nh-tags__pill {
-  display: inline-block;
-  padding: 0.7rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 3.6rem;
+  padding: 0 1.4rem;
   border: 1px solid var(--nh-border);
   border-radius: 999px;
+  background: var(--nh-surface);
   color: var(--nh-body);
   font-size: 1.3rem;
   line-height: 1.2;
   text-decoration: none;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
 .nh-tags__pill:hover {
-  border-color: rgba(var(--nh-brand-rgb), 0.45);
-  color: var(--nh-brand);
+  border-color: rgba(var(--nh-brand-rgb), 0.55);
+  background: rgba(var(--nh-brand-rgb), 0.08);
+  color: var(--nh-article-accent-ink);
 }
 
 /* --- Share ----------------------------------------------------------------- */
 .nh-share {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
-  gap: 1.2rem;
-  margin-top: 3.2rem;
-}
-
-.nh-share__label {
-  color: var(--nh-muted);
-  font-size: 1.4rem;
-  font-weight: 600;
+  gap: 1rem 2rem;
 }
 
 .nh-share__list {
@@ -311,14 +738,17 @@
   padding: 0;
 }
 
+/* 3.8rem was 38px, under the 44px touch minimum — and these are the only
+   icon-only targets on the page. */
 .nh-share__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.8rem;
-  height: 3.8rem;
+  width: 4.4rem;
+  height: 4.4rem;
   border: 1px solid var(--nh-border);
   border-radius: 50%;
+  background: var(--nh-surface);
   color: var(--nh-body);
   transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
@@ -328,30 +758,78 @@
   height: 1.8rem;
 }
 
+/* Was a solid orange fill with a white icon — 2.3:1, so the icon all but
+   vanished on hover. A tint plus the darkened ink instead. */
 .nh-share__btn:hover {
-  border-color: var(--nh-brand);
-  background: var(--nh-brand);
-  color: var(--nh-on-brand);
+  border-color: rgba(var(--nh-brand-rgb), 0.55);
+  background: rgba(var(--nh-brand-rgb), 0.08);
+  color: var(--nh-article-accent-ink);
 }
 
-/* --- Author box ------------------------------------------------------------ */
+/* Dawn's share-button prints its label as visible text, and nh-share-row
+   feeds the same setting to .nh-share__label — so the row read
+   "SHARE (wa)(f)(x) [Share]". Collapsed to a fourth matching circle.
+   font-size: 0 is the only hook: the label is a bare text node inside
+   <summary> with no element of its own. */
+.nh-share .share-button {
+  display: inline-block;
+}
+
+.nh-share .share-button__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  min-height: 4.4rem;
+  padding: 0;
+  border: 1px solid var(--nh-border);
+  border-radius: 50%;
+  background: var(--nh-surface);
+  /* style.css:385 sets .share-button__button { color: var(--nh-brand)
+     !important } globally, at 2.3:1. This is the one !important needed. */
+  color: var(--nh-body) !important;
+  font-size: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.nh-share .share-button__button:hover {
+  border-color: rgba(var(--nh-brand-rgb), 0.55);
+  background: rgba(var(--nh-brand-rgb), 0.08);
+  text-decoration: none;
+}
+
+.nh-share .share-button__button .svg-wrapper,
+.nh-share .share-button__button svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  min-width: 0;
+  margin: 0;
+}
+
+/* --- Author ----------------------------------------------------------------
+   De-framed: a byline is not a card. The only framed objects left on the page
+   are the real cards in the related row, which is what makes those read as
+   the thing to click. */
 .nh-author {
   display: flex;
   align-items: flex-start;
-  gap: 1.6rem;
-  margin-top: 3.2rem;
-  padding: 2rem;
-  border: 1px solid var(--nh-border);
-  border-radius: 1.6rem;
+  gap: 1.8rem;
+}
+
+.nh-author__kicker {
+  flex: none;
+  margin-bottom: 0.6rem;
 }
 
 .nh-author__avatar {
   flex-shrink: 0;
-  width: 6.4rem;
-  height: 6.4rem;
+  width: 5.6rem;
+  height: 5.6rem;
   overflow: hidden;
   border-radius: 50%;
-  background: #f2f2f2;
+  /* A brand tint, so an author with no photo still looks placed. */
+  background: rgba(var(--nh-brand-rgb), 0.1);
 }
 
 .nh-author__img {
@@ -360,20 +838,12 @@
   object-fit: cover;
 }
 
-.nh-author__kicker {
-  margin: 0 0 0.4rem;
-  color: var(--nh-muted);
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .nh-author__name {
   margin: 0;
   color: var(--nh-heading);
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .nh-author__name a {
@@ -382,61 +852,65 @@
 }
 
 .nh-author__name a:hover {
-  color: var(--nh-brand);
+  color: var(--nh-article-accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.35rem;
 }
 
 .nh-author__role {
-  margin: 0.2rem 0 0;
-  color: var(--nh-muted);
-  font-size: 1.3rem;
+  margin: 0.3rem 0 0;
+  color: var(--nh-article-label-ink);
+  font-size: 1.35rem;
 }
 
+/* Narrower than the copy on purpose: a two-line bio across the full rail
+   reads as body text; across 56rem it reads as a caption. */
 .nh-author__bio {
-  margin-top: 0.8rem;
+  max-width: 56rem;
+  margin-top: 1rem;
   color: var(--nh-body);
-  font-size: 1.4rem;
-  line-height: 1.6;
+  font-size: 1.55rem;
+  line-height: 1.65;
 }
 
 .nh-author__bio p {
   margin: 0;
 }
 
-/* --- Previous / next ------------------------------------------------------- */
+/* --- Previous / next --------------------------------------------------------
+   Two text blocks either side of a hairline, not two bordered cards — those
+   competed with the related cards directly below them for the same click. */
 .nh-article-nav {
   display: grid;
-  gap: 1.6rem;
-  margin-top: 4rem;
+  gap: 2.4rem;
+  margin-top: 4.8rem;
+  padding-top: 3.2rem;
+  border-top: 1px solid var(--nh-border);
 }
 
 .nh-article-nav__item {
   display: block;
-  padding: 1.6rem 2rem;
-  border: 1px solid var(--nh-border);
-  border-radius: 1.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   text-decoration: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.nh-article-nav__item:hover {
-  border-color: rgba(var(--nh-brand-rgb), 0.45);
-  box-shadow: 0 1rem 2.4rem rgba(0, 0, 0, 0.06);
 }
 
 .nh-article-nav__kicker {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  color: var(--nh-muted);
+  gap: 0.8rem;
+  color: var(--nh-article-label-ink);
   font-size: 1.2rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .nh-article-nav__arrow svg {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .nh-article-nav__item--prev .nh-article-nav__arrow {
@@ -450,15 +924,19 @@
   -webkit-line-clamp: 2;
   line-clamp: 2;
   overflow: hidden;
-  margin-top: 0.6rem;
+  margin-top: 0.8rem;
   color: var(--nh-heading);
-  font-size: 1.5rem;
-  line-height: 1.4;
-  transition: color 0.2s ease;
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.35;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
 .nh-article-nav__item:hover .nh-article-nav__title {
-  color: var(--nh-brand);
+  color: var(--nh-article-accent-ink);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--nh-brand-rgb), 0.5);
+  text-underline-offset: 0.4rem;
 }
 
 .nh-article-nav__item--next {
@@ -472,7 +950,12 @@
 @media screen and (min-width: 750px) {
   .nh-article-nav {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 3.2rem;
+  }
+
+  .nh-article-nav__item--next {
+    padding-left: 3.2rem;
+    border-left: 1px solid var(--nh-border);
   }
 }
 
@@ -484,14 +967,21 @@
 
 .nh-related__header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 1.6rem 2.4rem;
-  margin-bottom: 2rem;
+  gap: 1.2rem 2.4rem;
+  margin-bottom: 2.8rem;
+  padding-bottom: 1.8rem;
+  /* The rule makes the row announce itself as a new chapter rather than
+     floating after the byline. */
+  border-bottom: 1px solid var(--nh-border);
 }
 
 .nh-related__header .section-heading {
   margin: 0 !important;
+  font-size: clamp(2rem, 1.6rem + 0.8vw, 2.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 .nh-related__grid {
@@ -500,19 +990,106 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media screen and (min-width: 750px) {
+/* Was min-width: 750px, which squeezed four cards into a 738px tablet row.
+   Tablets stay 2-up; only real desktops go 4-up. */
+@media screen and (min-width: 990px) {
   .nh-related__grid {
     /* --nh-related-cols is how many cards were actually found, so 1-3 results
        stay at natural width instead of stretching across the row. */
     grid-template-columns: repeat(min(var(--nh-related-cols, 4), 4), minmax(0, 1fr));
-    gap: 2rem;
+    gap: 2.4rem;
+  }
+}
+
+/* --- Tablets ---------------------------------------------------------------
+   Only the prose tokens are retuned; the rules above do the rest. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .article-template__content {
+    --nh-prose-size: 1.8rem;
+  }
+
+  .article-template__content h2 {
+    font-size: 2.5rem;
   }
 }
 
 /* --- Phones ---------------------------------------------------------------- */
 @media screen and (max-width: 749px) {
+  .article-template__content {
+    --nh-prose-size: 1.7rem;
+    --nh-prose-lead: 1.72;
+    --nh-prose-gap: 2.2rem;
+    margin-top: 2.8rem;
+    margin-bottom: 3.6rem;
+  }
+
+  .article-template > .article-template__header {
+    margin-top: 2rem;
+    margin-bottom: 2.8rem;
+  }
+
+  /* The clamp floor is already 2.6rem; the 2.2rem that used to be here pushed
+     the headline BELOW its own floor, which is most of why the page felt
+     small on a phone. */
   .article-template__title {
+    font-size: 2.6rem;
+    line-height: 1.2;
+  }
+
+  .nh-article-eyebrow {
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .nh-article-meta {
+    font-size: 1.3rem;
+  }
+
+  .article-template__content > p:first-of-type {
+    font-size: 1.8rem;
+  }
+
+  .article-template__content h2 {
+    margin-top: 4rem;
     font-size: 2.2rem;
+    line-height: 1.3;
+  }
+
+  .article-template__content h3 {
+    margin-top: 2.8rem;
+    font-size: 1.9rem;
+  }
+
+  .article-template__content h4,
+  .article-template__content h5,
+  .article-template__content h6 {
+    font-size: 1.7rem;
+  }
+
+  .article-template__content blockquote {
+    margin: 3.2rem 0;
+    padding-left: 1.6rem;
+    font-size: 1.8rem;
+  }
+
+  .article-template__content hr {
+    margin: 3.6rem 0;
+  }
+
+  .article-template__content figure {
+    margin: 3.2rem 0;
+  }
+
+  .article-template__content img {
+    border-radius: 1rem;
+  }
+
+  /* 48vh of a 375x667 phone is a crop that changes with every phone height; a
+     fixed ratio is steadier and keeps the headline on the first screen. */
+  .article-template__hero-container .article-template__hero-adapt {
+    height: auto;
+    aspect-ratio: 16 / 10;
+    border-radius: 1.2rem;
   }
 
   .article-template__hero--overlay {
@@ -523,12 +1100,44 @@
     padding: 4rem 0 2rem;
   }
 
-  .nh-article-meta {
-    font-size: 1.3rem;
+  /* A 9rem label gutter is a quarter of a 375px line, so labels go above. */
+  .nh-tags,
+  .nh-share {
+    display: block;
+  }
+
+  .nh-tags__title,
+  .nh-share__label {
+    display: block;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .nh-tags__pill {
+    min-height: 4.4rem;
+    padding: 0 1.6rem;
+  }
+
+  .nh-tags,
+  .nh-share,
+  .nh-author {
+    margin-top: 3.2rem;
+    padding-top: 2.4rem;
+  }
+
+  /* (0,2,0), so it still beats the three-selector rule above regardless of
+     order. */
+  .nh-tags + .nh-share,
+  .nh-tags + .nh-author,
+  .nh-share + .nh-tags,
+  .nh-share + .nh-author,
+  .nh-author + .nh-tags,
+  .nh-author + .nh-share {
+    margin-top: 2rem;
   }
 
   .nh-author {
-    padding: 1.6rem;
+    gap: 1.4rem;
   }
 
   .nh-author__avatar {
@@ -536,17 +1145,66 @@
     height: 4.8rem;
   }
 
+  .nh-author__name {
+    font-size: 1.7rem;
+  }
+
+  .nh-author__bio {
+    font-size: 1.45rem;
+  }
+
+  .nh-article-nav {
+    gap: 2rem;
+    margin-top: 3.6rem;
+    padding-top: 2.4rem;
+  }
+
+  .nh-article-nav__item--next {
+    padding-top: 2rem;
+    border-top: 1px solid var(--nh-border);
+  }
+
+  /* First article in the blog: nh-article-nav emits a display:none spacer, so
+     without this the lone "next" block would sit under a doubled rule. */
+  .nh-article-nav__spacer + .nh-article-nav__item--next {
+    padding-top: 0;
+    border-top: 0;
+  }
+
   .nh-related {
-    margin-top: 4rem;
+    margin-top: 4.8rem;
+  }
+
+  .nh-related__header {
+    margin-bottom: 1.8rem;
+    padding-bottom: 1.4rem;
   }
 }
 
+/* --- Focus ------------------------------------------------------------------
+   An `outline: 2px solid var(--nh-brand)` ring is 2.3:1 on white, under the
+   3:1 floor for non-text — invisible to a low-vision keyboard user. */
+.article-template a:focus-visible,
+.article-template summary:focus-visible,
+.article-template button:focus-visible {
+  outline: 2px solid var(--nh-article-accent-ink);
+  outline-offset: 3px;
+  border-radius: 0.4rem;
+}
+
+.nh-share__btn:focus-visible,
+.nh-share .share-button__button:focus-visible {
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .nh-article-nav__item,
+  .article-template__content a,
+  .nh-article-eyebrow,
   .nh-article-nav__title,
   .nh-share__btn,
+  .nh-share .share-button__button,
   .nh-tags__pill,
   .nh-toc__link {
-    transition: none;
-  }
+    transition: none;}
 }

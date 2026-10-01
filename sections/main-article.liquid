@@ -151,6 +151,14 @@
             class="article-template__header page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
             {{ block.shopify_attributes }}
           >
+            {%- comment -%}
+              Category kicker: which shelf of the blog this article is on.
+              blog.url already carries any locale prefix — never hand-build
+              /blogs/<handle> here.
+            {%- endcomment -%}
+            {%- if blog.title != blank -%}
+              <a class="nh-article-eyebrow" href="{{ blog.url }}">{{ blog.title | escape }}</a>
+            {%- endif -%}
             <h1 class="article-template__title">{{ article.title | escape }}</h1>
             {%- render 'nh-article-meta', article: article, block: block, read_minutes: read_minutes -%}
           </header>
@@ -187,16 +195,6 @@
     -%}
   {%- endif -%}
 
-  <div class="article-template__back element-margin-top center{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-    <a href="{{ blog.url }}" class="article-template__link link animate-arrow">
-      <span class="icon-wrap">
-        <span class="svg-wrapper">
-          {{- 'icon-arrow.svg' | inline_asset_content -}}
-        </span>
-      </span>
-      {{ 'blogs.article.back_to_blog' | t: title: blog.title | escape }}
-    </a>
-  </div>
   {%- if blog.comments_enabled? -%}
     <div class="article-template__comment-wrapper background-secondary">
       <div
