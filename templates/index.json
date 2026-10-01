@@ -647,11 +647,29 @@
       "settings": {
         "heading": "LATEST FROM | OUR BLOGS",
         "content": "",
-        "blog": "blog",
         "article_limit": 6,
         "view_all_label": "View all",
-        "view_all_url": ""
-      }
+        "view_all_url": "",
+        "show_category": true
+      },
+      "blocks": {
+        "blog_news": {
+          "type": "blog",
+          "settings": {
+            "blog": "news"
+          }
+        },
+        "blog_blog": {
+          "type": "blog",
+          "settings": {
+            "blog": "blog"
+          }
+        }
+      },
+      "block_order": [
+        "blog_news",
+        "blog_blog"
+      ]
     },
     "read_more_content_VTWaD8": {
       "type": "content-with-image",

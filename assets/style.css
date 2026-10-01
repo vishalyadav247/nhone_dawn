@@ -5,6 +5,23 @@
    Reference: .claude/resources/design_theme.jpeg (NH ONE COLOR PALETTE)
    ========================================================================== */
 :root {
+
+  /* One gap for every card listing — product grids, carousels, category
+     tiles, blog cards, related and recommended rows. Carousels take the same
+     number through their Owl margin option, and Dawn's product grids through
+     Theme settings > Grid spacing (set to 10, which halves to 5 on phones). */
+  --nh-card-gap: 1rem;
+
+  /* Dawn sizes its product grids (collection, you-may-also-like, recommended)
+     from these four. The Theme settings range that normally feeds them steps
+     in 4s, so it cannot express 10 — they are overridden here from the same
+     token instead, so those rows match every other card listing. style.css
+     loads after theme.liquid's :root block, so this wins at equal
+     specificity. */
+  --grid-desktop-horizontal-spacing: var(--nh-card-gap);
+  --grid-desktop-vertical-spacing: var(--nh-card-gap);
+  --grid-mobile-horizontal-spacing: var(--nh-card-gap);
+  --grid-mobile-vertical-spacing: var(--nh-card-gap);
   /* --- Brand -------------------------------------------------------------
      PREFERRED: change the brand colour in the theme editor at
      Theme settings > NH ONE Brand. That emits an overriding :root block in
@@ -2421,6 +2438,12 @@ background-color: transparent !important;
 }
 
 @media screen and (max-width: 749px) {
+  :root {
+    --nh-card-gap: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 749px) {
   .main-blog__intro {
     font-size: 1.4rem;
   }
@@ -3353,10 +3376,6 @@ background-color: transparent !important;
 
 /* --- Phone: one feature per slide, auto-playing ------------------------- */
 @media screen and (max-width: 749px) {
-  .info-features-section {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-  }
 
   /* Owl turns the strip into a slider. Until it initialises, lay the features
      out as the same one-slide row (first feature showing, the rest clipped)
@@ -3675,7 +3694,7 @@ background-color: transparent !important;
 .nh-blog-grid {
   display: grid;
   grid-template-columns: repeat(min(var(--nh-blog-cols, 4), 4), minmax(0, 1fr));
-  gap: 2.4rem 2rem;
+  gap: var(--nh-card-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -3722,7 +3741,7 @@ background-color: transparent !important;
 
 @media screen and (max-width: 749px) {
   .nh-blog-grid {
-    gap: 1.8rem 1.2rem;
+    gap: var(--nh-card-gap);
   }
 
   .nh-blog-card__excerpt {
@@ -4195,9 +4214,9 @@ background-color: transparent !important;
 
   .collection-link-list__more {
     display: inline-block;
-    margin-top: 1.2rem;
-    font-size: 1.25rem;
-    font-weight: 600;
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 400;
     color: var(--nh-heading);
     text-decoration: underline;
     text-underline-offset: 0.4rem;
@@ -4256,7 +4275,7 @@ background-color: transparent !important;
 .blog-hub__tiles {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(22rem, 26rem));
-  gap: 2rem;
+  gap: var(--nh-card-gap);
   margin: 0 0 4.8rem;
   padding: 0;
   list-style: none;
@@ -4339,6 +4358,16 @@ background-color: transparent !important;
 }
 
 /* --- Category rows --------------------------------------------------------- */
+/* In-page jumps ease rather than snap — the blog hub's category tiles are
+   anchor links to the rows below, and arriving instantly gives no sense of
+   having travelled. Honours a reduced-motion preference; the rows carry
+   scroll-margin-top so they clear the sticky header. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 .blog-hub__row {
   margin: 0 0 5.6rem;
   scroll-margin-top: 12rem;
@@ -4421,7 +4450,7 @@ background-color: transparent !important;
 
   .blog-hub__tiles {
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-    gap: 1.2rem;
+    gap: var(--nh-card-gap);
     margin-bottom: 3.6rem;
   }
 

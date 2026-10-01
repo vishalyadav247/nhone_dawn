@@ -641,12 +641,6 @@
   text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
 /* --- End matter: tags, share, author ---------------------------------------
    These three used to be separate blocks, one of them a bordered card. Three
    frames in a row flatten the hierarchy, so nothing reads as more important
@@ -1001,7 +995,7 @@
 
 .nh-related__grid {
   display: grid;
-  gap: 1.8rem 1.2rem;
+  gap: var(--nh-card-gap);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -1012,7 +1006,7 @@
     /* --nh-related-cols is how many cards were actually found, so 1-3 results
        stay at natural width instead of stretching across the row. */
     grid-template-columns: repeat(min(var(--nh-related-cols, 4), 4), minmax(0, 1fr));
-    gap: 2.4rem;
+    gap: var(--nh-card-gap);
   }
 }
 

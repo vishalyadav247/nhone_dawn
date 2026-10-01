@@ -1,5 +1,8 @@
 {%- comment -%}
-  Custom blog slider: latest articles from one blog in an Owl Carousel.
+  Custom blog slider: the most recent articles from every blog, newest first,
+  in an Owl Carousel. Not tied to one category — the articles are gathered
+  across all blogs and sorted by publish date, so the row is always the
+  store's latest writing whichever category it came from.
 
   Header row: heading (+ optional intro text) on the left; on the right a
   "View all" link and the prev/next arrows. The arrows reuse the split-capsule
@@ -13,11 +16,22 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign blog = blogs[section.settings.blog.handle]
-  assign view_all_url = section.settings.view_all_url
-  if view_all_url == blank and blog
-    assign view_all_url = blog.url
-  endif
+  # The newest articles across every blog the merchant lists as a block.
+  # Liquid's blogs object is a lookup drop, not an iterable one, so the
+  # blogs have to be named — hence the blocks. Their articles are
+  # concatenated (Liquid cannot merge arrays in place) and sorted once.
+  assign recent_articles = '' | split: ''
+  for block in section.blocks
+    assign source_blog = block.settings.blog
+    if source_blog != blank
+      assign recent_articles = recent_articles | concat: source_blog.articles
+    endif
+  endfor
+  assign recent_articles = recent_articles | sort: 'published_at' | reverse
+
+  # "View all" goes to the blog hub, since the row is no longer one category.
+  # Theme settings > Blog > Blog hub page; the section can override it.
+  assign view_all_url = section.settings.view_all_url | default: settings.blog_hub_url
 -%}
 
 <div class="blog-slider-wrapper">
@@ -41,18 +55,26 @@
     </div>
 
     <div class="owl-carousel blog-slider">
-      {%- if blog -%}
-        {%- for article in blog.articles limit: section.settings.article_limit -%}
-          {%- comment -%}
-            'item blog-slide' are Owl's own hooks — the card itself lives in
-            snippets/nh-blog-card.liquid and is shared with the blog hub, the
-            category page and the article page's related row.
-          {%- endcomment -%}
-          {% render 'nh-blog-card', article: article, extra_classes: 'item blog-slide' %}
-        {%- endfor -%}
-      {%- else -%}
-        <p>No blog selected or blog does not exist.</p>
-      {%- endif -%}
+      {%- for article in recent_articles limit: section.settings.article_limit -%}
+        {%- comment -%}
+          'item blog-slide' are Owl's own hooks — the card itself lives in
+          snippets/nh-blog-card.liquid and is shared with the blog hub, the
+          category page and the article page's related row. The category pill
+          is on because the row now mixes articles from several blogs.
+        {%- endcomment -%}
+        {%- comment -%}
+          An article does not carry a reference to its blog, and the merged
+          list has lost which block it came from, so the parent blog is looked
+          up from the article URL: /blogs/<blog-handle>/<article-handle>.
+        {%- endcomment -%}
+        {%- assign article_blog_handle = article.url | split: '/blogs/' | last | split: '/' | first -%}
+        {% render 'nh-blog-card',
+          article: article,
+          blog: blogs[article_blog_handle],
+          show_category: section.settings.show_category,
+          extra_classes: 'item blog-slide'
+        %}
+      {%- endfor -%}
     </div>
   </div>
 </div>
@@ -68,7 +90,7 @@
       var build = function () {
       $carousel.owlCarousel({
         loop: false,
-        margin: 15,
+        margin: 10,
         nav: true,
         dots: false,
         navContainer: $nav.length ? $nav : false,
@@ -85,11 +107,11 @@
           },
           750: {
             items: 3,
-            margin: 15
+            margin: 10
           },
           1100: {
             items: 4,
-            margin: 15
+            margin: 10
           }
         }
       });
@@ -120,9 +142,11 @@
       "label": "Section Content"
     },
     {
-      "type": "blog",
-      "id": "blog",
-      "label": "Select Blog"
+      "type": "checkbox",
+      "id": "show_category",
+      "default": true,
+      "label": "Show category on each card",
+      "info": "The row mixes articles from every blog, so the pill says which one each came from."
     },
     {
       "type": "number",
@@ -145,7 +169,22 @@
       "type": "url",
       "id": "view_all_url",
       "label": "Link",
-      "info": "Leave empty to link to the selected blog."
+      "info": "Leave empty to use the blog hub page set in Theme settings > Blog."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "blog",
+      "name": "Blog",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "blog",
+          "id": "blog",
+          "label": "Blog",
+          "info": "Articles from every blog listed here are merged and shown newest first. Create a new blog? Add a block for it here, or its posts will never appear in this row."
+        }
+      ]
     }
   ],
   "presets": [

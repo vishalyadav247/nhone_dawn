@@ -67,7 +67,7 @@ $(function() {
 		nhWhenVisible(el, function () {
 		$(el).owlCarousel({
 			items: 3,
-			margin: 20,
+			margin: 10,
 			loop: true,
 			nav: true,
 			dots: false,
@@ -179,7 +179,7 @@ $('.CarCarousel').each(function () {
 
   $this.owlCarousel({
    	items: 10,
-	margin: 15,
+	margin: 10,
 	loop: true,
 	autoplay: true,
   	autoplayTimeout: 2000,
