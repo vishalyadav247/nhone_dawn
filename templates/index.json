@@ -67,6 +67,25 @@
         "color_scheme": ""
       }
     },
+    "info_features_dQaP6T": {
+      "type": "info-features",
+      "name": "Info Features",
+      "settings": {
+        "heading": "",
+        "feature1_title": "FREE DELIVERY",
+        "feature1_description": "Across the Country",
+        "feature1_icon": "shopify://shop_images/free-delivery.png",
+        "feature2_title": "EASY RETURNS",
+        "feature2_description": "7 Days Return Policy",
+        "feature2_icon": "shopify://shop_images/product-return.png",
+        "feature3_title": "COMFORT PAYMENTS",
+        "feature3_description": "COD and Online Payment",
+        "feature3_icon": "shopify://shop_images/payment-method.png",
+        "feature4_title": "CUSTOMER SUPPORT",
+        "feature4_description": "24 x 7 (Support)",
+        "feature4_icon": "shopify://shop_images/customer-service.png"
+      }
+    },
     "car_carousel_W9niJY": {
       "type": "car-carousel",
       "blocks": {
@@ -557,25 +576,6 @@
       "name": "Feature Box Grid",
       "settings": {}
     },
-    "info_features_dQaP6T": {
-      "type": "info-features",
-      "name": "Info Features",
-      "settings": {
-        "heading": "",
-        "feature1_title": "FREE DELIVERY",
-        "feature1_description": "Across the Country",
-        "feature1_icon": "shopify://shop_images/free-delivery.png",
-        "feature2_title": "EASY RETURNS",
-        "feature2_description": "7 Days Return Policy",
-        "feature2_icon": "shopify://shop_images/product-return.png",
-        "feature3_title": "COMFORT PAYMENTS",
-        "feature3_description": "COD and Online Payment",
-        "feature3_icon": "shopify://shop_images/payment-method.png",
-        "feature4_title": "CUSTOMER SUPPORT",
-        "feature4_description": "24 x 7 (Support)",
-        "feature4_icon": "shopify://shop_images/customer-service.png"
-      }
-    },
     "home_page_tabbber_rjDEBe": {
       "type": "home-page-tabbber",
       "blocks": {
@@ -657,7 +657,7 @@
       "type": "content-with-image",
       "name": "Read More Content Section",
       "settings": {
-        "background_color": "#FFF5F5",
+        "background_color": "#fff5f5",
         "heading": "NH ONE – Driving Innovation with Premium Car Accessories in India",
         "content": "<h3>Upgrade your vehicle with stylish and durable car accessories.</h3>\n<p>\nAt NH ONE, we believe a car is more than just a way to get from one place to another – it’s a statement of\nstyle, performance, and comfort. That’s why we bring you a wide range of premium car accessories in India\ndesigned to make every drive safer and more enjoyable.\n</p>\n<p>\nFrom LED headlights for better visibility to car mats, key covers, mobile chargers, and cleaning products, we\nprovide everything you need to maintain and upgrade your car.\n</p>\n<h3>Why Indian car owners choose NH ONE for accessories</h3>\n<p>\nWhen it comes to buying car accessories online, drivers across India trust NH ONE for quality and reliability.\nWe go beyond just selling products – we deliver solutions that transform your driving experience.\n</p>\n<ul>\n<li>Top-grade materials ensure long-lasting durability.</li>\n<li>Advanced technology like waterproof LED headlights and fast-charging car chargers.</li>\n<li>Affordable pricing without compromising quality.</li>\n<li>Customer-first service with fast delivery and easy returns.</li>\n</ul>\n<h3>Brighten every journey with advanced LED headlights</h3>\n<p>\nDriving at night or in harsh weather requires superior lighting. NH ONE offers high-performance LED headlights\nequipped with advanced cooling systems and IP68 waterproofing. These headlights provide:\n</p>\n<ul>\n<li>Crystal-clear visibility with powerful LED chips.</li>\n<li>Precise beam patterns that reduce glare for oncoming drivers.</li>\n<li>Durable construction built for Indian road conditions.</li>\n</ul>\n<p>Our LED car lights not only enhance safety but also give your vehicle a modern look.</p>\n<h3>Keep interiors spotless with premium car mats</h3>\n<p>\nDust, mud, and spills are part of everyday driving in India. Protect your interiors with NH ONE’s durable car\nmats, designed for all-weather use.\n</p>\n<ul>\n<li>Anti-slip surface for safe driving.</li>\n<li>Waterproof and easy-to-clean material.</li>\n<li>Tailored designs to fit multiple car models.</li>\n</ul>\n<p>These mats combine style with practicality, ensuring your car’s interiors remain fresh and clean.</p>\n<h3>Protect your keys with stylish car key covers</h3>\n<p>\nYour car keys deserve as much care as your vehicle. NH ONE’s car key covers not only keep them safe from\nscratches and dust but also add a stylish touch.\n</p>\n<ul>\n<li>Available in premium leather and silicone.</li>\n<li>Shockproof and dust-resistant designs.</li>\n<li>Multiple colors and textures to suit your style.</li>\n</ul>\n<p>Small upgrades like these bring both functionality and elegance to your everyday driving experience.</p>\n<h3>Stay powered on the road with fast-charging car mobile chargers</h3>\n<p>\nRunning out of battery during long drives is never ideal. With NH ONE’s fast-charging car chargers, you’ll never\nhave to worry about losing connectivity.\n</p>\n<ul>\n<li>Multiple USB ports for charging multiple devices.</li>\n<li>Surge and heat protection for safety.</li>\n<li>Compact design that fits seamlessly in your car.</li>\n</ul>\n<p>These chargers are a must-have for tech-savvy drivers in India.</p>\n<h3>Maintain your vehicle with car cleaning and care products</h3>\n<p>\nKeeping your car spotless is easier with NH ONE’s range of car cleaning accessories. From shampoos to microfiber\ntowels, each product is designed to protect your car’s paint and interior finish.\n</p>\n<ul>\n<li>Car shampoos that prevent scratches.</li>\n<li>Dashboard and interior cleaners for a polished look.</li>\n<li>High-quality towels for streak-free results.</li>\n</ul>\n<p>Our car care kits help preserve the showroom shine of your vehicle.</p>\n<h3>Simple guide to choosing the right accessories for your car</h3>\n<p>\nWith so many options online, selecting the right accessories can feel overwhelming. Here’s how NH ONE helps make\nthe choice easier:\n</p>\n<ul>\n<li>Focus on accessories that improve safety, comfort, or convenience.</li>\n<li>Invest in durable products made with quality materials.</li>\n<li>Ensure accessories are compatible with your car model.</li>\n<li>Look for advanced features like waterproofing or fast charging.</li>\n<li>Read customer feedback before making a purchase.</li>\n</ul>\n<p>Our collection includes only tested, high-performance products, so you can shop with confidence.</p>\n<h3>Extend your car’s life with smart care tips</h3>\n<p>\nAccessories do more than add style – they also protect your vehicle. Here are some tips to keep your car in top\nshape:\n</p>\n<ul>\n<li>Install car mats to shield interiors from dust and spills.</li>\n<li>Upgrade to LED headlights for safer night driving.</li>\n<li>Use cleaning shampoos to maintain the paint’s shine.</li>\n<li>Keep a mobile charger for emergencies.</li>\n<li>Add key covers to prevent key wear and tear.</li>\n</ul>\n<p>With NH ONE accessories, maintaining your car becomes simple and effective.</p>\n<h3>What makes NH ONE the best place to shop for car accessories online</h3>\n<p>\nThere are many stores selling car accessories in India, but NH ONE stands out for its focus on innovation,\nquality, and customer satisfaction.\n</p>\n<ul>\n<li>Quick and reliable delivery across India.</li>\n<li>Secure shopping with hassle-free returns.</li>\n<li>Expert guidance to help you choose the right accessories.</li>\n<li>Wide range covering interior, exterior, and performance upgrades.</li>\n</ul>\n<p>Thousands of customers nationwide trust NH ONE for car accessories that deliver real value.</p>\n<h3>Join the NH ONE community and enhance your drive</h3>\n<p>\nAt NH ONE, we don’t just sell accessories – we create automotive solutions that enhance safety, performance, and\nstyle. Whether you’re upgrading your headlights, protecting your interiors, or keeping your car in showroom\ncondition, we’ve got you covered.\n</p>\n<p>Start exploring our collection today at NH ONE and experience the difference.</p>",
         "collapsed_height": 25,
@@ -922,12 +922,12 @@
   },
   "order": [
     "banner_section_4ipiEf",
+    "info_features_dQaP6T",
     "car_carousel_W9niJY",
     "car_carousel_4JN3Rr",
     "top_category_section_tVBBqj",
     "home_page_tabbber_KiTEVe",
     "featured_box_section_W7xpeT",
-    "info_features_dQaP6T",
     "home_page_tabbber_rjDEBe",
     "content_section_NJcANL",
     "shopping_guide_section_4KLxKh",
