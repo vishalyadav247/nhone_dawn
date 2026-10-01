@@ -191,7 +191,15 @@
       var tabLinks = section.querySelectorAll('.tab-nav li');
       var tabPanes = section.querySelectorAll('.tab-pane');
 
-      initCarousel(section.querySelector('.tab-pane.active'));
+      // Build the first tab's carousel after load, once it nears the screen
+      // (nhWhenVisible lives in assets/main.js). Its pre-init layout in
+      // style.css already shows the same row until then.
+      var first = section.querySelector('.tab-pane.active');
+      if (typeof window.nhWhenVisible === 'function') {
+        window.nhWhenVisible(first, function () { initCarousel(first); });
+      } else {
+        initCarousel(first);
+      }
 
       tabLinks.forEach(function (tab) {
         function prefetch() {

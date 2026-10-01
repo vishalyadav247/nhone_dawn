@@ -63,6 +63,9 @@
       var $carousel = $(this);
       var $nav = $carousel.closest('.blog-slider-wrapper').find('.blog-slider__nav');
 
+      // Built after page load, once near the screen (nhWhenVisible in
+      // assets/main.js); style.css lays the row out statically until then.
+      var build = function () {
       $carousel.owlCarousel({
         loop: false,
         margin: 15,
@@ -93,12 +96,10 @@
 
       $nav.find('.owl-prev').attr('aria-label', 'Previous articles');
       $nav.find('.owl-next').attr('aria-label', 'Next articles');
+      };
 
-      // Owl measures slide widths at init; re-measure once fonts and images
-      // have loaded, in case the layout shifted.
-      $(window).on('load', function () {
-        $carousel.trigger('refresh.owl.carousel');
-      });
+      if (typeof window.nhWhenVisible === 'function') window.nhWhenVisible(this, build);
+      else build();
     });
   });
 </script>

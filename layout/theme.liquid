@@ -21,24 +21,31 @@
     -%}
     <link rel="canonical" href="{{ canonical_href }}">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    >
 
     <!-- Google Tag Manager -->
+    {%- comment -%}
+      GTM (and the gtag, Meta, Clarity and Bing tags it loads) starts after
+      the window load event, so its ~150 KB and main-thread work don't compete
+      with the first render. dataLayer exists from the start, so anything
+      pushed before then is queued and processed when GTM loads.
+    {%- endcomment -%}
     <script>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
+        function loadGtm() {
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        }
+        if (d.readyState === 'complete') {
+          loadGtm();
+        } else {
+          w.addEventListener('load', loadGtm, { once: true });
+        }
       })(window, document, 'script', 'dataLayer', 'GTM-5LDFGZR7');
     </script>
     <!-- End Google Tag Manager -->
@@ -86,6 +93,11 @@
 
     {%- liquid
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+      # The theme CSS also uses medium (500) and semibold (600) body text.
+      # These are served from Shopify's font CDN with the other weights; they
+      # used to come from a render-blocking Google Fonts stylesheet.
+      assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+      assign body_font_semibold = settings.type_body_font | font_modify: 'weight', '600'
       assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
       assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
     %}
@@ -93,6 +105,8 @@
     {% style %}
       {{ settings.type_body_font | font_face: font_display: 'swap' }}
       {{ body_font_bold | font_face: font_display: 'swap' }}
+      {{ body_font_medium | font_face: font_display: 'swap' }}
+      {{ body_font_semibold | font_face: font_display: 'swap' }}
       {{ body_font_italic | font_face: font_display: 'swap' }}
       {{ body_font_bold_italic | font_face: font_display: 'swap' }}
       {{ settings.type_header_font | font_face: font_display: 'swap' }}

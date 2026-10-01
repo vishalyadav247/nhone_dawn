@@ -103,7 +103,10 @@
         }
       }
 
-      sync();
+      // First build waits for page load and the bar nearing the screen
+      // (nhWhenVisible in assets/main.js); it has a one-slide pre-init layout.
+      if (typeof window.nhWhenVisible === 'function') window.nhWhenVisible(el, sync);
+      else sync();
       // addEventListener on a media query list is not in older Safari.
       if (phone.addEventListener) phone.addEventListener('change', sync);
       else phone.addListener(sync);

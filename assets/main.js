@@ -22,9 +22,50 @@ if(!previewMode){
 	}
 	});
 }
+
+/**
+ * Run a carousel's init only when it is worth it: after the page has loaded
+ * (or 3s after the HTML is ready, whichever is first) and once the element is
+ * within 300px of the viewport. Every carousel has a static pre-init layout
+ * (style.css, "Carousel pre-init layout"), so waiting is invisible, and Owl's
+ * layout work no longer competes with the first render. Carousels far down
+ * the page are only built if the visitor scrolls to them.
+ */
+window.nhWhenVisible = function (el, init) {
+	if (!el) return;
+	var done = false;
+	var watching = false;
+	function run() {
+		if (done) return;
+		done = true;
+		init();
+	}
+	function watch() {
+		if (watching) return;
+		watching = true;
+		if (!('IntersectionObserver' in window)) return run();
+		var io = new IntersectionObserver(function (entries) {
+			if (entries.some(function (e) { return e.isIntersecting; })) {
+				io.disconnect();
+				run();
+			}
+		}, { rootMargin: '300px 0px' });
+		io.observe(el);
+	}
+	if (document.readyState === 'complete') {
+		watch();
+	} else {
+		window.addEventListener('load', watch, { once: true });
+		setTimeout(watch, 3000);
+	}
+};
+
 $(function() {
-	$(".carousel").each(function() {
-		$(this).owlCarousel({
+	// .product-carousel (home-page-tabbber) is initialised by its section.
+	$(".carousel").not(".product-carousel").each(function() {
+		var el = this;
+		nhWhenVisible(el, function () {
+		$(el).owlCarousel({
 			items: 3,
 			margin: 20,
 			loop: true,
@@ -56,6 +97,7 @@ $(function() {
 					items: 4
 				}
 			}
+		});
 		});
 	});
 
@@ -101,7 +143,10 @@ $(function() {
 	});
 });
 
-$(".bannerCarousel").owlCarousel({
+$(".bannerCarousel").each(function () {
+	var el = this;
+	nhWhenVisible(el, function () {
+$(el).owlCarousel({
 	items: 1,
 	margin: 10,
 	loop: true,
@@ -120,9 +165,12 @@ $(".bannerCarousel").owlCarousel({
 		}
 	}
 });
+	});
+});
 
 $('.CarCarousel').each(function () {
   var $this = $(this);
+  nhWhenVisible(this, function () {
 
   var isRTL = $this.data('rtl') === true || $this.data('rtl') === "true";
 
@@ -171,6 +219,7 @@ $('.CarCarousel').each(function () {
 
   $navContainer.find('.owl-prev').attr('aria-label', 'Previous');
   $navContainer.find('.owl-next').attr('aria-label', 'Next');
+  });
 });
 
 $(".pdp-featured-collection").owlCarousel({

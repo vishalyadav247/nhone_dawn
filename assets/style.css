@@ -595,7 +595,8 @@ h3.card__heading {
    ========================================================================== */
 .bannerCarousel:not(.owl-loaded),
 .CarCarousel:not(.owl-loaded),
-.product-carousel:not(.owl-loaded) {
+.product-carousel:not(.owl-loaded),
+.blog-slider:not(.owl-loaded) {
   --pre-items: 1;
   --pre-gap: 0px;
   display: flex !important;
@@ -609,13 +610,15 @@ h3.card__heading {
    away when Owl takes over, which is itself a layout shift. */
 .bannerCarousel,
 .CarCarousel,
-.product-carousel {
+.product-carousel,
+.blog-slider {
   transition: none;
 }
 
 .bannerCarousel:not(.owl-loaded) > *,
 .CarCarousel:not(.owl-loaded) > *,
-.product-carousel:not(.owl-loaded) > * {
+.product-carousel:not(.owl-loaded) > *,
+.blog-slider:not(.owl-loaded) > * {
   flex: 0 0 calc((100% - (var(--pre-items) - 1) * var(--pre-gap)) / var(--pre-items));
   min-width: 0;
 }
@@ -645,8 +648,10 @@ h3.card__heading {
 /* Only the slides that fit are rendered, so the track never overflows. (An rtl
    track overflowing to the left is scored as a layout shift when Owl builds
    its stage, even though nothing visibly moves.) */
+.bannerCarousel:not(.owl-loaded) > :nth-child(n + 2),
 .CarCarousel:not(.owl-loaded) > :nth-child(n + 5),
-.product-carousel:not(.owl-loaded) > :nth-child(n + 3) {
+.product-carousel:not(.owl-loaded) > :nth-child(n + 3),
+.blog-slider:not(.owl-loaded) > :nth-child(n + 5) {
   display: none;
 }
 
@@ -655,9 +660,24 @@ h3.card__heading {
   --pre-gap: 5px;
 }
 
-.product-carousel:not(.owl-loaded) {
+.product-carousel:not(.owl-loaded),
+.blog-slider:not(.owl-loaded) {
   --pre-items: 2;
   --pre-gap: 5px;
+}
+
+/* custom-blog-slider: 3 across from 750px, 4 from 1100px, 15px apart. */
+@media (min-width: 750px) {
+  .blog-slider:not(.owl-loaded) {
+    --pre-items: 3;
+    --pre-gap: 15px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .blog-slider:not(.owl-loaded) {
+    --pre-items: 4;
+  }
 }
 
 @media (min-width: 600px) {
