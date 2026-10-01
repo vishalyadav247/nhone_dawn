@@ -82,6 +82,15 @@
   padding-right: var(--nh-article-gutter) !important;
 }
 
+/* main-article wraps the body — and only the body — in its own .page-width,
+   so the gutter is already applied by that wrapper. Applying it again here
+   inset the copy a further 1.5rem on phones, so paragraphs started 15px to
+   the right of the headline they belong to. */
+.article-template .page-width > .nh-article-body {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* The hero sits on the same rail as everything else. The related row is the
    one exception: it keeps Dawn's full .page-width so four cards have room. */
 .article-template .article-template__hero-container {
@@ -583,21 +592,27 @@
 
 .article-template__content table {
   width: 100%;
+  /* fixed, not auto: the rich-text editor writes <colgroup> widths in px, and
+     with auto layout those plus the cells' min-content width overflowed the
+     column on phones (a 490px table in a 456px measure). Fixed layout makes
+     the declared widths proportional and wraps the text instead. */
+  table-layout: fixed;
   margin: 3.2rem 0;
   border-collapse: collapse;
   font-size: 1.6rem;
   line-height: 1.6;
 }
 
-.article-template__content th,
-.article-template__content td {
+.article-template__content table th,
+.article-template__content table td {
   padding: 1.2rem 1.4rem;
   border-bottom: 1px solid var(--nh-border);
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
-.article-template__content th {
+.article-template__content table th {
   color: var(--nh-heading);
   font-weight: 600;
 }
@@ -1086,10 +1101,29 @@
 
   /* 48vh of a 375x667 phone is a crop that changes with every phone height; a
      fixed ratio is steadier and keeps the headline on the first screen. */
+  .article-template__hero-container {
+    padding-left: var(--nh-article-gutter);
+    padding-right: var(--nh-article-gutter);
+  }
+
   .article-template__hero-container .article-template__hero-adapt {
     height: auto;
     aspect-ratio: 16 / 10;
     border-radius: 1.2rem;
+  }
+
+  .article-template__content table th,
+  .article-template__content table td {
+    padding: 1rem;
+  }
+
+  /* The rich-text editor writes <col width="197"> etc. in px. Under
+     table-layout: fixed those widths are a floor, so tables declaring more
+     than the column is wide (155+165+170) overflowed the page on phones. A
+     width attribute is only a presentational hint, so this plain rule beats
+     it; the columns then divide the available width instead. */
+  .article-template__content table col {
+    width: auto;
   }
 
   .article-template__hero--overlay {
