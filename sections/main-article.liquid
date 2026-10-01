@@ -1,4 +1,66 @@
+{%- comment -%}
+  Article page — the third level of the blog:
+  hub (/blogs) -> category (/blogs/news) -> article (/blogs/news/<handle>).
+
+  Built on stock Dawn and kept ADDITIVE: the content, share and comments markup
+  below is Dawn's, because the published articles are merchant-authored rich
+  text and their formatting must not shift. The new pieces are breadcrumb,
+  meta line, table of contents, tags, author box, prev/next and related posts.
+
+  Dawn's block loop is order-driven, so anything a merchant might reasonably
+  reorder is a block. Page furniture that only ever belongs at the bottom —
+  prev/next and related — sits outside the loop, the same place Dawn already
+  hardcodes "back to blog" and the comments.
+
+  Styles: Dawn's section-blog-post.css, then section-blog-post-nh.css, which is
+  loaded second so it overrides at equal specificity without !important.
+{%- endcomment -%}
+
 {{ 'section-blog-post.css' | asset_url | stylesheet_tag }}
+{{ 'section-blog-post-nh.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # Pre-pass: the overlay hero has to draw the title inside the image block,
+  # which the block loop can't express on its own. Find the title block first,
+  # then let the featured_image case borrow it.
+  assign title_block = blank
+  assign has_image_block = false
+  for b in section.blocks
+    if b.type == 'title'
+      assign title_block = b
+    endif
+    if b.type == 'featured_image'
+      assign has_image_block = true
+    endif
+  endfor
+
+  # All four conditions matter. Without has_image_block the title block would be
+  # suppressed below while nothing ever drew the overlay title, leaving the
+  # article with NO <h1> at all — reachable by simply deleting the Featured
+  # image block in the theme editor.
+  assign hero_overlay = false
+  if section.settings.hero_layout == 'overlay' and article.image != blank and title_block != blank and has_image_block
+    assign hero_overlay = true
+  endif
+-%}
+
+{%- comment -%}
+  Reading time, computed once here so the article page and the cards agree —
+  same /200 formula as snippets/nh-blog-card.liquid.
+{%- endcomment -%}
+{%- liquid
+  assign wpm = 200
+  for b in section.blocks
+    if b.type == 'title' and b.settings.reading_wpm > 49
+      assign wpm = b.settings.reading_wpm
+    endif
+  endfor
+  assign word_count = article.content | strip_html | split: ' ' | size
+  assign read_minutes = word_count | divided_by: wpm
+  if read_minutes < 1
+    assign read_minutes = 1
+  endif
+-%}
 
 <article class="article-template">
   {%- for block in section.blocks -%}
@@ -7,80 +69,123 @@
         <div class="page-width page-width--narrow">
           {% render block %}
         </div>
+
+      {%- when 'breadcrumb' -%}
+        <div {{ block.shopify_attributes }}>
+          {% render 'breadcrumb' %}
+        </div>
+
       {%- when 'featured_image' -%}
         {%- if article.image -%}
+          {%- liquid
+            assign hero_mobile = article.metafields.custom.mobile_cover_image.value
+            if hero_mobile == blank or block.settings.use_mobile_cover == false
+              assign hero_mobile = article.image
+            endif
+          -%}
           <div
-            class="article-template__hero-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+            class="article-template__hero-container{% if hero_overlay %} article-template__hero-container--overlay{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
             {{ block.shopify_attributes }}
           >
             <div
-              class="article-template__hero-{{ block.settings.image_height }} media"
-              {% if block.settings.image_height == 'adapt' and article.image %}
+              class="article-template__hero-{{ block.settings.image_height }} media{% if hero_overlay %} article-template__hero--overlay{% endif %}"
+              {% if block.settings.image_height == 'adapt' and hero_overlay == false %}
                 style="padding-bottom: {{ 1 | divided_by: article.image.aspect_ratio | times: 100 }}%;"
               {% endif %}
             >
-              <img
-                srcset="
-                  {% if article.image.width >= 350 %}{{ article.image | image_url: width: 350 }} 350w,{% endif %}
-                  {% if article.image.width >= 750 %}{{ article.image | image_url: width: 750 }} 750w,{% endif %}
-                  {% if article.image.width >= 1100 %}{{ article.image | image_url: width: 1100 }} 1100w,{% endif %}
-                  {% if article.image.width >= 1500 %}{{ article.image | image_url: width: 1500 }} 1500w,{% endif %}
-                  {% if article.image.width >= 2200 %}{{ article.image | image_url: width: 2200 }} 2200w,{% endif %}
-                  {% if article.image.width >= 3000 %}{{ article.image | image_url: width: 3000 }} 3000w,{% endif %}
-                  {{ article.image | image_url }} {{ article.image.width }}w
-                "
-                sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 }}px, (min-width: 750px) calc(100vw - 10rem), 100vw"
-                src="{{ article.image | image_url: width: 1100 }}"
-                loading="eager"
-                fetchpriority="high"
-                width="{{ article.image.width }}"
-                height="{{ article.image.height }}"
-                alt="{{ article.image.alt | escape }}"
-              >
+              {%- comment -%}
+                The hero is the LCP element: eager, high priority, and always
+                with explicit width/height so it reserves its box.
+              {%- endcomment -%}
+              <picture>
+                {%- if hero_mobile != article.image -%}
+                  <source
+                    media="(max-width: 749px)"
+                    srcset="{{ hero_mobile | image_url: width: 900 }}"
+                    width="{{ hero_mobile.width }}"
+                    height="{{ hero_mobile.height }}"
+                  >
+                {%- endif -%}
+                <img
+                  srcset="
+                    {% if article.image.width >= 350 %}{{ article.image | image_url: width: 350 }} 350w,{% endif %}
+                    {% if article.image.width >= 750 %}{{ article.image | image_url: width: 750 }} 750w,{% endif %}
+                    {% if article.image.width >= 1100 %}{{ article.image | image_url: width: 1100 }} 1100w,{% endif %}
+                    {% if article.image.width >= 1500 %}{{ article.image | image_url: width: 1500 }} 1500w,{% endif %}
+                    {% if article.image.width >= 2200 %}{{ article.image | image_url: width: 2200 }} 2200w,{% endif %}
+                    {% if article.image.width >= 3000 %}{{ article.image | image_url: width: 3000 }} 3000w,{% endif %}
+                    {{ article.image | image_url }} {{ article.image.width }}w
+                  "
+                  sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 }}px, (min-width: 750px) calc(100vw - 10rem), 100vw"
+                  src="{{ article.image | image_url: width: 1100 }}"
+                  loading="eager"
+                  fetchpriority="high"
+                  width="{{ article.image.width }}"
+                  height="{{ article.image.height }}"
+                  alt="{{ article.image.alt | escape }}"
+                >
+              </picture>
+
+              {%- if hero_overlay -%}
+                <div class="article-template__hero-overlay">
+                  <div class="page-width">
+                    <h1 class="article-template__title article-template__title--overlay">
+                      {{- article.title | escape -}}
+                    </h1>
+                    {%- render 'nh-article-meta',
+                      article: article,
+                      block: title_block,
+                      read_minutes: read_minutes,
+                      modifier: 'overlay'
+                    -%}
+                  </div>
+                </div>
+              {%- endif -%}
             </div>
           </div>
         {%- endif -%}
 
       {%- when 'title' -%}
-        <header
-          class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
-          <h1
-            class="article-template__title"
+        {%- unless hero_overlay -%}
+          <header
+            class="article-template__header page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+            {{ block.shopify_attributes }}
           >
-            {{ article.title | escape }}
-          </h1>
-          {%- if block.settings.blog_show_date -%}
-            <span class="circle-divider caption-with-letter-spacing">
-              {{- article.published_at | time_tag: format: 'date' -}}
-            </span>
-          {%- endif -%}
-          {%- if block.settings.blog_show_author -%}
-            <span class="caption-with-letter-spacing">
-              <span>{{ article.author }}</span>
-            </span>
-          {%- endif -%}
-        </header>
+            <h1 class="article-template__title">{{ article.title | escape }}</h1>
+            {%- render 'nh-article-meta', article: article, block: block, read_minutes: read_minutes -%}
+          </header>
+        {%- endunless -%}
 
       {%- when 'content' -%}
-        <div
-          class="article-template__content page-width page-width--narrow rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
-          {{ article.content }}
+        <div class="page-width">
+          {% render 'nh-article-body', article: article, block: block %}
         </div>
 
+      {%- when 'tags' -%}
+        {%- render 'nh-article-tags', article: article, blog: blog, block: block -%}
+
       {%- when 'share' -%}
-        <div
-          class="article-template__social-sharing page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
-          {% assign share_url = request.origin | append: article.url %}
-          {% render 'share-button', block: block, share_link: share_url %}
-        </div>
+        {%- render 'nh-share-row', article: article, block: block -%}
+
+      {%- when 'author_box' -%}
+        {%- render 'nh-article-author', article: article, block: block -%}
     {%- endcase -%}
   {%- endfor -%}
+
+  {%- comment -%}
+    Below here is page furniture, fixed in order — the same category as Dawn's
+    own back-link and comments. Never make these blocks: a merchant dragging
+    "related articles" above the body is never what they meant.
+  {%- endcomment -%}
+
+  {%- if section.settings.show_article_nav -%}
+    {%- render 'nh-article-nav',
+      article: article,
+      blog: blog,
+      prev_label: section.settings.nav_prev_label,
+      next_label: section.settings.nav_next_label
+    -%}
+  {%- endif -%}
 
   <div class="article-template__back element-margin-top center{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
     <a href="{{ blog.url }}" class="article-template__link link animate-arrow">
@@ -174,117 +279,123 @@
             </div>
           {%- endif -%}
 
-          <div
-            {% if blog.moderated? == false %}
-              class="article-template__comments-fields"
-            {% endif %}
-          >
-            <div class="article-template__comment-fields">
-              <div class="field field--with-error">
-                <input
-                  type="text"
-                  name="comment[author]"
-                  id="CommentForm-author"
-                  class="field__input"
-                  autocomplete="name"
-                  value="{{ form.author }}"
-                  aria-required="true"
-                  required
-                  {% if form.errors contains 'author' %}
-                    aria-invalid="true"
-                    aria-describedby="CommentForm-author-error"
-                  {% endif %}
-                  placeholder="{{ 'blogs.article.name' | t }}"
-                >
-                <label class="field__label" for="CommentForm-author">
-                  {{- 'blogs.article.name' | t }}
-                  <span aria-hidden="true">*</span></label
-                >
-                {%- if form.errors contains 'author' -%}
-                  <small id="CommentForm-author-error">
-                    <span class="form__message">
-                      <span class="svg-wrapper">
-                        {{- 'icon-error.svg' | inline_asset_content -}}
-                      </span>
-                      {{- 'blogs.article.name' | t }}
-                      {{ form.errors.messages.author }}.</span
-                    >
-                  </small>
-                {%- endif -%}
-              </div>
-              <div class="field field--with-error">
-                <input
-                  type="email"
-                  name="comment[email]"
-                  id="CommentForm-email"
-                  autocomplete="email"
-                  class="field__input"
-                  value="{{ form.email }}"
-                  autocorrect="off"
-                  autocapitalize="off"
-                  aria-required="true"
-                  required
-                  {% if form.errors contains 'email' %}
-                    aria-invalid="true"
-                    aria-describedby="CommentForm-email-error"
-                  {% endif %}
-                  placeholder="{{ 'blogs.article.email' | t }}"
-                >
-                <label class="field__label" for="CommentForm-email">
-                  {{- 'blogs.article.email' | t }}
-                  <span aria-hidden="true">*</span></label
-                >
-                {%- if form.errors contains 'email' -%}
-                  <small id="CommentForm-email-error">
-                    <span class="form__message">
-                      <span class="svg-wrapper">
-                        {{- 'icon-error.svg' | inline_asset_content -}}
-                      </span>
-                      {{- 'blogs.article.email' | t }}
-                      {{ form.errors.messages.email }}.</span
-                    >
-                  </small>
-                {%- endif -%}
-              </div>
-            </div>
+          <div class="article-template__comment-fields">
             <div class="field field--with-error">
-              <textarea
-                rows="5"
-                name="comment[body]"
-                id="CommentForm-body"
-                class="text-area field__input"
+              <input
+                type="text"
+                name="comment[author]"
+                id="CommentForm-author"
+                class="field__input"
+                autocomplete="name"
+                value="{{ form.author }}"
                 aria-required="true"
                 required
-                {% if form.errors contains 'body' %}
+                {% if form.errors contains 'author' %}
                   aria-invalid="true"
-                  aria-describedby="CommentForm-body-error"
+                  aria-describedby="CommentForm-author-error"
                 {% endif %}
-                placeholder="{{ 'blogs.article.message' | t }}"
-              >{{ form.body }}</textarea>
-              <label class="form__label field__label" for="CommentForm-body">
-                {{- 'blogs.article.message' | t }}
+                placeholder="{{ 'blogs.article.name' | t }}"
+              >
+              <label class="field__label" for="CommentForm-author">
+                {{- 'blogs.article.name' | t }}
                 <span aria-hidden="true">*</span></label
               >
-            </div>
-            {%- if form.errors contains 'body' -%}
-              <small id="CommentForm-body-error">
-                <span class="form__message">
-                  <span class="svg-wrapper">
-                    {{- 'icon-error.svg' | inline_asset_content -}}
+              {%- if form.errors contains 'author' -%}
+                <small id="CommentForm-author-error">
+                  <span class="form__message">
+                    <span class="svg-wrapper">
+                      {{- 'icon-error.svg' | inline_asset_content -}}
+                    </span>
+                    {{ 'blogs.article.name' | t }}
+                    {{ form.errors.messages.author }}.
                   </span>
-                  {{- 'blogs.article.message' | t }}
-                  {{ form.errors.messages.body }}.</span
-                >
-              </small>
-            {%- endif -%}
+                </small>
+              {%- endif -%}
+            </div>
+
+            <div class="field field--with-error">
+              <input
+                type="email"
+                name="comment[email]"
+                id="CommentForm-email"
+                autocomplete="email"
+                class="field__input"
+                value="{{ form.email }}"
+                autocorrect="off"
+                autocapitalize="off"
+                aria-required="true"
+                required
+                {% if form.errors contains 'email' %}
+                  aria-invalid="true"
+                  aria-describedby="CommentForm-email-error"
+                {% endif %}
+                placeholder="{{ 'blogs.article.email' | t }}"
+              >
+              <label class="field__label" for="CommentForm-email">
+                {{- 'blogs.article.email' | t }}
+                <span aria-hidden="true">*</span></label
+              >
+              {%- if form.errors contains 'email' -%}
+                <small id="CommentForm-email-error">
+                  <span class="form__message">
+                    <span class="svg-wrapper">
+                      {{- 'icon-error.svg' | inline_asset_content -}}
+                    </span>
+                    {{ 'blogs.article.email' | t }}
+                    {{ form.errors.messages.email }}.
+                  </span>
+                </small>
+              {%- endif -%}
+            </div>
           </div>
+          <div class="field field--with-error">
+            <textarea
+              rows="5"
+              name="comment[body]"
+              id="CommentForm-body"
+              class="text-area field__input"
+              aria-required="true"
+              required
+              {% if form.errors contains 'body' %}
+                aria-invalid="true"
+                aria-describedby="CommentForm-body-error"
+              {% endif %}
+              placeholder="{{ 'blogs.article.message' | t }}"
+            >{{ form.body }}</textarea>
+            <label class="form__label field__label" for="CommentForm-body">
+              {{- 'blogs.article.message' | t }}
+              <span aria-hidden="true">*</span></label
+            >
+          </div>
+          {%- if form.errors contains 'body' -%}
+            <small id="CommentForm-body-error">
+              <span class="form__message">
+                <span class="svg-wrapper">
+                  {{- 'icon-error.svg' | inline_asset_content -}}
+                </span>
+                {{ 'blogs.article.message' | t }}
+                {{ form.errors.messages.body }}.</span
+              >
+            </small>
+          {%- endif -%}
           {%- if blog.moderated? -%}
-            <p class="article-template__comment-warning caption">{{ 'blogs.article.moderated' | t }}</p>
+            <p class="article-template__comment-warning">{{ 'blogs.article.moderated' | t }}</p>
           {%- endif -%}
           <input type="submit" class="button" value="{{ 'blogs.article.post' | t }}">
         {% endform %}
       </div>
     </div>
+  {%- endif -%}
+
+  {%- if section.settings.show_related -%}
+    {%- render 'nh-related-articles',
+      article: article,
+      blog: blog,
+      heading: section.settings.related_heading,
+      count: section.settings.related_count,
+      match_tags: section.settings.related_match_tags,
+      view_all_label: section.settings.related_view_all_label
+    -%}
   {%- endif -%}
 </article>
 
@@ -297,9 +408,92 @@
   "name": "t:sections.main-article.name",
   "tag": "section",
   "class": "section",
-  "blocks": [
+  "settings": [
     {
-      "type": "@app"
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "select",
+      "id": "hero_layout",
+      "options": [
+        { "value": "stacked", "label": "Image, then title" },
+        { "value": "overlay", "label": "Title over image" }
+      ],
+      "default": "stacked",
+      "label": "Hero layout",
+      "info": "\"Title over image\" needs a featured image and a Title block; it falls back to stacked without them."
+    },
+    {
+      "type": "header",
+      "content": "Previous / next article"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_article_nav",
+      "default": true,
+      "label": "Show previous / next links"
+    },
+    {
+      "type": "text",
+      "id": "nav_prev_label",
+      "label": "Previous label",
+      "default": "Previous article"
+    },
+    {
+      "type": "text",
+      "id": "nav_next_label",
+      "label": "Next label",
+      "default": "Next article"
+    },
+    {
+      "type": "header",
+      "content": "Related articles"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "default": true,
+      "label": "Show related articles"
+    },
+    {
+      "type": "text",
+      "id": "related_heading",
+      "label": "Heading",
+      "default": "You may also |like",
+      "info": "Put a pipe before the words you want in the brand colour. The pipe itself is not shown."
+    },
+    {
+      "type": "range",
+      "id": "related_count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "Number of articles"
+    },
+    {
+      "type": "checkbox",
+      "id": "related_match_tags",
+      "default": true,
+      "label": "Prefer articles sharing a tag",
+      "info": "Falls back to the most recent in the same category."
+    },
+    {
+      "type": "text",
+      "id": "related_view_all_label",
+      "label": "View all label",
+      "default": "View all",
+      "info": "Leave empty to hide the link."
+    }
+  ],
+  "blocks": [
+    { "type": "@app" },
+    {
+      "type": "breadcrumb",
+      "name": "Breadcrumb",
+      "limit": 1,
+      "settings": []
     },
     {
       "type": "featured_image",
@@ -330,6 +524,13 @@
           "default": "adapt",
           "label": "t:sections.main-article.blocks.featured_image.settings.image_height.label",
           "info": "t:sections.main-article.blocks.featured_image.settings.image_height.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_mobile_cover",
+          "default": true,
+          "label": "Use the mobile cover image on phones",
+          "info": "Reads the article metafield custom.mobile_cover_image when one is set."
         }
       ]
     },
@@ -349,13 +550,115 @@
           "id": "blog_show_author",
           "default": false,
           "label": "t:sections.main-article.blocks.title.settings.blog_show_author.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_reading_time",
+          "default": true,
+          "label": "Show reading time"
+        },
+        {
+          "type": "range",
+          "id": "reading_wpm",
+          "min": 100,
+          "max": 300,
+          "step": 10,
+          "default": 200,
+          "unit": "wpm",
+          "label": "Reading speed",
+          "info": "Used to estimate reading time. The article cards use the same figure."
         }
       ]
     },
     {
       "type": "content",
       "name": "t:sections.main-article.blocks.content.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Table of contents"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_toc",
+          "default": true,
+          "label": "Show table of contents",
+          "info": "Built from the H2 headings in the article body. Articles without enough headings simply don't get one."
+        },
+        {
+          "type": "text",
+          "id": "toc_title",
+          "label": "Title",
+          "default": "In this article"
+        },
+        {
+          "type": "select",
+          "id": "toc_position",
+          "options": [
+            { "value": "right", "label": "Right" },
+            { "value": "left", "label": "Left" }
+          ],
+          "default": "right",
+          "label": "Position on desktop"
+        },
+        {
+          "type": "checkbox",
+          "id": "toc_sticky",
+          "default": true,
+          "label": "Stick while scrolling"
+        },
+        {
+          "type": "range",
+          "id": "toc_min_headings",
+          "min": 2,
+          "max": 8,
+          "step": 1,
+          "default": 2,
+          "label": "Minimum headings",
+          "info": "Articles with fewer headings than this don't show a table of contents."
+        },
+        {
+          "type": "range",
+          "id": "toc_max_items",
+          "min": 5,
+          "max": 30,
+          "step": 1,
+          "default": 20,
+          "label": "Maximum entries"
+        },
+        {
+          "type": "checkbox",
+          "id": "toc_mobile_collapsed",
+          "default": true,
+          "label": "Start collapsed on phones"
+        }
+      ]
+    },
+    {
+      "type": "tags",
+      "name": "Tags",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tags_title",
+          "label": "Title",
+          "default": "Tagged in"
+        },
+        {
+          "type": "text",
+          "id": "hidden_tag_prefix",
+          "label": "Hide tags starting with",
+          "info": "For internal tags you don't want shown, e.g. \"cat:\". Leave empty to show all."
+        },
+        {
+          "type": "text",
+          "id": "hidden_tags",
+          "label": "Hide these tags",
+          "info": "Comma separated."
+        }
+      ]
     },
     {
       "type": "share",
@@ -365,16 +668,78 @@
         {
           "type": "text",
           "id": "share_label",
-          "label": "t:sections.main-article.blocks.share.settings.text.label",
-          "default": "t:sections.main-article.blocks.share.settings.text.default"
+          "default": "t:sections.main-article.blocks.share.settings.text.default",
+          "label": "t:sections.main-article.blocks.share.settings.text.label"
         },
         {
-          "type": "paragraph",
-          "content": "t:sections.main-article.blocks.share.settings.featured_image_info.content"
+          "type": "checkbox",
+          "id": "show_whatsapp",
+          "default": true,
+          "label": "WhatsApp"
         },
         {
-          "type": "paragraph",
-          "content": "t:sections.main-article.blocks.share.settings.title_info.content"
+          "type": "checkbox",
+          "id": "show_facebook",
+          "default": true,
+          "label": "Facebook"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_x",
+          "default": true,
+          "label": "X (Twitter)"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_pinterest",
+          "default": false,
+          "label": "Pinterest"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_copy",
+          "default": true,
+          "label": "Copy link",
+          "info": "Uses the device's native share sheet where available."
+        }
+      ]
+    },
+    {
+      "type": "author_box",
+      "name": "Author",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "author_heading",
+          "label": "Kicker",
+          "default": "Written by"
+        },
+        {
+          "type": "text",
+          "id": "default_author_name",
+          "label": "Fallback name",
+          "info": "Used when the article has no author set."
+        },
+        {
+          "type": "text",
+          "id": "default_author_role",
+          "label": "Fallback role"
+        },
+        {
+          "type": "richtext",
+          "id": "default_author_bio",
+          "label": "Fallback bio"
+        },
+        {
+          "type": "image_picker",
+          "id": "default_author_image",
+          "label": "Fallback photo"
+        },
+        {
+          "type": "url",
+          "id": "author_link",
+          "label": "Fallback link"
         }
       ]
     }

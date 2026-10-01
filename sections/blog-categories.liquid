@@ -1,0 +1,286 @@
+{%- comment -%}
+  Blog hub — the top level of the blog: every category, each with a heading and
+  its most recent articles.
+
+  Shopify has no /blogs route and Liquid cannot enumerate the store's blogs, so
+  each category is a block with its own blog picker. That also lets the merchant
+  order the categories and give each one its own tile image and description.
+
+  Lives on templates/page.blogs.json, which is attached to a page whose handle is
+  'blogs'. A URL redirect /blogs -> /pages/blogs makes the short URL work.
+
+  Styles live in assets/style.css under "Blog hub".
+{%- endcomment -%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{% render 'breadcrumb' %}
+
+<div class="blog-hub page-width section-{{ section.id }}-padding">
+  <header class="blog-hub__intro">
+    {%- if section.settings.heading != blank -%}
+      {% render 'section-heading', heading: section.settings.heading, tag: 'h1' %}
+    {%- else -%}
+      <h1 class="section-heading section-heading--display">{{ page.title | default: 'Blogs' | escape }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.intro != blank -%}
+      <div class="blog-hub__lede rte">{{ section.settings.intro }}</div>
+    {%- endif -%}
+  </header>
+
+  {%- comment -%} Quick-nav tiles: one per category, anchored to its row below. {%- endcomment -%}
+  {%- if section.settings.show_tiles -%}
+    {%- assign tile_count = 0 -%}
+    <ul class="blog-hub__tiles list-unstyled">
+      {%- for block in section.blocks -%}
+        {%- assign cat_blog = block.settings.blog -%}
+        {%- comment -%}
+          The articles_count guard must match the row loop below exactly —
+          otherwise an empty category gets a tile anchoring to a row that was
+          never rendered.
+        {%- endcomment -%}
+        {%- if cat_blog != blank and cat_blog.articles_count > 0 -%}
+          {%- liquid
+            assign tile_count = tile_count | plus: 1
+            assign cat_title = block.settings.heading | default: cat_blog.title
+            assign tile_image = block.settings.image
+            # No tile image set? Borrow the category's newest article cover.
+            if tile_image == blank
+              assign newest = cat_blog.articles.first
+              assign tile_image = newest.image
+            endif
+          -%}
+          <li class="blog-hub__tile" {{ block.shopify_attributes }}>
+            {%- comment -%}
+              Keyed on block.id, not the blog handle: nothing stops a merchant
+              adding two Category blocks for the same blog, which would emit a
+              duplicate DOM id and send both tiles to the first row.
+            {%- endcomment -%}
+            <a href="#category-{{ block.id }}" class="blog-hub__tile-link">
+              {%- if tile_image != blank -%}
+                {{
+                  tile_image
+                  | image_url: width: 600
+                  | image_tag:
+                    widths: '200, 300, 400, 600',
+                    sizes: '(min-width: 990px) 20vw, (min-width: 750px) 30vw, 45vw',
+                    loading: 'lazy',
+                    alt: cat_title,
+                    class: 'blog-hub__tile-img'
+                }}
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'blog-hub__tile-img blog-hub__tile-img--placeholder' }}
+              {%- endif -%}
+              <span class="blog-hub__tile-title">{{ cat_title | escape }}</span>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    {%- if tile_count == 0 -%}
+      {%- comment -%} Every block is missing its blog — don't leave an empty <ul>. {%- endcomment -%}
+      <style>
+        #shopify-section-{{ section.id }} .blog-hub__tiles { display: none; }
+      </style>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} One row per category: heading, view-all, then recent articles. {%- endcomment -%}
+  {%- assign rendered_rows = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- assign cat_blog = block.settings.blog -%}
+    {%- if cat_blog != blank and cat_blog.articles_count > 0 -%}
+      {%- liquid
+        assign rendered_rows = rendered_rows | plus: 1
+        assign cat_title = block.settings.heading | default: cat_blog.title
+        assign view_all = block.settings.view_all_label | default: 'View all'
+      -%}
+      <section
+        class="blog-hub__row"
+        id="category-{{ block.id }}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="blog-hub__row-header">
+          <div class="blog-hub__row-text">
+            <h2 class="blog-hub__row-title">
+              <a href="{{ cat_blog.url }}">{{ cat_title | escape }}</a>
+            </h2>
+            {%- if block.settings.description != blank -%}
+              <div class="blog-hub__row-desc rte">{{ block.settings.description }}</div>
+            {%- endif -%}
+          </div>
+
+          <a href="{{ cat_blog.url }}" class="blog-view-all blog-hub__row-link">
+            {{- view_all | escape }}
+            <span class="blog-hub__row-count">({{ cat_blog.articles_count }})</span>
+          </a>
+        </div>
+
+        <div class="nh-blog-grid nh-blog-grid--4">
+          {%- for article in cat_blog.articles limit: section.settings.articles_per_category -%}
+            {% render 'nh-blog-card',
+              article: article,
+              show_date: section.settings.show_date,
+              show_read_time: section.settings.show_read_time,
+              show_excerpt: section.settings.show_excerpt
+            %}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if rendered_rows == 0 -%}
+    <p class="blog-hub__empty">
+      {%- if request.design_mode -%}
+        Add a Category block and pick a blog for it in the theme editor to build this page.
+      {%- else -%}
+        There are no articles published yet. Please check back soon.
+      {%- endif -%}
+    </p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Blog categories",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Page heading",
+      "default": "Our |Blogs",
+      "info": "Put a pipe before the words you want in the brand colour, e.g. \"OUR |BLOGS\". The pipe itself is not shown. This renders as the page's H1."
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro text"
+    },
+    {
+      "type": "header",
+      "content": "Category tiles"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tiles",
+      "default": true,
+      "label": "Show category tiles",
+      "info": "A row of image tiles at the top that jump down to each category."
+    },
+    {
+      "type": "header",
+      "content": "Article cards"
+    },
+    {
+      "type": "range",
+      "id": "articles_per_category",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "Articles shown per category"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "default": true,
+      "label": "Show date"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_time",
+      "default": true,
+      "label": "Show reading time"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "default": false,
+      "label": "Show excerpt"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "blog",
+          "id": "blog",
+          "label": "Blog"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading override",
+          "info": "Leave empty to use the blog's own name."
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Tile image",
+          "info": "Leave empty to use the newest article's image."
+        },
+        {
+          "type": "text",
+          "id": "view_all_label",
+          "label": "View all label",
+          "default": "View all"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog categories",
+      "blocks": [{ "type": "category" }, { "type": "category" }]
+    }
+  ]
+}
+{% endschema %}

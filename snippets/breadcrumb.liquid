@@ -1,3 +1,183 @@
+{%- comment -%}
+  Breadcrumb trail, rendered on every template except the homepage.
+
+  The crumbs are built once into two parallel lists (names + urls) and then
+  rendered twice: as the visible nav, and as BreadcrumbList JSON-LD so the trail
+  can earn rich results. Keeping one source means the markup and the structured
+  data can never drift apart.
+
+  A crumb with an empty url is the current page: it renders as plain text, and
+  JSON-LD omits its "item", which is what schema.org expects for the last crumb.
+
+  Blog trails run Home / Blogs / Category / Article. The "Blogs" level is the
+  hub page (Theme settings > Blog > Blog hub page) — Shopify has no /blogs route,
+  so the hub is an ordinary page and its URL has to be configured, not assumed.
+  With no hub configured the level is simply skipped.
+{%- endcomment -%}
+
+{%- liquid
+  assign sep = '~~||~~'
+  assign crumb_names = ''
+  assign crumb_urls = ''
+
+  assign hub_url = settings.blog_hub_url
+  assign hub_label = settings.blog_hub_label | default: 'Blogs'
+-%}
+
+{%- unless template.name == 'index' -%}
+  {%- liquid
+    # ---- Home ----------------------------------------------------------------
+    assign crumb_names = crumb_names | append: sep | append: 'Home'
+    assign crumb_urls = crumb_urls | append: sep | append: routes.root_url
+
+    # ---- Product -------------------------------------------------------------
+    if template.name == 'product'
+      assign path_parts = request.path | split: '/'
+      assign collection_handle = ''
+      if path_parts.size > 3 and path_parts[1] == 'collections'
+        assign collection_handle = path_parts[2]
+      endif
+      if collection_handle != blank
+        assign breadcrumb_collection = collections[collection_handle]
+        if breadcrumb_collection and breadcrumb_collection.title != blank
+          assign crumb_names = crumb_names | append: sep | append: breadcrumb_collection.title
+          assign crumb_urls = crumb_urls | append: sep | append: breadcrumb_collection.url
+        endif
+      endif
+      assign crumb_names = crumb_names | append: sep | append: product.title
+      assign crumb_urls = crumb_urls | append: sep | append: ''
+
+    # ---- Collection ----------------------------------------------------------
+    elsif template.name == 'collection' and collection.handle
+      if current_tags != blank
+        assign crumb_names = crumb_names | append: sep | append: collection.title
+        assign crumb_urls = crumb_urls | append: sep | append: collection.url
+        assign tag_label = current_tags | join: ' + '
+        assign crumb_names = crumb_names | append: sep | append: tag_label
+        assign crumb_urls = crumb_urls | append: sep | append: ''
+      else
+        assign crumb_names = crumb_names | append: sep | append: collection.title
+        assign crumb_urls = crumb_urls | append: sep | append: ''
+      endif
+
+    # ---- Blog (category) and tagged blog -------------------------------------
+    elsif template.name == 'blog'
+      if hub_url != blank
+        assign crumb_names = crumb_names | append: sep | append: hub_label
+        assign crumb_urls = crumb_urls | append: sep | append: hub_url
+      endif
+      if current_tags != blank
+        assign crumb_names = crumb_names | append: sep | append: blog.title
+        assign crumb_urls = crumb_urls | append: sep | append: blog.url
+        assign tag_label = current_tags | join: ' + '
+        assign crumb_names = crumb_names | append: sep | append: tag_label
+        assign crumb_urls = crumb_urls | append: sep | append: ''
+      else
+        assign crumb_names = crumb_names | append: sep | append: blog.title
+        assign crumb_urls = crumb_urls | append: sep | append: ''
+      endif
+
+    # ---- Article -------------------------------------------------------------
+    elsif template.name == 'article'
+      if hub_url != blank
+        assign crumb_names = crumb_names | append: sep | append: hub_label
+        assign crumb_urls = crumb_urls | append: sep | append: hub_url
+      endif
+      if blog != blank
+        assign crumb_names = crumb_names | append: sep | append: blog.title
+        assign crumb_urls = crumb_urls | append: sep | append: blog.url
+      endif
+      assign crumb_names = crumb_names | append: sep | append: article.title
+      assign crumb_urls = crumb_urls | append: sep | append: ''
+
+    # ---- Cart ----------------------------------------------------------------
+    elsif template.name == 'cart'
+      assign crumb_names = crumb_names | append: sep | append: 'Your cart'
+      assign crumb_urls = crumb_urls | append: sep | append: ''
+
+    # ---- Page ----------------------------------------------------------------
+    elsif template.name == 'page'
+      assign crumb_names = crumb_names | append: sep | append: page.title
+      assign crumb_urls = crumb_urls | append: sep | append: ''
+
+    # ---- Anything else -------------------------------------------------------
+    else
+      assign crumb_names = crumb_names | append: sep | append: page_title
+      assign crumb_urls = crumb_urls | append: sep | append: ''
+    endif
+
+    assign names = crumb_names | remove_first: sep | split: sep
+    assign urls = crumb_urls | remove_first: sep | split: sep
+  -%}
+
+  <div class="breadcrumbs">
+    <div class="page-width">
+      <nav role="navigation" aria-label="breadcrumbs">
+        {%- for name in names -%}
+          {%- liquid
+            assign crumb_url = urls[forloop.index0]
+            assign is_last = forloop.last
+          -%}
+          {%- if crumb_url != blank and is_last == false -%}
+            <a href="{{ crumb_url }}" title="{{ name | escape }}">{{ name | escape }}</a>
+          {%- else -%}
+            <span
+              {% if template.name == 'product' or template.name == 'article' %}
+                class="product-breadcrumb-title"
+              {% endif %}
+            >
+              {{- name | escape -}}
+            </span>
+          {%- endif -%}
+          {%- unless is_last -%}
+            <span aria-hidden="true"> / </span>
+          {%- endunless -%}
+        {%- endfor -%}
+      </nav>
+    </div>
+  </div>
+
+  {%- comment -%}
+    Collection pages already get a BreadcrumbList from snippets/collection-json-ld.liquid
+    (rendered by main-collection-product-grid). Emitting a second one would ship two
+    conflicting graphs on every /collections/* URL, so the collection banner passes
+    emit_jsonld: false and the existing snippet stays the owner there.
+  {%- endcomment -%}
+  {%- unless emit_jsonld == false -%}
+  {%- capture breadcrumb_ld -%}
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {%- for name in names -%}
+          {%- liquid
+            assign crumb_url = urls[forloop.index0]
+            # blog_hub_url is a `url` setting: the picker stores a relative path,
+            # but the field also accepts a pasted absolute URL. Prepending
+            # shop.url to one of those yields "https://shop.inhttps://shop.in/...".
+            assign crumb_abs = crumb_url
+            unless crumb_url contains '://'
+              assign crumb_abs = shop.url | append: crumb_url
+            endunless
+          -%}
+          {
+            "@type": "ListItem",
+            "position": {{ forloop.index }},
+            "name": {{ name | json }}
+            {%- if crumb_url != blank and forloop.last == false -%}
+              , "item": {{ crumb_abs | json }}
+            {%- endif -%}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  {%- endcapture -%}
+  <script type="application/ld+json">
+    {{- breadcrumb_ld -}}
+  </script>
+  {%- endunless -%}
+{%- endunless -%}
+
 <style>
   .breadcrumbs{
       nav{
@@ -34,69 +214,6 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        @media screen and (max-width:400px)
       }
     }
 </style>
-
-<div class="breadcrumbs">
-  <div class="page-width">
-    {% unless template == 'index' %}
-      <nav role="navigation" aria-label="breadcrumbs">
-        <a href="{{ routes.root_url }}" title="Home">Home</a>
-        <span aria-hidden="true"> / </span>
-
-        {% if template contains 'product' %}
-          {% assign path_parts = request.path | split: '/' %}
-          {% assign collection_handle = '' %}
-
-          {% if path_parts.size > 3 and path_parts[1] == 'collections' %}
-            {% assign collection_handle = path_parts[2] %}
-          {% endif %}
-
-          {% if collection_handle != '' %}
-            {% assign breadcrumb_collection = collections[collection_handle] %}
-            {% if breadcrumb_collection %}
-              <a href="{{ breadcrumb_collection.url }}" title="{{ breadcrumb_collection.title }}">
-                {{ breadcrumb_collection.title | escape }}
-              </a>
-              <span aria-hidden="true"> / </span>
-            {% endif %}
-          {% endif %}
-
-          <span class="product-breadcrumb-title">{{ product.title | escape }}</span>
-
-        {% elsif template contains 'collection' and collection.handle %}
-          {% if current_tags %}
-            <a href="{{ collection.url }}" title="{{ collection.title }}">
-              {{ collection.title | escape }}
-            </a>
-            <span aria-hidden="true"> / </span>
-            <span>{{ current_tags | join: ' + ' }}</span>
-          {% else %}
-            <span>{{ collection.title | escape }}</span>
-          {% endif %}
-
-        {% elsif template == 'blog' %}
-          <span>Blogs</span>
-
-        {% elsif template == 'article' %}
-          <a href="{{ blog.url }}" title="{{ blog.title }}">
-            {{ blog.title | escape }}
-          </a>
-          <span aria-hidden="true"> - </span>
-          <span>{{ article.title | escape }}</span>
-
-        {% elsif template contains 'cart' %}
-          <span>Your cart</span>
-
-        {% elsif template contains 'page' %}
-          <span>{{ page.title | escape }}</span>
-
-        {% else %}
-          <span>{{ page_title | escape }}</span>
-        {% endif %}
-      </nav>
-    {% endunless %}
-  </div>
-</div>

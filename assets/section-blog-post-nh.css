@@ -1,0 +1,552 @@
+/* ==========================================================================
+   Article page — NH ONE redesign (sections/main-article.liquid)
+
+   Loaded straight after Dawn's section-blog-post.css, so it overrides at equal
+   specificity without !important. Kept out of assets/style.css deliberately:
+   style.css is render-blocking on every template, and none of this applies
+   anywhere but the article page.
+
+   Covers: hero (stacked + overlay), meta line, table of contents, tags,
+   author box, prev/next and the related-articles row.
+   ========================================================================== */
+
+/* Dawn puts a 5rem top margin on the first child of .article-template unless
+   it's the hero. With a breadcrumb block first, that gap lands in the wrong
+   place. */
+.article-template > .breadcrumbs:first-child,
+.article-template > div:first-child > .breadcrumbs {
+  margin-top: 0;
+}
+
+/* --- Header / hero --------------------------------------------------------- */
+.article-template__header {
+  margin-top: 3.2rem;
+  margin-bottom: 2.4rem;
+  text-align: left;
+}
+
+.article-template__title {
+  margin: 0 0 1.2rem;
+  color: var(--nh-heading);
+  font-size: 3.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  word-break: break-word;
+}
+
+/* Dawn sizes the hero with DIRECT-child selectors — base.css:1118 (.media > *)
+   and base.css:1129 (.media > img). Wrapping the image in <picture> means the
+   <picture> absorbs the first rule and the <img> inside matches neither, so
+   without this the image renders at its intrinsic width, top-left anchored and
+   clipped. There is no global `img { max-width: 100% }` in this theme. */
+.article-template__hero-container picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.article-template__hero-container picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.article-template__hero-container--overlay {
+  max-width: none;
+  margin: 0;
+}
+
+.article-template__hero--overlay {
+  position: relative;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.article-template__hero--overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-template__hero-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 6rem 0 3.2rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.article-template__title--overlay {
+  max-width: 90rem;
+  margin-bottom: 0.8rem;
+  color: #fff;
+}
+
+/* --- Meta line ------------------------------------------------------------- */
+.nh-article-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  color: var(--nh-muted);
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
+.nh-article-meta--overlay {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nh-article-meta__dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--nh-brand);
+}
+
+/* --- Body + table of contents ---------------------------------------------- */
+.nh-article-body {
+  max-width: var(--nh-article-measure, 78rem);
+  margin-inline: auto;
+}
+
+.nh-article-body .article-template__content {
+  min-width: 0;
+}
+
+.nh-toc__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: nh-toc;
+}
+
+.nh-toc__item {
+  margin: 0;
+}
+
+.nh-toc__link {
+  display: block;
+  padding: 0.6rem 0 0.6rem 1.4rem;
+  border-left: 2px solid var(--nh-border);
+  color: var(--nh-muted);
+  font-size: 1.4rem;
+  line-height: 1.45;
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.nh-toc__link:hover {
+  color: var(--nh-brand);
+  border-left-color: rgba(var(--nh-brand-rgb), 0.45);
+}
+
+.nh-toc__link[aria-current='true'] {
+  color: var(--nh-brand);
+  border-left-color: var(--nh-brand);
+  font-weight: 600;
+}
+
+.nh-toc__title {
+  margin: 0 0 1rem;
+  color: var(--nh-heading);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Mobile: an inline collapsible above the body. Deliberately NOT a floating
+   button or bottom sheet — a fixed mobile tab bar already owns the bottom of
+   the viewport. */
+.nh-toc--mobile {
+  margin: 0 0 2.4rem;
+  padding: 1.2rem 1.6rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.2rem;
+}
+
+.nh-toc__summary {
+  cursor: pointer;
+  color: var(--nh-heading);
+  font-size: 1.4rem;
+  font-weight: 600;
+  list-style: none;
+}
+
+.nh-toc__summary::-webkit-details-marker {
+  display: none;
+}
+
+.nh-toc__summary::after {
+  content: '＋';
+  float: right;
+  color: var(--nh-muted);
+  font-weight: 400;
+}
+
+.nh-toc--mobile[open] .nh-toc__summary::after {
+  content: '－';
+}
+
+.nh-toc--mobile .nh-toc__list {
+  margin-top: 1.2rem;
+}
+
+@media screen and (max-width: 989px) {
+  .nh-toc--desktop {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .nh-toc--mobile {
+    display: none;
+  }
+
+  .nh-article-body--with-toc {
+    display: grid;
+    gap: 0 5rem;
+    max-width: 118rem;
+    grid-template-columns: minmax(0, 1fr) 28rem;
+  }
+
+  .nh-article-body--toc-left {
+    grid-template-columns: 28rem minmax(0, 1fr);
+  }
+
+  .nh-article-body--toc-left .nh-toc--desktop {
+    order: -1;
+  }
+
+  /* --header-height is set on <html> by the sticky-header component, but only
+     when a sticky header type is configured — the fallback is mandatory.
+     NO z-index here: position:sticky with z-index:auto creates no stacking
+     context, so the header and its hover flyout keep painting above the rail.
+     Setting any z-index breaks that. */
+  .nh-toc--sticky {
+    position: sticky;
+    top: calc(var(--header-height, 9rem) + 2rem);
+    max-height: calc(100vh - var(--header-height, 9rem) - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Anchor jumps have to clear the header when it re-reveals on scroll-up. */
+.article-template__content h2 {
+  scroll-margin-top: calc(var(--header-height, 9rem) + 2rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* --- Tags ------------------------------------------------------------------ */
+.nh-tags {
+  margin-top: 3.2rem;
+}
+
+.nh-tags__title {
+  margin: 0 0 1rem;
+  color: var(--nh-muted);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nh-tags__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nh-tags__pill {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 999px;
+  color: var(--nh-body);
+  font-size: 1.3rem;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.nh-tags__pill:hover {
+  border-color: rgba(var(--nh-brand-rgb), 0.45);
+  color: var(--nh-brand);
+}
+
+/* --- Share ----------------------------------------------------------------- */
+.nh-share {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 3.2rem;
+}
+
+.nh-share__label {
+  color: var(--nh-muted);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.nh-share__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nh-share__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.8rem;
+  height: 3.8rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 50%;
+  color: var(--nh-body);
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.nh-share__btn svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.nh-share__btn:hover {
+  border-color: var(--nh-brand);
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+}
+
+/* --- Author box ------------------------------------------------------------ */
+.nh-author {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.6rem;
+  margin-top: 3.2rem;
+  padding: 2rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.6rem;
+}
+
+.nh-author__avatar {
+  flex-shrink: 0;
+  width: 6.4rem;
+  height: 6.4rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f2f2f2;
+}
+
+.nh-author__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nh-author__kicker {
+  margin: 0 0 0.4rem;
+  color: var(--nh-muted);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nh-author__name {
+  margin: 0;
+  color: var(--nh-heading);
+  font-size: 1.7rem;
+  font-weight: 600;
+}
+
+.nh-author__name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nh-author__name a:hover {
+  color: var(--nh-brand);
+}
+
+.nh-author__role {
+  margin: 0.2rem 0 0;
+  color: var(--nh-muted);
+  font-size: 1.3rem;
+}
+
+.nh-author__bio {
+  margin-top: 0.8rem;
+  color: var(--nh-body);
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.nh-author__bio p {
+  margin: 0;
+}
+
+/* --- Previous / next ------------------------------------------------------- */
+.nh-article-nav {
+  display: grid;
+  gap: 1.6rem;
+  margin-top: 4rem;
+}
+
+.nh-article-nav__item {
+  display: block;
+  padding: 1.6rem 2rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.4rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nh-article-nav__item:hover {
+  border-color: rgba(var(--nh-brand-rgb), 0.45);
+  box-shadow: 0 1rem 2.4rem rgba(0, 0, 0, 0.06);
+}
+
+.nh-article-nav__kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--nh-muted);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nh-article-nav__arrow svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.nh-article-nav__item--prev .nh-article-nav__arrow {
+  display: inline-flex;
+  transform: scaleX(-1);
+}
+
+.nh-article-nav__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-top: 0.6rem;
+  color: var(--nh-heading);
+  font-size: 1.5rem;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.nh-article-nav__item:hover .nh-article-nav__title {
+  color: var(--nh-brand);
+}
+
+.nh-article-nav__item--next {
+  text-align: right;
+}
+
+.nh-article-nav__item--next .nh-article-nav__kicker {
+  justify-content: flex-end;
+}
+
+@media screen and (min-width: 750px) {
+  .nh-article-nav {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+/* --- Related articles ------------------------------------------------------ */
+.nh-related {
+  margin-top: 5.6rem;
+  margin-bottom: 1.6rem;
+}
+
+.nh-related__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem 2.4rem;
+  margin-bottom: 2rem;
+}
+
+.nh-related__header .section-heading {
+  margin: 0 !important;
+}
+
+.nh-related__grid {
+  display: grid;
+  gap: 1.8rem 1.2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media screen and (min-width: 750px) {
+  .nh-related__grid {
+    /* --nh-related-cols is how many cards were actually found, so 1-3 results
+       stay at natural width instead of stretching across the row. */
+    grid-template-columns: repeat(min(var(--nh-related-cols, 4), 4), minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+/* --- Phones ---------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .article-template__title {
+    font-size: 2.2rem;
+  }
+
+  .article-template__hero--overlay {
+    aspect-ratio: 4 / 3;
+  }
+
+  .article-template__hero-overlay {
+    padding: 4rem 0 2rem;
+  }
+
+  .nh-article-meta {
+    font-size: 1.3rem;
+  }
+
+  .nh-author {
+    padding: 1.6rem;
+  }
+
+  .nh-author__avatar {
+    width: 4.8rem;
+    height: 4.8rem;
+  }
+
+  .nh-related {
+    margin-top: 4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nh-article-nav__item,
+  .nh-article-nav__title,
+  .nh-share__btn,
+  .nh-tags__pill,
+  .nh-toc__link {
+    transition: none;
+  }
+}

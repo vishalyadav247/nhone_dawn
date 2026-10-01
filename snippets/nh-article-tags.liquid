@@ -1,0 +1,63 @@
+{%- comment -%}
+  Tag pills linking to the blog's tagged views.
+
+  URL shape is {{ blog.url }}/tagged/<handleized tag>. Two things matter:
+  blog.url already carries any locale prefix, so never hand-build
+  /blogs/<handle>; and Shopify matches the HANDLEIZED tag, so a raw tag with a
+  space or punctuation 404s. Handleize in the href, escape in the text — never
+  the other way round.
+
+  Accepts:
+  - article, blog
+  - block: {Object} the 'tags' block
+
+  Usage:
+  {% render 'nh-article-tags', article: article, blog: blog, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign hide_list = block.settings.hidden_tags | downcase | split: ','
+  assign prefix = block.settings.hidden_tag_prefix | strip
+  assign prefix_len = prefix | size
+  assign shown = 0
+-%}
+
+{%- capture tag_pills -%}
+  {%- for tag in article.tags -%}
+    {%- liquid
+      assign skip = false
+      assign tag_lc = tag | downcase | strip
+
+      if prefix != blank
+        assign head = tag | slice: 0, prefix_len
+        if head == prefix
+          assign skip = true
+        endif
+      endif
+
+      for h in hide_list
+        assign h_clean = h | strip
+        if h_clean != blank and h_clean == tag_lc
+          assign skip = true
+        endif
+      endfor
+    -%}
+    {%- unless skip -%}
+      <li class="nh-tags__item">
+        <a class="nh-tags__pill" rel="tag" href="{{ blog.url }}/tagged/{{ tag | handleize }}">
+          {{- tag | escape -}}
+        </a>
+      </li>
+      {%- assign shown = shown | plus: 1 -%}
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if shown > 0 -%}
+  <div class="nh-tags page-width page-width--narrow" {{ block.shopify_attributes }}>
+    {%- if block.settings.tags_title != blank -%}
+      <p class="nh-tags__title">{{ block.settings.tags_title | escape }}</p>
+    {%- endif -%}
+    <ul class="nh-tags__list list-unstyled">{{ tag_pills }}</ul>
+  </div>
+{%- endif -%}

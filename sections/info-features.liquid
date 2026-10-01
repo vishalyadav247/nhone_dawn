@@ -1,27 +1,126 @@
-<div class="info-features page-width">
-  {% for i in (1..4) %}
-    {% capture feature_icon %}feature{{ i }}_icon{% endcapture %}
-    {% capture feature_title %}feature{{ i }}_title{% endcapture %}
-    {% capture feature_description %}feature{{ i }}_description{% endcapture %}
+{%- comment -%}
+  Info features: the trust bar (free delivery, returns, payments, support).
 
-    <div class="feature">
-      <div>
-        {% if section.settings[feature_icon] %}
-        <img src="{{ section.settings[feature_icon] | img_url: 'large'}}" alt="{{ section.settings[feature_title] }} width="auto" height="auto"">
-      {% endif %}
-      </div>
-      <div>
-        <h3>{{ section.settings[feature_title] }}</h3>
-      <p>{{ section.settings[feature_description] }}</p>
-      </div>
-    </div>
-  {% endfor %}
+  A slim one-row strip: icon beside a short title and description, four
+  across with short hairline dividers. Optional heading above (empty by
+  default).
+
+  On phones it becomes an auto-playing carousel (no dots, no arrows), one
+  feature per slide laid out exactly like the desktop strip, using
+  the Owl Carousel already loaded by layout/theme.liquid. It is initialised
+  only below 750px and destroyed again above it, so the desktop strip is
+  untouched. The markup is divs with list roles because Owl injects its own
+  wrappers, which would not be valid inside a <ul>.
+
+  The icon images are plain black PNGs in mixed styles, so they are used as a
+  CSS mask (--icon, set on the card) and painted in the brand colour. Every
+  icon matches, and recolouring the brand in the theme editor recolours them.
+
+  Styles live in assets/style.css under "Info features".
+{%- endcomment -%}
+
+<div class="info-features-section page-width">
+  {%- if section.settings.heading != blank -%}
+    {% render 'section-heading', heading: section.settings.heading %}
+  {%- endif -%}
+  <div class="nh-trust" id="nh-trust-{{ section.id }}" role="list">
+    {%- for i in (1..4) -%}
+      {%- liquid
+        assign icon_key = 'feature' | append: i | append: '_icon'
+        assign title_key = 'feature' | append: i | append: '_title'
+        assign description_key = 'feature' | append: i | append: '_description'
+        assign icon = section.settings[icon_key]
+        assign title = section.settings[title_key]
+        assign description = section.settings[description_key]
+      -%}
+      {%- if title != blank or description != blank -%}
+        <div
+          class="nh-trust__item{% if icon %} nh-trust__item--has-icon{% endif %}"
+          role="listitem"
+          {% if icon %}
+            style="--icon: url('{{ icon | image_url: width: 240 }}');"
+          {% endif %}
+        >
+          {%- if icon -%}
+            <span class="nh-trust__icon" aria-hidden="true">
+              <span class="nh-trust__glyph"></span>
+            </span>
+          {%- endif -%}
+          <div class="nh-trust__text">
+            {%- if title != blank -%}
+              {%- comment -%} Titles are typed in caps; show them in title case ("Free Delivery"). {%- endcomment -%}
+              {%- assign title_words = title | split: ' ' -%}
+              {%- capture title_case -%}
+                {%- for word in title_words -%}{{ word | downcase | capitalize }}{% unless forloop.last %} {% endunless %}{%- endfor -%}
+              {%- endcapture -%}
+              <h3 class="nh-trust__title">{{ title_case | escape }}</h3>
+            {%- endif -%}
+            {%- if description != blank -%}
+              <p class="nh-trust__description">{{ description | escape | newline_to_br }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
 </div>
+
+<script>
+  (function () {
+    // jQuery and Owl are loaded with defer in layout/theme.liquid, so they do
+    // not exist while this inline script is parsed. Deferred scripts finish
+    // before DOMContentLoaded, so that is the earliest safe moment to start.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', start);
+    } else {
+      start();
+    }
+
+    function start() {
+      var el = document.getElementById('nh-trust-{{ section.id }}');
+      if (!el || typeof window.jQuery !== 'function') return;
+
+      var $el = window.jQuery(el);
+      var phone = window.matchMedia('(max-width: 749px)');
+
+      function sync() {
+        var on = $el.hasClass('owl-loaded');
+
+        if (phone.matches && !on) {
+          $el.addClass('owl-carousel').owlCarousel({
+            items: 1,
+            margin: 0,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 3000,
+            autoplayHoverPause: true,
+            nav: false,
+            dots: false
+          });
+        } else if (!phone.matches && on) {
+          $el.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+          $el.find('.owl-stage-outer').children().unwrap();
+        }
+      }
+
+      sync();
+      // addEventListener on a media query list is not in older Safari.
+      if (phone.addEventListener) phone.addEventListener('change', sync);
+      else phone.addListener(sync);
+    }
+  })();
+</script>
 
 {% schema %}
 {
   "name": "Info Features",
   "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Put a | before the words that should appear in the brand colour. Leave empty to hide the heading."
+    },
     {
       "type": "header",
       "content": "Feature 1"
@@ -41,7 +140,8 @@
     {
       "type": "image_picker",
       "id": "feature1_icon",
-      "label": "Icon"
+      "label": "Icon",
+      "info": "Single-colour icon on a transparent background. It is shown in the brand colour."
     },
 
     {
@@ -63,7 +163,8 @@
     {
       "type": "image_picker",
       "id": "feature2_icon",
-      "label": "Icon"
+      "label": "Icon",
+      "info": "Single-colour icon on a transparent background. It is shown in the brand colour."
     },
 
     {
@@ -85,7 +186,8 @@
     {
       "type": "image_picker",
       "id": "feature3_icon",
-      "label": "Icon"
+      "label": "Icon",
+      "info": "Single-colour icon on a transparent background. It is shown in the brand colour."
     },
 
     {
@@ -107,7 +209,8 @@
     {
       "type": "image_picker",
       "id": "feature4_icon",
-      "label": "Icon"
+      "label": "Icon",
+      "info": "Single-colour icon on a transparent background. It is shown in the brand colour."
     }
   ],
   "presets": [

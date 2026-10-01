@@ -42,28 +42,26 @@
   border-radius:0 !important;
 }
 
-/* Add-to-cart half of the pair: OUTLINE style per the NH ONE design spec —
-   white fill, --nh-border hairline, dark label, brand-coloured border on hover.
-   Dawn buttons are driven by these custom properties, so the loading spinner
-   follows automatically. The visible hairline is a real `border` because
-   style.css hides Dawn's ::before/::after border pseudo-elements on this button.
+/* Add-to-cart half of the pair: the SECONDARY button — dark fill, white label
+   (--nh-btn-secondary-*), beside the orange Buy Now. Dawn buttons are driven by
+   these custom properties, so the loading spinner follows automatically.
    Direct-child paths only — never the fetched content inside quick-add-modal. */
 .quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit,
 .quick-add:has(> .card-buy-now) > product-form .quick-add__submit {
-  --color-button: 255, 255, 255;
-  --color-button-text: 23, 23, 23;
+  --color-button: 23, 23, 23;
+  --color-button-text: 255, 255, 255;
   --alpha-button-background: 1;
   --alpha-button-border: 0;
-  border: 1px solid var(--nh-btn-outline-border);
+  border: 0;
   font-size: 1.3rem;
   padding-left: 0.4rem;
   padding-right: 0.4rem;
 }
 
+/* Same automatic darkening as every other filled button on the site. */
 .quick-add:has(> .card-buy-now) > modal-opener .quick-add__submit:hover,
 .quick-add:has(> .card-buy-now) > product-form .quick-add__submit:hover {
-  border-color: var(--nh-btn-outline-border-hover);
-  color: var(--nh-brand);
+  filter: brightness(var(--nh-btn-hover-darken, 0.88));
 }
 
 .card-buy-now.gokwik-checkout button.card-buy-now__btn {

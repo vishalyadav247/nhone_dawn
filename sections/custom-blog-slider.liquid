@@ -1,3 +1,108 @@
+{%- comment -%}
+  Custom blog slider: latest articles from one blog in an Owl Carousel.
+
+  Header row: heading (+ optional intro text) on the left; on the right a
+  "View all" link and the prev/next arrows. The arrows reuse the split-capsule
+  buttons shared with every slider (.nh-slider-nav in style.css) via Owl's
+  navContainer option.
+
+  Cards: compact framed cards with a square cover, date + reading time and
+  the title. 4 per view on desktop, 3 on tablets, 2 on phones.
+
+  Styles live in assets/style.css under "Blog slider".
+{%- endcomment -%}
+
+{%- liquid
+  assign blog = blogs[section.settings.blog.handle]
+  assign view_all_url = section.settings.view_all_url
+  if view_all_url == blank and blog
+    assign view_all_url = blog.url
+  endif
+-%}
+
+<div class="blog-slider-wrapper">
+  <div class="page-width">
+    <div class="blog-header">
+      <div class="blog-header__text">
+        {% render 'section-heading', heading: section.settings.heading %}
+        {%- if section.settings.content != blank -%}
+          <div class="blog-desc">{{ section.settings.content }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="blog-header__actions">
+        {%- if section.settings.view_all_label != blank and view_all_url != blank -%}
+          <a href="{{ view_all_url }}" class="blog-view-all">
+            {{- section.settings.view_all_label | escape -}}
+          </a>
+        {%- endif -%}
+        <div class="nh-slider-nav blog-slider__nav"></div>
+      </div>
+    </div>
+
+    <div class="owl-carousel blog-slider">
+      {%- if blog -%}
+        {%- for article in blog.articles limit: section.settings.article_limit -%}
+          {%- comment -%}
+            'item blog-slide' are Owl's own hooks — the card itself lives in
+            snippets/nh-blog-card.liquid and is shared with the blog hub, the
+            category page and the article page's related row.
+          {%- endcomment -%}
+          {% render 'nh-blog-card', article: article, extra_classes: 'item blog-slide' %}
+        {%- endfor -%}
+      {%- else -%}
+        <p>No blog selected or blog does not exist.</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    $('.blog-slider').each(function () {
+      var $carousel = $(this);
+      var $nav = $carousel.closest('.blog-slider-wrapper').find('.blog-slider__nav');
+
+      $carousel.owlCarousel({
+        loop: false,
+        margin: 15,
+        nav: true,
+        dots: false,
+        navContainer: $nav.length ? $nav : false,
+        navText: [
+          '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path></svg>',
+          '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path></svg>'
+        ],
+        responsive: {
+          0: {
+            items: 2,
+            margin: 12,
+            nav: true,
+            dots: true
+          },
+          750: {
+            items: 3,
+            margin: 15
+          },
+          1100: {
+            items: 4,
+            margin: 15
+          }
+        }
+      });
+
+      $nav.find('.owl-prev').attr('aria-label', 'Previous articles');
+      $nav.find('.owl-next').attr('aria-label', 'Next articles');
+
+      // Owl measures slide widths at init; re-measure once fonts and images
+      // have loaded, in case the layout shifted.
+      $(window).on('load', function () {
+        $carousel.trigger('refresh.owl.carousel');
+      });
+    });
+  });
+</script>
+
 {% schema %}
 {
   "name": "Custom Blog Slider",
@@ -23,6 +128,23 @@
       "id": "article_limit",
       "label": "Number of Articles",
       "default": 6
+    },
+    {
+      "type": "header",
+      "content": "View all link"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "Link text",
+      "default": "View all",
+      "info": "Leave empty to hide the link."
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "Link",
+      "info": "Leave empty to link to the selected blog."
     }
   ],
   "presets": [
@@ -32,228 +154,3 @@
   ]
 }
 {% endschema %}
-
-<div class="blog-slider-wrapper">
-  <div class="page-width">
-    <div class="blog-header">
-      {% render 'section-heading', heading: section.settings.heading %}
-      <div class="blog-desc">{{ section.settings.content }}</div>
-    </div>
-
-    <div class="owl-carousel blog-slider">
-      {% assign blog = blogs[section.settings.blog.handle] %}
-      {% if blog %}
-        {% for article in blog.articles limit: section.settings.article_limit %}
-          <div class="item blog-slide">
-            <a href="{{ article.url }}">
-              <div class="blog-card">
-                {% if article.image %}
-                  <div class="blog-image">
-                    <picture>
-                      {% comment %}
-                      {% if article.metafields.custom.mobile_cover_image != blank %}
-                        <source
-                          media="(max-width: 749px)"
-                          srcset="{{ article.metafields.custom.mobile_cover_image | image_url: width: 500 }}"
-                        >
-                      {% endif %}
-
-                      {% if article.metafields.custom.desktop_cover_image != blank %}
-                        <source
-                          media="(min-width: 750px)"
-                          srcset="{{ article.metafields.custom.desktop_cover_image | image_url: width: 500 }}"
-                        >
-                      {% endif %}
-                       {% endcomment %}
-
-                      <img
-                        src="{{ article.metafields.custom.mobile_cover_image | image_url: width: 500 }}"
-                        alt="{{ article.title }}"
-                        loading="lazy"
-                        width="1200"
-                        height="auto"
-                      >
-                    </picture>
-                  </div>
-                {% endif %}
-                <div class="blog-info">
-                  <h3 class="blog-heading">{{ article.title }}</h3>
-                  <p class="blog-date">{{ article.published_at | date: '%B %d, %Y' }}</p>
-                  <p class="blog-excerpt">
-                    {{ article.excerpt_or_content | strip_html | truncate: 150 }}
-                  </p>
-                </div>
-              </div>
-            </a>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No blog selected or blog does not exist.</p>
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-<style>
-  .blog-slider-wrapper {
-    margin-bottom:20px;
-    background: #fdfdfd;
-
-    a{
-      text-decoration:none;
-    }
-  }
-
-  .blog-header {
-    margin-bottom:20px;
-  }
-
-  .blog-card {
-    display: grid;
-    grid-template-columns:1fr;
-    background: #fff;
-    overflow: hidden;
-    height: 100%;
-    position:relative;
-
-    @media screen and (min-width:1100px){
-      grid-template-columns:1fr 1fr;
-      min-height: 350px;
-    }
-  }
-
-  .blog-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .blog-info {
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    left: -30px;
-    background: #ffffff;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 290px;
-  }
-
-  .blog-tag {
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--nh-heading);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .blog-heading {
-    font-weight: 500;
-    margin: 0;
-    text-transform: uppercase;
-  }
-
-  /* The whole card is a link, so hovering it tints the title with the brand
-     colour — the same hover every other link on the site uses. */
-  .blog-slide a:hover .blog-heading {
-    color: var(--nh-link-hover);
-  }
-
-  .blog-date {
-    font-size: 13px;
-    color: var(--nh-muted);
-    margin:5px 0 0 0;
-  }
-
-  .blog-excerpt {
-    font-size: 14px;
-    color: var(--nh-body);
-    margin-bottom:0;
-  }
-
-  .read-more {
-    align-self: flex-start;
-    background: var(--nh-btn-secondary-bg);
-    color: var(--nh-btn-secondary-label);
-    padding: 10px 20px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: filter 0.3s ease;
-  }
-
-  /* Same automatic darkening as every other button on the site. */
-  .read-more:hover {
-    filter: brightness(var(--nh-btn-hover-darken, 0.88));
-  }
-
-  /* Owl Carousel Custom Nav Placement */
-  .blog-slider-wrapper button.owl-prev{
-      left: -30px;
-  }
-
-  @media(max-width: 768px){
-    .blog-card{
-      flex-direction: column !important;
-      border: 1px solid #c0c0c0ba;
-    }
-    .blog-image img {
-      width: 100% !important;
-    }
-
-    .blog-desc{
-      text-align:center;
-    }
-    .blog-info {
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      left: 0;
-      background: #ffffff;
-      top: 0;
-      transform: none;
-      height: fit-content;
-    }
-  }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const $carousel = $('.blog-slider');
-    $carousel.owlCarousel({
-      loop: false,
-      margin: 20,
-      nav: false,
-      dots: true,
-      navText: [
-        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-					fill="none" stroke="currentColor" stroke-width="2" 
-					stroke-linecap="round" stroke-linejoin="round" 
-					class="feather feather-chevron-left">
-					<polyline points="15 18 9 12 15 6"></polyline>
-				</svg>`,
-        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-					fill="none" stroke="currentColor" stroke-width="2" 
-					stroke-linecap="round" stroke-linejoin="round" 
-					class="feather feather-chevron-right">
-					<polyline points="9 18 15 12 9 6"></polyline>
-				</svg>`,
-      ],
-      responsive: {
-        0: {
-          items: 1,
-        },
-        600: {
-          items: 1,
-        },
-        1100: {
-          items: 2,
-          nav: true,
-        },
-      },
-    });
-  });
-</script>

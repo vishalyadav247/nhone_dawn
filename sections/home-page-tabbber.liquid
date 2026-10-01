@@ -2,6 +2,60 @@
 <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
+<style>
+  #shopify-tabber-{{ section.id }} {
+
+    .owl-stage-outer{
+      padding-bottom:2px;
+    }
+  
+    .tab-nav {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 0 !important;
+      color:var(--nh-heading);
+
+      span.tab-nav{
+        gap: 10px;
+      }
+
+      li {
+        padding: 8px 16px;
+        border: 1px solid var(--nh-brand);
+        cursor: pointer;
+        border-radius: 4rem;
+        transition: 0.3s;
+
+        &.active {
+          background-color: var(--nh-brand);
+          color: #fff;
+          border-color: var(--nh-brand);
+        }
+      }
+    }
+    .tab-pane {
+      display: none;
+
+      &.active {
+        display: block;
+        margin-top: 20px;
+      }
+    }
+
+    .item {
+      text-align: center;
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+  }
+</style>
 
 <section class="shopify-tabber" id="shopify-tabber-{{ section.id }}">
   <div class="page-width">
@@ -63,51 +117,6 @@
     </div>
   </div>
 </section>
-
-<style>
-  .shopify-tabber .tab-nav {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    margin-top: 0 !important;
-    align-items: center;
-    padding-bottom:5px;
-
-    span.tab-nav{
-      gap: 10px;
-    }
-  }
-  .shopify-tabber .tab-nav li {
-    padding: 8px 16px;
-    border: 1px solid var(--nh-brand);
-    cursor: pointer;
-    border-radius: 4px;
-    transition: 0.3s;
-  }
-  .shopify-tabber .tab-nav li.active {
-    background-color: var(--nh-brand);
-    color: #fff;
-    border-color: var(--nh-brand);
-  }
-  .shopify-tabber .tab-pane {
-    display: none;
-  }
-  .shopify-tabber .tab-pane.active {
-    display: block;
-    margin-top: 20px;
-  }
-  .shopify-tabber .item {
-
-    text-align: center;
-  }
-  .shopify-tabber .item img {
-    max-width: 100%;
-    height: auto;
-  }
-</style>
-
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.shopify-tabber').forEach(function (section) {
@@ -128,14 +137,14 @@
               `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
               fill="none" stroke="currentColor" stroke-width="2" 
               stroke-linecap="round" stroke-linejoin="round" 
-              class="feather feather-chevron-left">
-              <polyline points="15 18 9 12 15 6"></polyline>
+              class="feather feather-arrow-left">
+              <path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
             </svg>`,
               `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
               fill="none" stroke="currentColor" stroke-width="2" 
               stroke-linecap="round" stroke-linejoin="round" 
-              class="feather feather-chevron-right">
-              <polyline points="9 18 15 12 9 6"></polyline>
+              class="feather feather-arrow-right">
+              <path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
             </svg>`,
             ],
             responsive: {
@@ -166,12 +175,12 @@
       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
         fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"></polyline>
+        <path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
       </svg>`,
       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
         fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"></polyline>
+        <path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
       </svg>`
     ],
     responsive: {

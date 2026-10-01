@@ -1,1 +1,77 @@
-{"sections":{"main":{"type":"main-article","blocks":{"featured_image":{"type":"featured_image","settings":{"image_height":"adapt"}},"title":{"type":"title","settings":{"blog_show_date":true,"blog_show_author":false}},"share":{"type":"share","settings":{"share_label":"Share"}},"content":{"type":"content","settings":{}}},"block_order":["featured_image","title","share","content"],"settings":{}}},"order":["main"]}
+{
+  "sections": {
+    "main": {
+      "type": "main-article",
+      "blocks": {
+        "breadcrumb": {
+          "type": "breadcrumb",
+          "settings": {}
+        },
+        "featured_image": {
+          "type": "featured_image",
+          "settings": {
+            "image_height": "adapt",
+            "use_mobile_cover": true
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "blog_show_date": true,
+            "blog_show_author": false,
+            "show_reading_time": true,
+            "reading_wpm": 200
+          }
+        },
+        "content": {
+          "type": "content",
+          "settings": {
+            "enable_toc": true,
+            "toc_title": "In this article",
+            "toc_position": "right",
+            "toc_sticky": true,
+            "toc_min_headings": 2,
+            "toc_max_items": 20,
+            "toc_mobile_collapsed": true
+          }
+        },
+        "tags": {
+          "type": "tags",
+          "settings": {
+            "tags_title": "Tagged in"
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share",
+            "show_whatsapp": true,
+            "show_facebook": true,
+            "show_x": true,
+            "show_pinterest": false,
+            "show_copy": true
+          }
+        },
+        "author_box": {
+          "type": "author_box",
+          "settings": {
+            "author_heading": "Written by"
+          }
+        }
+      },
+      "block_order": ["breadcrumb", "featured_image", "title", "content", "tags", "share", "author_box"],
+      "settings": {
+        "hero_layout": "stacked",
+        "show_article_nav": true,
+        "nav_prev_label": "Previous article",
+        "nav_next_label": "Next article",
+        "show_related": true,
+        "related_heading": "You may also |like",
+        "related_count": 4,
+        "related_match_tags": true,
+        "related_view_all_label": "View all"
+      }
+    }
+  },
+  "order": ["main"]
+}

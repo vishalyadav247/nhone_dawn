@@ -8,6 +8,8 @@
   - show_badges: {Boolean} Renders 'Sale' and 'Sold Out' tags if the product matches the condition (optional)
   - price_class: {String} Adds a price class to the price element (optional)
   - show_compare_at_price: {Boolean} Renders the compare at price if the product matches the condition (optional)
+  - compact: {Boolean} Product-card mode: drops trailing ".00" from prices and renders "From" as a
+    separate small label (.price__from) so the price fits on one line. Default: false (optional)
 
   Usage:
   {% render 'price', product: product %}
@@ -29,14 +31,33 @@
   assign money_price = price | money
   assign money_price_min = price_min | money
   assign money_price_max = price_max | money
+  assign money_compare = compare_at_price | money
   if settings.currency_code_enabled
     assign money_price = price | money_with_currency
     assign money_price_min = price_min | money_with_currency
     assign money_price_max = price_max | money_with_currency
+    assign money_compare = compare_at_price | money_with_currency
+  endif
+
+  comment
+    Compact mode drops a trailing ".00". Done as a replace rather than with
+    money_without_trailing_zeros so it also works when "Show currency codes"
+    is on (this store has it on), where the money_with_currency formats apply.
+  endcomment
+  if compact
+    assign money_price = money_price | replace: '.00', ''
+    assign money_price_min = money_price_min | replace: '.00', ''
+    assign money_price_max = money_price_max | replace: '.00', ''
+    assign money_compare = money_compare | replace: '.00', ''
   endif
 
   if target == product and product.price_varies
-    assign money_price = 'products.product.price.from_price_html' | t: price: money_price
+    if compact
+      assign from_label = 'products.product.price.from_price_html' | t: price: '' | strip
+      assign money_price = '<span class="price__from">' | append: from_label | append: '</span> ' | append: money_price
+    else
+      assign money_price = 'products.product.price.from_price_html' | t: price: money_price
+    endif
   endif
 -%}
 
@@ -67,11 +88,7 @@
               </span>
               <span>
                 <s class="price-item price-item--regular variant-item__old-price">
-                  {% if settings.currency_code_enabled %}
-                    {{ compare_at_price | money_with_currency }}
-                  {% else %}
-                    {{ compare_at_price | money }}
-                  {% endif %}
+                  {{ money_compare }}
                 </s>
               </span>
             {%- endunless -%}
@@ -99,11 +116,7 @@
           <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
           <span>
             <s class="price-item price-item--regular">
-              {% if settings.currency_code_enabled %}
-                {{ compare_at_price | money_with_currency }}
-              {% else %}
-                {{ compare_at_price | money }}
-              {% endif %}
+              {{ money_compare }}
             </s>
           </span>
         {%- endunless -%}

@@ -21,9 +21,12 @@
 
   Accepts:
   - heading {String} - raw heading text from the section settings.
+  - tag {String} - heading level, 'h1' or 'h2'. Defaults to 'h2'. The blog hub
+    passes 'h1' since it owns the page's top-level heading.
 
   Usage:
   {% render 'section-heading', heading: section.settings.title %}
+  {% render 'section-heading', heading: section.settings.title, tag: 'h1' %}
 {%- endcomment -%}
 
 {%- comment -%}
@@ -96,10 +99,16 @@
 {%- endfor -%}
 
 {%- if lead_words != blank or accent_words != blank -%}
-  <h2 class="section-heading section-heading--display">
+  {%- liquid
+    assign heading_level = tag | default: 'h2'
+    unless heading_level == 'h1'
+      assign heading_level = 'h2'
+    endunless
+  -%}
+  <{{ heading_level }} class="section-heading section-heading--display">
     {{- lead_words -}}
     {%- if accent_words != blank -%}
       <span class="section-heading__accent">{{ accent_words | strip }}</span>
     {%- endif -%}
-  </h2>
+  </{{ heading_level }}>
 {%- endif -%}

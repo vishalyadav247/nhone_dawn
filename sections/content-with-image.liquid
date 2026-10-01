@@ -1,0 +1,245 @@
+{%- comment -%}
+  Content with image — the long-form SEO copy at the foot of the home page.
+
+  Same shape as before (one block of copy behind a Read more button), but the
+  heading and the copy are now theme editor settings, so they are edited
+  without touching code:
+  - "Section heading" runs through snippets/section-heading.liquid, so it is
+    two-tone like the carousels (the pipe marks the brand-coloured words).
+  - "Content" is an `html` setting rather than `richtext`, because the copy
+    uses <h3> and <ul>, which richtext strips.
+
+  Two columns: the copy (heading scrolls with it) and an image, with the image on the
+  left or the right per the "Image position" setting. On wide screens the image
+  has a fixed height from the "Image height" setting and the text column is
+  sized to match (height: 0 + min-height: 100%, so it does not stretch the
+  row); the copy simply scrolls inside that column, so the section never grows
+  and there is no expand button. Below 990px the columns stack and the whole
+  copy is shown, because a scrolling box inside a scrolling page reads badly
+  on a phone.
+
+  The background colour is optional and sits on a full-bleed wrapper, so it
+  runs edge to edge while the content stays inside page-width.
+
+  The Read more button works in both layouts, with the same collapsed start:
+  - on wide screens it opens into the scrolling panel beside the image, so the
+    section still never grows past the image;
+  - stacked, it simply expands to the full copy, since a scrolling box inside
+    a scrolling page reads badly on a phone.
+
+  All of the copy is in the HTML either way — it is only ever clipped by CSS,
+  never removed.
+
+  Styles live in assets/style.css under "Content with image".
+{%- endcomment -%}
+
+{%- liquid
+  assign body_id = 'nh-content-image-' | append: section.id
+-%}
+
+<div
+  class="nh-content-image-wrap"
+  {% if section.settings.background_color != blank %}
+    style="--nh-content-image-bg: {{ section.settings.background_color }};"
+  {% endif %}
+>
+  <div
+    class="nh-content-image page-width nh-content-image--media-{{ section.settings.media_position }}{% unless section.settings.image %} nh-content-image--no-media{% endunless %}"
+    id="{{ body_id }}-root"
+    style="--nh-content-image-media-h: {{ section.settings.image_height | default: 450 }}px; --nh-content-image-max: {{ section.settings.collapsed_height | default: 18 }}rem;"
+  >
+  {%- if section.settings.content != blank -%}
+    <div class="nh-content-image__grid">
+      {%- if section.settings.image -%}
+        <div class="nh-content-image__media">
+          {{
+            section.settings.image
+            | image_url: width: 1200
+            | image_tag:
+              widths: '400, 600, 800, 1000, 1200',
+              sizes: '(min-width: 990px) 45vw, 100vw',
+              loading: 'lazy',
+              class: 'nh-content-image__img'
+          }}
+        </div>
+      {%- endif -%}
+
+      <div class="nh-content-image__col">
+        <div class="nh-content-image__body" id="{{ body_id }}" tabindex="0">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="nh-content-image__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+
+          {{ section.settings.content }}
+        </div>
+
+        <button
+          class="nh-content-image__btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="{{ body_id }}"
+          data-label-more="{{ section.settings.more_label | default: 'Read more' | escape }}"
+          data-label-less="{{ section.settings.less_label | default: 'Read less' | escape }}"
+        >
+          <span class="nh-content-image__btn-text">{{ section.settings.more_label | default: 'Read more' | escape }}</span>
+          <svg class="nh-content-image__btn-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.getElementById('{{ body_id }}-root');
+    if (!root) return;
+
+    var body = root.querySelector('.nh-content-image__body');
+    var btn = root.querySelector('.nh-content-image__btn');
+    var col = root.querySelector('.nh-content-image__col');
+    if (!body || !btn || !col) return;
+
+    // Nothing hidden: drop the button rather than leave a dead control.
+    if (body.scrollHeight <= body.clientHeight + 8) {
+      btn.hidden = true;
+      return;
+    }
+
+    var text = btn.querySelector('.nh-content-image__btn-text');
+    var wide = window.matchMedia('(min-width: 990px)');
+
+    // Open height differs per layout: beside the image the copy fills what is
+    // left of the column (and then scrolls); stacked it grows to fit.
+    function openHeight() {
+      return wide.matches
+        ? Math.max(col.clientHeight - btn.offsetHeight - 16, 120)
+        : body.scrollHeight;
+    }
+
+    function setHeight(px) {
+      body.style.maxHeight = px === null ? '' : px + 'px';
+    }
+
+    btn.addEventListener('click', function () {
+      var open = !root.classList.contains('is-open');
+
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      text.textContent = open ? btn.dataset.labelLess : btn.dataset.labelMore;
+
+      // Animate between two pixel heights: a transition from or to a keyword
+      // does not animate, so the current height is pinned and a reflow forced
+      // before the target is set.
+      setHeight(body.getBoundingClientRect().height);
+      void body.offsetHeight;
+      root.classList.toggle('is-open', open);
+      setHeight(open ? openHeight() : parseFloat(getComputedStyle(root).getPropertyValue('--nh-content-image-max')) * 10);
+
+      if (open) body.scrollTop = 0;
+    });
+
+    // Crossing the breakpoint changes which open height is right.
+    window.addEventListener('resize', function () {
+      if (root.classList.contains('is-open')) setHeight(openHeight());
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Content with image",
+  "tag": "section",
+  "class": "content-with-image-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background colour",
+      "info": "Runs the full width of the screen. Leave empty for no background."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "NH ONE – Driving Innovation with Premium Car Accessories in India",
+      "info": "Shown above the copy. Leave empty to hide it."
+    },
+    {
+      "type": "html",
+      "id": "content",
+      "label": "Content",
+      "info": "Supports headings (h3), paragraphs and bullet lists. Scrolls beside the image on wide screens."
+    },
+    {
+      "type": "range",
+      "id": "collapsed_height",
+      "label": "Height before expanding",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "rem",
+      "default": 18
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "label": "Expand button text",
+      "default": "Read more"
+    },
+    {
+      "type": "text",
+      "id": "less_label",
+      "label": "Collapse button text",
+      "default": "Read less"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Height",
+      "min": 250,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 450,
+      "info": "On wide screens this also sets how tall the section is."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Content with image"
+    }
+  ]
+}
+{% endschema %}

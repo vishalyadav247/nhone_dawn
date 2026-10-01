@@ -34,14 +34,14 @@ $(function() {
 				`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 					fill="none" stroke="currentColor" stroke-width="2" 
 					stroke-linecap="round" stroke-linejoin="round" 
-					class="feather feather-chevron-left">
-					<polyline points="15 18 9 12 15 6"></polyline>
+					class="feather feather-arrow-left">
+					<path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
 				</svg>`,
 				`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 					fill="none" stroke="currentColor" stroke-width="2" 
 					stroke-linecap="round" stroke-linejoin="round" 
-					class="feather feather-chevron-right">
-					<polyline points="9 18 15 12 9 6"></polyline>
+					class="feather feather-arrow-right">
+					<path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
 				</svg>`
 			],
 			responsive: {
@@ -70,14 +70,14 @@ $(function() {
 			`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 			fill="none" stroke="currentColor" stroke-width="2" 
 			stroke-linecap="round" stroke-linejoin="round" 
-			class="feather feather-chevron-left">
-			<polyline points="15 18 9 12 15 6"></polyline>
+			class="feather feather-arrow-left">
+			<path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
 		</svg>`,
 			`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 			fill="none" stroke="currentColor" stroke-width="2" 
 			stroke-linecap="round" stroke-linejoin="round" 
-			class="feather feather-chevron-right">
-			<polyline points="9 18 15 12 9 6"></polyline>
+			class="feather feather-arrow-right">
+			<path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
 		</svg>`,
 		],
 		responsive: {
@@ -125,44 +125,51 @@ $('.CarCarousel').each(function () {
 
   var isRTL = $this.data('rtl') === true || $this.data('rtl') === "true";
 
+  // Arrows render beside the section heading (see sections/car-carousel.liquid).
+  var $navContainer = $this.closest('.car-carousel-section').find('.nh-slider-nav');
+
   $this.owlCarousel({
-   	items: 6,
-	margin: 50,
+   	items: 10,
+	margin: 15,
 	loop: true,
 	autoplay: true,
   	autoplayTimeout: 2000,
     autoplaySpeed: 1000,
-    // autoplayHoverPause: false,
+    autoplayHoverPause: true,
 	nav: true,
-	dots: true,
+	dots: false,
 	rtl: isRTL,
+	navContainer: $navContainer.length ? $navContainer : false,
+	// Long thin arrows for the pill control styled in style.css ("Car carousel").
 	navText: [
-		`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-			fill="none" stroke="currentColor" stroke-width="2" 
-			stroke-linecap="round" stroke-linejoin="round" 
-			class="feather feather-chevron-left">
-			<polyline points="15 18 9 12 15 6"></polyline>
+		`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+			fill="none" stroke="currentColor" stroke-width="1.8"
+			stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
 		</svg>`,
-		`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-			fill="none" stroke="currentColor" stroke-width="2" 
-			stroke-linecap="round" stroke-linejoin="round" 
-			class="feather feather-chevron-right">
-			<polyline points="9 18 15 12 9 6"></polyline>
+		`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+			fill="none" stroke="currentColor" stroke-width="1.8"
+			stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
 		</svg>`
 	],
 	responsive: {
 		0: {
-			items: 3,
+			items: 4,
+			margin: 12,
 			nav:false
-		},
-		600: {
-			items: 4
 		},
 		1000: {
 			items: 6
+		},
+		1200: {
+			items: 10
 		}
 	}
   });
+
+  $navContainer.find('.owl-prev').attr('aria-label', 'Previous');
+  $navContainer.find('.owl-next').attr('aria-label', 'Next');
 });
 
 $(".pdp-featured-collection").owlCarousel({
@@ -176,14 +183,14 @@ $(".pdp-featured-collection").owlCarousel({
 		`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 			fill="none" stroke="currentColor" stroke-width="2" 
 			stroke-linecap="round" stroke-linejoin="round" 
-			class="feather feather-chevron-left">
-			<polyline points="15 18 9 12 15 6"></polyline>
+			class="feather feather-arrow-left">
+			<path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
 		</svg>`,
 		`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 			fill="none" stroke="currentColor" stroke-width="2" 
 			stroke-linecap="round" stroke-linejoin="round" 
-			class="feather feather-chevron-right">
-			<polyline points="9 18 15 12 9 6"></polyline>
+			class="feather feather-arrow-right">
+			<path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
 		</svg>`
 	],
 	responsive: {
@@ -302,88 +309,7 @@ inlineMenu.querySelectorAll(".parent-navitem").forEach(list => {
 	});
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-	const contentWrapper = document.querySelector('.read-more-text');
-	const readMoreBtn = document.querySelector('.read-more-btn');
 
-	const maxWords = 100;
-	let wordCount = 0;
-
-	// Walk through nodes and split when over 200 words
-	function splitContent(node) {
-		if (wordCount >= maxWords) {
-		return { keep: null, extra: node.cloneNode(true) };
-		}
-
-		if (node.nodeType === Node.TEXT_NODE) {
-		const words = node.textContent.trim().split(/\s+/);
-		if (wordCount + words.length <= maxWords) {
-			wordCount += words.length;
-			return { keep: node.cloneNode(true), extra: null };
-		} else {
-			const splitIndex = maxWords - wordCount;
-			const keepText = words.slice(0, splitIndex).join(' ');
-			const extraText = words.slice(splitIndex).join(' ');
-			wordCount = maxWords;
-
-			return {
-			keep: document.createTextNode(keepText + ' '),
-			extra: document.createTextNode(extraText + ' '),
-			};
-		}
-		}
-
-		if (node.nodeType === Node.ELEMENT_NODE) {
-		const keepClone = node.cloneNode(false);
-		const extraClone = node.cloneNode(false);
-
-		node.childNodes.forEach((child) => {
-			const { keep, extra } = splitContent(child);
-			if (keep) keepClone.appendChild(keep);
-			if (extra) extraClone.appendChild(extra);
-		});
-
-		return {
-			keep: keepClone.hasChildNodes() ? keepClone : null,
-			extra: extraClone.hasChildNodes() ? extraClone : null,
-		};
-		}
-
-		return { keep: null, extra: null };
-	}
-
-	if (contentWrapper) {
-		const { keep, extra } = splitContent(contentWrapper);
-
-		if (extra) {
-		contentWrapper.innerHTML = '';
-		const visiblePart = document.createElement('span');
-		visiblePart.className = 'visible-text';
-		visiblePart.appendChild(keep);
-
-		const hiddenPart = document.createElement('span');
-		hiddenPart.className = 'more-text';
-		hiddenPart.style.display = 'none';
-		hiddenPart.appendChild(extra);
-
-		contentWrapper.appendChild(visiblePart);
-		contentWrapper.appendChild(hiddenPart);
-
-		// Toggle logic
-		readMoreBtn.addEventListener('click', function () {
-			if (hiddenPart.style.display === 'none') {
-			hiddenPart.style.display = 'inline';
-			readMoreBtn.textContent = 'Read Less';
-			} else {
-			hiddenPart.style.display = 'none';
-			readMoreBtn.textContent = 'Read More';
-			}
-		});
-		} else {
-		readMoreBtn.style.display = 'none'; // Hide button if <200 words
-		}
-	}
-});
 
 // collection popup js
 document.addEventListener('DOMContentLoaded', () => {
@@ -481,12 +407,12 @@ document.addEventListener('DOMContentLoaded', updateMobileCartBubble);
           `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
             fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
+            <path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path>
           </svg>`,
           `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
             fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
+            <path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path>
           </svg>`
         ],
         responsive: {

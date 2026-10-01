@@ -1,0 +1,138 @@
+{%- comment -%}
+  FAQ accordion.
+
+  Each question is a block, so the merchant adds, edits and reorders them in
+  the theme editor. Built on <details>/<summary>, so it opens and closes with
+  no JavaScript and works with a keyboard and screen readers.
+
+  All questions start closed, so the section stays compact; "Open the first
+  question" in the theme editor opens the first one if that is preferred.
+
+  Also emits FAQPage structured data. Google restricted FAQ rich results to
+  government and health sites in 2023, so do not expect the expandable
+  questions in Google's results; the markup is kept because other search and
+  AI tools still read it. Only rendered when the section has questions, and
+  only on the page where the section is placed.
+
+  Styles live in assets/style.css under "FAQ accordion".
+{%- endcomment -%}
+
+{%- liquid
+  assign faqs = section.blocks | where: 'type', 'faq'
+-%}
+
+{%- if faqs.size > 0 -%}
+  <section class="nh-faq page-width">
+    {%- if section.settings.heading != blank -%}
+      {% render 'section-heading', heading: section.settings.heading %}
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p class="nh-faq__intro">{{ section.settings.subheading | escape }}</p>
+    {%- endif -%}
+
+    <div class="nh-faq__list">
+      {%- for block in faqs -%}
+        {%- if block.settings.question != blank and block.settings.answer != blank -%}
+          <details
+            class="nh-faq__item"
+            {% if forloop.first and section.settings.open_first %}open{% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <summary class="nh-faq__question">
+              <span>{{ block.settings.question | escape }}</span>
+              <span class="nh-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="nh-faq__answer">{{ block.settings.answer }}</div>
+          </details>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- assign rendered = 0 -%}
+        {%- for block in faqs -%}
+          {%- if block.settings.question != blank and block.settings.answer != blank -%}
+            {%- if rendered > 0 -%},{%- endif -%}
+            {
+              "@type": "Question",
+              "name": {{ block.settings.question | strip_html | strip | json }},
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": {{ block.settings.answer | strip_html | strip | json }}
+              }
+            }
+            {%- assign rendered = rendered | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "nh-faq-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently Asked |Questions",
+      "info": "Put a pipe before the words you want in the brand colour. Leave empty to hide the heading."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Intro line",
+      "info": "Optional line under the heading."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "Open the first question",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Ask a question here"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Answer the question here.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" }
+      ]
+    }
+  ]
+}
+{% endschema %}

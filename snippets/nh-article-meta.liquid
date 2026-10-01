@@ -1,0 +1,46 @@
+{%- comment -%}
+  The date · reading time · author line under an article title.
+
+  Accepts:
+  - article:      {Object}
+  - block:        {Object} the 'title' block, for its toggles
+  - read_minutes: {Number} computed once by the section so the overlay and the
+                  stacked hero can't disagree
+  - modifier:     {String} optional BEM modifier, e.g. 'overlay'
+
+  Usage:
+  {% render 'nh-article-meta', article: article, block: block, read_minutes: read_minutes %}
+{%- endcomment -%}
+
+{%- liquid
+  assign show_date = block.settings.blog_show_date
+  assign show_author = block.settings.blog_show_author
+  assign show_read = block.settings.show_reading_time
+  if article.author == blank
+    assign show_author = false
+  endif
+-%}
+
+{%- if show_date or show_read or show_author -%}
+  <p class="nh-article-meta{% if modifier != blank %} nh-article-meta--{{ modifier }}{% endif %}">
+    {%- assign printed = 0 -%}
+
+    {%- if show_date -%}
+      <time class="nh-article-meta__item" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{- article.published_at | date: format: 'date' -}}
+      </time>
+      {%- assign printed = printed | plus: 1 -%}
+    {%- endif -%}
+
+    {%- if show_read -%}
+      {%- if printed > 0 -%}<span class="nh-article-meta__dot" aria-hidden="true"></span>{%- endif -%}
+      <span class="nh-article-meta__item">{{ read_minutes }} min read</span>
+      {%- assign printed = printed | plus: 1 -%}
+    {%- endif -%}
+
+    {%- if show_author -%}
+      {%- if printed > 0 -%}<span class="nh-article-meta__dot" aria-hidden="true"></span>{%- endif -%}
+      <span class="nh-article-meta__item">{{ article.author | escape }}</span>
+    {%- endif -%}
+  </p>
+{%- endif -%}

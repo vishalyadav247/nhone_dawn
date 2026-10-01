@@ -1,52 +1,42 @@
-<style>
-  .collection-link-list{
-      margin-bottom:25px;
-      line-height: 18px;
+{%- comment -%}
+  Collection link list: the SEO link block at the bottom of the home page.
 
-      .collection-link-list__links{
-        margin-top:10px;
-      }
+  A compact row of pill links to popular collections, under a small heading.
+  On desktop the whole list shows (it wraps to a few rows). On phones, where
+  the same list runs many rows deep, it is clipped to "Rows shown on mobile"
+  with a Show all toggle — a checkbox drives it, so there is no JavaScript.
 
-      /* Links follow the body text colour and turn the brand colour on hover,
-         like every other link on the site (Theme settings > Brand > Text). */
-      a{
-          color:rgba(var(--nh-link-rgb), 0.75);
-          text-decoration:none;
-          font-size:13px;
-          margin: 0 3px;
+  Styles live in assets/style.css under "Collection link list".
+{%- endcomment -%}
 
-          &:hover{
-              color:var(--nh-link-hover);
-              text-decoration:underline;
-          }
-      }
-  }
-</style>
-<div class="collection-link-list page-width">
-  {% if section.settings.section_heading != blank %}
-    <h2 class="collection-link-list__heading section-heading">
-      {{ section.settings.section_heading }}
-    </h2>
-  {% endif %}
+<section class="collection-link-list page-width" style="--nh-ll-rows: {{ section.settings.mobile_rows }};">
+  {%- if section.settings.section_heading != blank -%}
+    {% render 'section-heading', heading: section.settings.section_heading %}
+  {%- endif -%}
 
-  {% if section.blocks.size > 0 %}
-    <div class="collection-link-list__links">
-      {% for block in section.blocks %}
-        {% if block.settings.collection != blank %}
-          <a
-            href="{{ block.settings.collection.url }}"
-            class="collection-link-list__item"
-          >
+  <input
+    type="checkbox"
+    id="CollectionLinks-{{ section.id }}"
+    class="collection-link-list__toggle"
+  >
+
+  <ul class="collection-link-list__links list-unstyled" role="list">
+    {%- for block in section.blocks -%}
+      {%- if block.settings.collection != blank -%}
+        <li {{ block.shopify_attributes }}>
+          <a href="{{ block.settings.collection.url }}" class="collection-link-list__item">
             {{- block.settings.collection.title -}}
           </a>
-          {% unless forloop.last %}
-            <span class="collection-link-list__separator">|</span>
-          {% endunless %}
-        {% endif %}
-      {% endfor %}
-    </div>
-  {% endif %}
-</div>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+
+  <label for="CollectionLinks-{{ section.id }}" class="collection-link-list__more">
+    <span class="collection-link-list__more-show">{{ section.settings.show_all_label | escape }}</span>
+    <span class="collection-link-list__more-hide">{{ section.settings.show_less_label | escape }}</span>
+  </label>
+</section>
 
 {% schema %}
 {
@@ -56,7 +46,30 @@
       "type": "text",
       "id": "section_heading",
       "label": "Section Heading",
-      "default": "Popular Car Accessories List"
+      "default": "Popular Car |Accessories List",
+      "info": "Put a pipe before the words you want in the brand colour, e.g. \"POPULAR CAR |ACCESSORIES LIST\". The pipe itself is not shown."
+    },
+    {
+      "type": "range",
+      "id": "mobile_rows",
+      "label": "Rows shown on mobile",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 3,
+      "info": "The rest stay behind a Show all tap. Desktop always shows every link."
+    },
+    {
+      "type": "text",
+      "id": "show_all_label",
+      "label": "Show all link text",
+      "default": "Show all"
+    },
+    {
+      "type": "text",
+      "id": "show_less_label",
+      "label": "Show less link text",
+      "default": "Show less"
     }
   ],
   "blocks": [

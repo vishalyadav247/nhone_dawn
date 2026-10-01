@@ -356,24 +356,6 @@ h1, h2, h3, h4, h5, h6,
   height: auto;
 }
 
-.feature h3 {
-  font-weight: 500;
-  margin: 0;
-  margin-top: 7px;
-  font-size:1.6rem;
-}
-
-.feature p {
-  color: #555;
-  margin: 0;
-}
-
-.feature img {
-  width: 40px;
-  height: auto;
-  margin-bottom: 0;
-}
-
 .carousel-collections p,
 .all-products-collection p {
   margin: 0;
@@ -509,17 +491,6 @@ h1, h2, h3, h4, h5, h6,
 
 }
 
-.category-item {
-  height: 100%;
-  display: flex;
-  box-shadow: 0 0 5px 0 transparent;
-  transition: box-shadow 0.3s ease-out;
-}
-
-.category-item:hover {
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.15);
-}
-
 .custom-spec-table {
   width: 100%;
   border-collapse: collapse;
@@ -545,38 +516,15 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .carousel-caption {
-  font-size: 1.8rem;
+  font-size: 1.2rem;
   font-weight: 400;
   margin: 0;
-  margin-top: 5px;
 }
 
 a.carousel-link {
   text-decoration: none;
 }
 
-.CarCarousel {
-  .owl-item {
-    box-shadow: var(--theme-box-shadow);
-
-    &:hover img {
-      scale: 1.05;
-      transition: all 0.2s ease-in-out;
-    }
-  }
-
-  .owl-dots {
-    margin-top: 0;
-  }
-}
-
-.top-categories-carousel {
-  display: flex;
-  width: 100%;
-  gap: 10px;
-}
-
-.category-link,
 .carousel-link {
   text-align: center;
   text-decoration: none;
@@ -607,10 +555,6 @@ a.carousel-link {
   }
 }
 
-.category-img {
-  width: 100%;
-}
-
 .product-link {
   text-decoration: none;
 }
@@ -618,12 +562,6 @@ a.carousel-link {
 .header__menu-item span {
   text-transform: uppercase;
   font-weight: 500;
-}
-
-.CarCarousel img {
-  width: 100%;
-  max-width: 135px;
-  margin: auto;
 }
 
 h3.card__heading {
@@ -655,33 +593,8 @@ h3.card__heading {
     flex-direction: column;
   }
 
-  .info-features {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    text-align: center;
-    background-color: #f8f8f8;
-  }
-
-  .feature {
-    flex-basis: 48%;
-    max-width: 48%;
-    padding: 15px;
-    border-radius: 10px;
-  }
-
   .offer-modal.modal-content {
     width: 100% !important;
-  }
-
-  .top-categories-carousel {
-    flex-wrap: wrap;
-  }
-
-  .category-item {
-    max-width: 48.5%;
-    flex-basis: 48.5%;
-    width: 48.5%;
   }
 
   .section-title {
@@ -696,7 +609,7 @@ h3.card__heading {
     width: 100%;
     flex-wrap: nowrap;
     overflow-x: scroll;
-    scrollbar-width: thin;
+    scrollbar-width: none;
   }
 }
 
@@ -707,22 +620,6 @@ h3.card__heading {
 
   .header__heading-link {
     padding: 0px !important;
-  }
-
-  .info-features {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    text-align: center;
-    padding: 20px 0px;
-    background-color: #f8f8f8;
-  }
-
-  .feature {
-    flex: 1;
-    min-width: 200px;
-    padding: 15px;
-    border-radius: 10px;
   }
 
   .owl-theme .owl-nav {
@@ -1026,6 +923,10 @@ h3.card__heading {
 
   .footer-contact-info{
     font-size:1.3rem;
+    color:var(--nh-heading);
+    a{
+      color:var(--nh-heading);
+    }
 
     p{
       margin:0;
@@ -1119,6 +1020,100 @@ h3.card__heading {
 
 .bannerCarousel {
   min-height: 300px;
+}
+
+/* ==========================================================================
+   Banner carousel dots (sections/banner-section.liquid)
+   Liquid drop: inactive slides are small grey dots; the active one stretches
+   into an orange droplet and settles with a short wobble on every change.
+
+   Owl gives each dot a <span>, which is what is drawn here. The global
+   .owl-dots rule above styles every carousel's dots with !important, so these
+   overrides are scoped to .bannerCarousel and repeat !important where that
+   rule forces it. Other carousels keep the plain bars.
+   ========================================================================== */
+.bannerCarousel .owl-dots {
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.bannerCarousel .owl-dots button.owl-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 0.7rem; /* taller tap target around the small dot */
+  line-height: 0;
+}
+
+.bannerCarousel .owl-dots button.owl-dot span {
+  width: 0.9rem !important;
+  height: 0.7rem !important;
+  border-radius: 99rem !important;
+  background: #d6d6d6 !important;
+  opacity: 1;
+  transition:
+    width 0.45s cubic-bezier(0.68, -0.5, 0.27, 1.5),
+    height 0.45s cubic-bezier(0.68, -0.5, 0.27, 1.5),
+    background-color 0.3s ease;
+}
+
+.bannerCarousel .owl-dots button.owl-dot:hover span {
+  background: #b0b0b0 !important;
+}
+
+.bannerCarousel .owl-dots button.owl-dot.active span {
+  width: 2.6rem !important;
+  height: 0.7rem !important;
+  background: var(--nh-brand) !important;
+  animation: nh-banner-dot-squish 0.55s cubic-bezier(0.68, -0.5, 0.27, 1.5);
+}
+
+/* The droplet lands squashed, overshoots the other way, then settles. */
+@keyframes nh-banner-dot-squish {
+  0% {
+    transform: scaleX(0.4) scaleY(1.6);
+  }
+
+  55% {
+    transform: scaleX(1.12) scaleY(0.82);
+  }
+
+  100% {
+    transform: none;
+  }
+}
+
+.bannerCarousel .owl-dots button.owl-dot:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+  border-radius: 99rem;
+}
+
+@media screen and (max-width: 767px) {
+  .bannerCarousel .owl-dots {
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .bannerCarousel .owl-dots button.owl-dot span {
+    width: 0.6rem !important;
+    height: 0.6rem !important;
+  }
+
+  .bannerCarousel .owl-dots button.owl-dot.active span {
+    width: 2rem !important;
+    height: 0.7rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerCarousel .owl-dots button.owl-dot span {
+    transition: none;
+  }
+
+  .bannerCarousel .owl-dots button.owl-dot.active span {
+    animation: none;
+  }
 }
 
 .pdpBadgeWrapperTop {
@@ -1460,35 +1455,12 @@ header {
   }
 }
 
-.CarCarousel {
-  margin: 15px 0px;
-}
-
-.top-categories-section {
-  margin: 15px 0;
-}
-
 .mega-menu__content {
   background-color: #eaeaea !important;
 }
 
 .mega-menu[open] .mega-menu__content {
   z-index: 111;
-}
-
-.info-features {
-  box-shadow: 0 0 5px var(--theme-box-shadow);
-
-  .feature {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    text-align: left;
-
-    >div:first-child {
-      display: flex;
-    }
-  }
 }
 
 .jdgm-carousel-wrapper {
@@ -1513,10 +1485,6 @@ header {
     }
   }
 
-  @media screen and (max-width:767px) {
-    text-align: center;
-    margin-top:10px !important;
-  }
 }
 
 .post-ship-btn {
@@ -1536,75 +1504,9 @@ header {
   color: rgb(var(--color-foreground), 0.75);
 }
 
-.product-card-wrapper {
-  .card__content{
-  
-    /* Outline button per the NH ONE design spec: white fill, hairline border,
-       dark label, brand-coloured border + label on hover. Dawn's ::before /
-       ::after border pseudo-elements are hidden, so the hairline is a real
-       `border` rather than Dawn's box-shadow trick. */
-    .quick-add__submit{
-      background-color: var(--nh-surface) !important;
-      color: var(--nh-btn-outline-label) !important;
-      border: 1px solid var(--nh-btn-outline-border) !important;
-      min-height:36px;
-      border-radius:4px;
-      &::before,&::after{
-        display:none;
-      }
-      &:hover{
-        border-color: var(--nh-btn-outline-border-hover) !important;
-        color: var(--nh-brand) !important;
-      }
-    }
-  }
-  .card__information {
-    padding:0;
-    padding-bottom: 5px;
-
-    .price-item{
-      font-weight:600;
-    }
-
-    a {
-      color: rgb(var(--color-foreground)) !important;
-      text-decoration: none;
-      font-weight: 500;
-
-      &:hover {
-        color: var(--theme-color) !important;
-      }
-    }
-
-    .rating{
-      margin-top:0;
-    }
-  }
-
-  .card-information>*:not(.visually-hidden:first-child)+*:not(.rating):not(.card__information-volume-pricing-note){
-    margin:0;
-  }
-  .rating-star {
-    font-size: 1.7rem;
-    letter-spacing: 1px;
-  }
-
-  h3.card__heading {
-    height: 55px;
-  }
-}
-
 @media screen and (max-width:767px) {
   .shopify-tabber ul.tab-nav {
     flex-direction: column;
-  }
-
-  .category-item {
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.15);
-  }
-
-  .category-title.carousel-caption {
-    margin: 8px 0;
   }
 
   .shopify-tabber .tab-nav li {
@@ -1618,44 +1520,8 @@ header {
     padding: 0 !important;
   }
 
-  .feature-box-section .grid {
-    gap: 15px !important;
-  }
-
-  .info-features .feature {
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
-    padding: 0 !important;
-
-    img{
-      width:30px;
-    }
-    h3{
-      font-size:13px;
-    }
-    p{
-      font-size:11px;
-    }
-  }
-
-  .top-categories-carousel {
-    margin-top: 20px;
-  }
-
-  .info-features {
-    margin-top: 30px;
-    gap:10px;
-    padding-top:15px;
-    padding-bottom:15px;
-  }
-
   .jdgm-carousel-wrapper {
     padding-bottom: 10px !important;
-  }
-
-  .top-categories-carousel {
-    gap: 7px !important;
   }
 }
 
@@ -1667,10 +1533,6 @@ header {
 }
 
 @media screen and (max-width:767px) {
-
-  .carousel-caption {
-    font-size: 1.4rem;
-  }
 
   .collection .product-card-wrapper .card__information a {
     color: rgb(var(--color-foreground)) !important;
@@ -1777,33 +1639,8 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   }
 }
 
-.read-more-text{
-  p,ul li{
-    font-size:14px;
-    line-height: 18px;
-  }
-  p{
-    margin: 5px 0;
-  }
-  h3,h4,ul{
-    margin: 10px 0;
-  }
-}
-.read-more-btn {
-    display: block;
-    margin: 25px 0 0 0;
-    padding: 10px 20px;
-    border: none;
-    background: var(--theme-color);
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-}
 
 @media screen and (max-width:767px){
-  .read-more-btn{
-    margin: 25px auto 0 auto;
-  }
 }
 
 .collection_bottom_description{
@@ -2163,19 +2000,6 @@ body{
   color:#ffffff;
 }
 
-.product-card-wrapper {
-  .card__content{
-    overflow:hidden;
-    .card__badge{
-      position: absolute;
-      transform: rotate(-45deg);
-      left: -25px;
-      top: 11px;
-      min-width: 115px;
-    }
-  }
-}
-
 
 .custom-badge {
     color: #fff;
@@ -2291,30 +2115,217 @@ background-color: transparent !important;
   }
 }
 
-.main-blog{
-  h1{
-    text-align:center;
+/* ==========================================================================
+   Blog category page (sections/main-blog.liquid)
+   One blog's articles: title + intro + optional tag chips, an optional wide
+   "latest" feature card, then the shared .nh-blog-grid of .nh-blog-card.
+   ========================================================================== */
+.main-blog__header {
+  max-width: 76rem;
+  margin: 0 0 2.4rem;
+}
+
+.main-blog__title {
+  margin: 0;
+}
+
+.main-blog__tag-suffix {
+  color: var(--nh-brand);
+}
+
+.main-blog__tag-suffix::before {
+  content: ' / ';
+  color: var(--nh-muted);
+}
+
+.main-blog__intro {
+  margin-top: 1.2rem;
+  color: var(--nh-muted);
+  font-size: 1.6rem;
+  line-height: 1.6;
+}
+
+.main-blog__intro p {
+  margin: 0;
+}
+
+.main-blog__back {
+  display: inline-block;
+  margin-top: 1.2rem;
+  color: var(--nh-link);
+  font-size: 1.4rem;
+  text-decoration: none;
+}
+
+.main-blog__back:hover {
+  color: var(--nh-link-hover);
+  text-decoration: underline;
+}
+
+/* --- Tag chips ------------------------------------------------------------- */
+.main-blog__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0 0 3.2rem;
+  padding: 0;
+}
+
+.main-blog__tag {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 999px;
+  color: var(--nh-body);
+  font-size: 1.3rem;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.main-blog__tag:hover {
+  border-color: rgba(var(--nh-brand-rgb), 0.45);
+  color: var(--nh-brand);
+}
+
+.main-blog__tag--active {
+  background: var(--nh-brand);
+  border-color: var(--nh-brand);
+  color: var(--nh-on-brand);
+}
+
+.main-blog__tag--active:hover {
+  color: var(--nh-on-brand);
+}
+
+/* --- Featured (newest) article --------------------------------------------- */
+.main-blog__feature {
+  display: grid;
+  gap: 2.4rem;
+  align-items: center;
+  margin: 0 0 4rem;
+  padding: 1.2rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.8rem;
+  text-decoration: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.main-blog__feature-media {
+  overflow: hidden;
+  border-radius: 1.2rem;
+  aspect-ratio: 16 / 10;
+  background: #f2f2f2;
+}
+
+.main-blog__feature-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.main-blog__feature-kicker {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.main-blog__feature-title {
+  margin: 0;
+  color: var(--nh-heading);
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+  transition: color 0.2s ease;
+}
+
+.main-blog__feature-excerpt {
+  margin: 1.2rem 0 0;
+  color: var(--nh-muted);
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+
+.main-blog__feature-cta {
+  display: inline-block;
+  margin-top: 1.6rem;
+  color: var(--nh-brand);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.main-blog__feature-cta::after {
+  content: ' \2192';
+}
+
+.main-blog__empty {
+  margin: 4rem 0;
+  color: var(--nh-muted);
+  font-size: 1.6rem;
+}
+
+@media screen and (min-width: 750px) {
+  .main-blog__feature {
+    grid-template-columns: 1.15fr 1fr;
+    gap: 3.2rem;
   }
-  .blog-articles{
-    margin-top:50px;
 
-    @media screen and (min-width:750px){
-      row-gap:25px;
-      .article-card-wrapper .article-card{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap: 25px;
+  .main-blog__feature-body {
+    padding-right: 1.6rem;
+  }
+}
 
-        .card__heading{
-          a{
-            font-size:24px;
-          }
-        }
-        .article-card__excerpt{
-          font-size:16px;
-        }
-      }
-    }
+@media (hover: hover) {
+  .main-blog__feature:hover {
+    border-color: rgba(var(--nh-brand-rgb), 0.45);
+    box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.08);
+  }
+
+  .main-blog__feature:hover .main-blog__feature-img {
+    transform: scale(1.03);
+  }
+
+  .main-blog__feature:hover .main-blog__feature-title {
+    color: var(--nh-brand);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .main-blog__intro {
+    font-size: 1.4rem;
+  }
+
+  .main-blog__tags {
+    margin-bottom: 2.4rem;
+  }
+
+  .main-blog__feature-title {
+    font-size: 1.8rem;
+  }
+
+  .main-blog__feature-excerpt {
+    font-size: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-blog__feature,
+  .main-blog__feature-img {
+    transition: none;
+  }
+
+  .main-blog__feature:hover .main-blog__feature-img {
+    transform: none;
   }
 }
 
@@ -2656,3 +2667,2281 @@ background-color: transparent !important;
     transform: none;
   }
 }
+
+
+/* ==========================================================================
+   Top categories (sections/top-category-section.liquid)
+   Photo cards: the category photo fills a rounded card, the title sits over a
+   dark fade at the bottom, and a "Shop now" arrow slides in on hover.
+   The category images on this store are square lifestyle/product photos with
+   mixed backgrounds, so they are cropped to fill (object-fit: cover) and the
+   fade keeps the white title readable on any of them.
+
+   5-6 across on desktop (grid follows the block count), 3 on tablet, 2 on
+   phones. The title is overlaid, so .carousel-caption (shared with the car
+   carousel) is only overridden through .category-title.carousel-caption.
+   ========================================================================== */
+.top-categories-section {
+  --tc-radius: 1.6rem;
+  --tc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  padding-top: 2rem;
+  padding-bottom: 1.2rem;
+}
+
+.top-categories-carousel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 1.2rem;
+}
+
+.category-item {
+  position: relative;
+  display: block;
+  min-width: 0;
+  border-radius: var(--tc-radius);
+  overflow: hidden;
+  isolation: isolate; /* keeps the rounded clip during the image zoom in Safari */
+  background: #f2f2f2;
+  box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.4s var(--tc-ease),
+    box-shadow 0.4s var(--tc-ease);
+}
+
+.category-link {
+  position: relative;
+  display: block;
+  height: 100%;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Dark fade behind the title. */
+.category-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.78) 0%,
+    rgba(0, 0, 0, 0.35) 32%,
+    rgba(0, 0, 0, 0) 58%
+  );
+  transition: opacity 0.4s var(--tc-ease);
+}
+
+/* Round "Shop now" arrow, top-right. */
+.category-link::after {
+  content: '';
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 2;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background-color: var(--nh-brand);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E");
+  background-size: 1.8rem;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0.6rem 1.6rem rgba(var(--nh-brand-rgb), 0.45);
+  opacity: 0;
+  transform: scale(0.6) rotate(-45deg);
+  transition:
+    opacity 0.3s ease,
+    transform 0.4s var(--tc-ease);
+}
+
+.category-link:focus-visible {
+  outline: 3px solid var(--nh-brand);
+  outline-offset: 3px;
+  border-radius: var(--tc-radius);
+}
+
+.category-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transform: scale(1.001);
+  transition: transform 0.7s var(--tc-ease);
+}
+
+.category-title.carousel-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 1.6rem 1.6rem 1.8rem;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Brand-coloured accent bar under the title that grows on hover. */
+.category-title.carousel-caption::after {
+  content: '';
+  display: block;
+  width: 2.4rem;
+  height: 0.3rem;
+  margin-top: 0.8rem;
+  border-radius: 0.3rem;
+  background: var(--nh-brand);
+  transition: width 0.4s var(--tc-ease);
+}
+
+@media (hover: hover) {
+  .category-item:hover {
+    transform: translateY(-0.6rem);
+    box-shadow: 0 1.8rem 3.6rem rgba(0, 0, 0, 0.18);
+  }
+
+  .category-item:hover .category-img {
+    transform: scale(1.08);
+  }
+
+  .category-item:hover .category-link::after {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  .category-item:hover .category-title.carousel-caption::after {
+    width: 4.8rem;
+  }
+}
+
+.category-link:focus-visible::after {
+  opacity: 1;
+  transform: none;
+}
+
+@media screen and (max-width: 989px) {
+  .top-categories-carousel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .top-categories-section {
+    --tc-radius: 1.2rem;
+    padding:0;
+    margin: 2rem 0;
+  }
+
+  .top-categories-carousel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.6rem;
+  }
+
+  .category-img {
+    aspect-ratio: 1;
+  }
+
+  .category-title.carousel-caption {
+    padding: 1rem 1rem 1.2rem;
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+  }
+
+  .category-title.carousel-caption::after {
+    width: 1.8rem;
+    height: 0.25rem;
+    margin-top: 0.6rem;
+  }
+
+  /* No hover on touch: show the arrow permanently, smaller. */
+  .category-link::after {
+    top: 0.8rem;
+    right: 0.8rem;
+    width: 2.6rem;
+    height: 2.6rem;
+    background-size: 1.4rem;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-item,
+  .category-img,
+  .category-link::after,
+  .category-title.carousel-caption::after {
+    transition: none;
+  }
+
+  .category-item:hover,
+  .category-item:hover .category-img {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Car carousel (sections/car-carousel.liquid)
+   Auto-scrolling row of linked cards. Each card is a soft gradient "well"
+   holding the image, with the caption underneath; on hover the card lifts,
+   gains a brand-tinted ring and the image grows. The row's left and right
+   edges fade out so slides glide in and out instead of being cut off.
+
+   Two card styles (section setting "Card style"):
+   - .car-carousel--image  product photos, filling most of the well.
+   - .car-carousel--logo   brand logos on white, always in full colour.
+
+   Arrows are rendered by Owl into .nh-slider-nav, next to the heading.
+   Older global rules style every Owl carousel's arrows
+   with !important, so the overrides below are scoped to the section and
+   use !important only where those rules force it.
+   ========================================================================== */
+.car-carousel-section {
+  --cc-radius: 1.6rem;
+  --cc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --cc-well: radial-gradient(120% 90% at 50% 25%, #ffffff 0%, #f4f4f5 60%, #ebebed 100%);
+
+  margin-top:1.5rem;
+}
+
+.car-carousel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.car-carousel__header .section-heading {
+  margin: 0 !important;
+}
+
+/* --- Arrows ------------------------------------------------------------
+   The prev/next buttons are styled once for every slider on the site, in
+   "Slider arrow buttons" at the end of this file. Only the container is here:
+   it just lines the two buttons up beside the heading. */
+.nh-slider-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.nh-slider-nav:empty,
+.nh-slider-nav.disabled {
+  display: none;
+}
+
+/* --- Track ---------------------------------------------------------------
+   Vertical padding gives the hover lift and shadow room inside Owl's
+   overflow:hidden viewport; the negative margin cancels it in the layout. */
+.car-carousel-section .CarCarousel {
+  margin: 0;
+}
+
+.car-carousel-section .owl-stage-outer {
+  padding: 1.2rem 0 1.5rem;
+  margin: -1rem 0 -1.6rem;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+}
+
+.car-carousel-section .owl-item {
+  box-shadow: none;
+}
+
+.car-carousel-section .owl-item:hover img {
+  scale: none;
+}
+
+/* --- Card --------------------------------------------------------------- */
+.car-carousel-section .carousel-link {
+  display: block;
+  height: 100%;
+  color: var(--nh-heading);
+  text-decoration: none;
+  border-radius: var(--cc-radius);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.car-carousel-section .carousel-link:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+.car-carousel-section .carousel-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  margin: 0;
+}
+
+.car-carousel-section .carousel-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--cc-radius);
+  background: var(--cc-well);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  transition:
+    box-shadow 0.35s var(--cc-ease),
+    transform 0.35s var(--cc-ease);
+}
+
+.car-carousel-section .carousel-media img,
+.car-carousel-section .carousel-media svg {
+  width: 84%;
+  max-width: none;
+  height: 84%;
+  margin: 0;
+  object-fit: contain;
+  mix-blend-mode: multiply; /* white-canvas PNGs blend into the well */
+  transition: transform 0.5s var(--cc-ease);
+}
+
+.car-carousel-section .carousel-img--placeholder {
+  fill: var(--nh-muted);
+  opacity: 0.35;
+}
+
+.car-carousel-section .carousel-caption {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(2 * 1.3em);
+  margin: 0;
+  padding: 0 0.2rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--nh-heading);
+  transition: color 0.25s ease;
+}
+
+@media (hover: hover) {
+  .car-carousel-section .carousel-link:hover .carousel-media {
+    transform: translateY(-0.4rem);
+    box-shadow:
+      inset 0 0 0 1.5px rgba(var(--nh-brand-rgb), 0.55),
+      0 1.2rem 2.4rem rgba(0, 0, 0, 0.1);
+  }
+
+  .car-carousel-section .carousel-link:hover .carousel-media img {
+    transform: scale(1.08);
+  }
+
+  .car-carousel-section .carousel-link:hover .carousel-caption {
+    color: var(--nh-brand);
+  }
+}
+
+/* --- Logo style --------------------------------------------------------- */
+.car-carousel--logo {
+  --cc-well: var(--nh-surface);
+}
+
+.car-carousel--logo .carousel-media {
+  aspect-ratio: 4 / 3;
+  box-shadow: inset 0 0 0 1px var(--nh-border);
+}
+
+.car-carousel--logo .carousel-media img {
+  width: 80%;
+  height: 80%;
+}
+
+.car-carousel--logo .carousel-caption {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  min-height: 1.3em;
+  font-weight: 500;
+  color: var(--nh-heading);
+}
+
+@media (hover: hover) {
+  .car-carousel--logo .carousel-link:hover .carousel-media img {
+    transform: scale(1.04);
+  }
+}
+
+/* --- Mobile ------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .car-carousel-section {
+    --cc-radius: 1.2rem;
+
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .car-carousel__header {
+    margin-bottom: 1.2rem;
+  }
+
+  .car-carousel-section .owl-stage-outer {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .car-carousel-section .carousel-figure {
+    gap: 0.8rem;
+  }
+
+  .car-carousel-section .carousel-caption {
+    font-size: 1.05rem;
+    letter-spacing: 0.03em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .car-carousel-section .carousel-media,
+  .car-carousel-section .carousel-media img,
+  .nh-slider-nav button {
+    transition: none;
+  }
+
+  .car-carousel-section .carousel-link:hover .carousel-media,
+  .car-carousel-section .carousel-link:hover .carousel-media img {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Info features (sections/info-features.liquid)
+   A slim, compact trust strip: one row inside a hairline-bordered white
+   panel. Each cell centres an icon beside a short title and description;
+   short hairline dividers separate the cells.
+
+   Icons are the merchant's black PNGs used as a mask (--icon, set inline on
+   the card) and painted in the brand colour inside a small tinted disc.
+   4 across from tablet up; on phones a 2x2 grid with the icon centred above
+   the text, so titles stay on one line. Not interactive, so no hover.
+   ========================================================================== */
+.info-features-section {
+  margin-top: 1.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.info-features-section .section-heading {
+  margin: 0 0 1.6rem;
+}
+
+.nh-trust {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.4rem;
+  background: var(--nh-surface);
+}
+
+.nh-trust__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  min-width: 0;
+  padding: 1.6rem 1.6rem;
+}
+
+.nh-trust__item + .nh-trust__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 3.2rem;
+  background: var(--nh-border);
+  transform: translateY(-50%);
+}
+
+.nh-trust__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.12);
+}
+
+.nh-trust__glyph {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: var(--nh-brand);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.nh-trust__text {
+  min-width: 0;
+}
+
+.nh-trust__title {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--nh-heading);
+  white-space: nowrap;
+}
+
+.nh-trust__description {
+  margin: 0.2rem 0 0;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--nh-muted);
+}
+
+/* --- Tablet: still one row, tighter --------------------------------------- */
+@media screen and (max-width: 989px) {
+  .nh-trust__item {
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.4rem 0.8rem;
+    text-align: center;
+  }
+
+  .nh-trust__title {
+    white-space: normal;
+  }
+}
+
+/* --- Phone: one feature per slide, auto-playing ------------------------- */
+@media screen and (max-width: 749px) {
+  .info-features-section {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Owl turns the strip into a slider; until it initialises the features
+     stack, so nothing jumps sideways on load. */
+  .nh-trust {
+    display: block;
+    border-radius: 1.2rem;
+  }
+
+  .nh-trust.owl-loaded .owl-stage {
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* The carousel runs without dots or arrows — it advances on its own. */
+  .nh-trust .owl-dots,
+  .nh-trust .owl-nav {
+    display: none !important;
+  }
+
+  /* Same arrangement as the desktop strip: icon on the left, text beside it. */
+  .nh-trust__item {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.2rem;
+    padding: 1.6rem 1.2rem;
+    text-align: left;
+  }
+
+  /* One per slide: no dividers between features any more. */
+  .nh-trust__item + .nh-trust__item::before {
+    content: none;
+  }
+
+  .nh-trust__item {
+    box-shadow: none;
+  }
+
+  .nh-trust__icon {
+    width: 3.8rem;
+    height: 3.8rem;
+  }
+
+  .nh-trust__glyph {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .nh-trust__title {
+    font-size: 1.25rem;
+    letter-spacing: 0;
+  }
+
+  .nh-trust__description {
+    margin-top: 0.1rem;
+    font-size: 1.1rem;
+    letter-spacing: 0;
+  }
+}
+
+/* ==========================================================================
+   Blog slider (sections/custom-blog-slider.liquid)
+   Header: heading on the left; an underlined "View all" text link and the
+   shared arrow buttons (.nh-slider-nav, see "Slider arrow buttons") on the
+   right.
+
+   Cards: compact framed cards. A white card with a hairline border and a small
+   inner padding frames a rounded square cover, then date + reading time and a
+   two-line title. Hover: the border warms to the brand colour, a soft shadow
+   appears, the cover zooms slightly and the title turns orange.
+   4 per view on desktop, 3 on tablets, 2 on phones (slide counts are set in
+   the section's Owl config). Mobile dots keep the global .owl-dots style.
+   ========================================================================== */
+.blog-slider-wrapper {
+  margin: 2rem 0;
+}
+
+.blog-slider-wrapper a:not(.blog-view-all) {
+  text-decoration: none;
+}
+
+.blog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem 2.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-header .section-heading {
+  margin: 0 !important;
+}
+
+.blog-desc {
+  margin-top: 0.6rem;
+  color: var(--nh-muted);
+  font-size: 1.4rem;
+}
+
+.blog-desc p {
+  margin: 0;
+}
+
+.blog-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  flex-shrink: 0;
+}
+
+.blog-view-all {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--nh-heading);
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.4rem;
+}
+
+.blog-view-all:hover {
+  color: var(--nh-brand);
+}
+
+/* --- Track ----------------------------------------------------------------
+   Vertical padding gives the hover shadow room inside Owl's overflow:hidden
+   viewport; the negative margin cancels it in the layout. */
+.blog-slider .owl-stage-outer {
+  padding: 0.4rem 0 2rem;
+  margin: -0.4rem 0 -2rem;
+}
+
+.blog-slider .owl-stage {
+  display: flex; /* equal-height cards */
+}
+
+.blog-slider .owl-item {
+  display: flex;
+  flex-shrink: 0; /* keep Owl's measured widths; flex would squeeze them */
+}
+
+/* --- Card ----------------------------------------------------------------- */
+.nh-blog-card {
+  display: flex;
+  width: 100%;
+}
+
+.nh-blog-card__link {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem 1rem 1.6rem;
+  color: var(--nh-body);
+  background: var(--nh-surface);
+  border: 1px solid var(--nh-border);
+  border-radius: 1.8rem;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.nh-blog-card__link:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+.nh-blog-card__media {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 1.2rem;
+  background: #f2f2f2;
+}
+
+.nh-blog-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nh-blog-card__img--placeholder {
+  fill: var(--nh-muted);
+  opacity: 0.35;
+}
+
+.nh-blog-card__body {
+  min-width: 0;
+  padding: 1.4rem 0.6rem 0;
+}
+
+.nh-blog-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--nh-muted);
+}
+
+.nh-blog-card__dot {
+  flex-shrink: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--nh-brand);
+}
+
+.nh-blog-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin: 0.6rem 0 0;
+  font-family: var(--font-body-family);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--nh-heading);
+  transition: color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .nh-blog-card__link:hover {
+    border-color: rgba(var(--nh-brand-rgb), 0.2);
+    box-shadow: 0 1.2rem 2.8rem rgba(var(--nh-brand-rgb), 0.10);
+    background-color: rgba(var(--nh-brand-rgb), 0.10);
+  }
+
+  .nh-blog-card__link:hover .nh-blog-card__img {
+    transform: scale(1.04);
+    
+  }
+
+  .nh-blog-card__link:hover .nh-blog-card__title {
+    color: var(--nh-heading);
+  }
+}
+
+/* --- Phones ---------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .blog-slider-wrapper {
+    margin: 2.4rem 0;
+  }
+
+  .blog-header__actions .nh-slider-nav {
+    display: none;
+  }
+
+  .blog-view-all {
+    font-size: 1.3rem;
+  }
+
+  .nh-blog-card__link {
+    padding: 0.6rem 0.6rem 1.2rem;
+    border-radius: 1.4rem;
+  }
+
+  .nh-blog-card__media {
+    border-radius: 1rem;
+  }
+
+  .nh-blog-card__body {
+    padding: 1rem 0.4rem 0;
+  }
+
+  .nh-blog-card__meta {
+    gap: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .nh-blog-card__title {
+    margin-top: 0.4rem;
+    font-size: 1.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nh-blog-card__link,
+  .nh-blog-card__img {
+    transition: none;
+  }
+
+  .nh-blog-card__link:hover .nh-blog-card__img {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Blog card grid (snippets/nh-blog-card.liquid outside a carousel)
+   The same .nh-blog-card the slider uses, laid out as a responsive CSS grid.
+   Used by the blog hub (sections/blog-categories.liquid), the category page
+   (sections/main-blog.liquid) and the article page's related row.
+   ========================================================================== */
+.nh-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  gap: 2.4rem 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nh-blog-grid--4 {
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+}
+
+.nh-blog-grid a {
+  text-decoration: none;
+}
+
+/* Blog name overlaid on the cover — only used where cards from several
+   categories sit side by side (the hub). */
+.nh-blog-card__category {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.nh-blog-card__excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  margin: 0.8rem 0 0;
+  color: var(--nh-muted);
+  font-size: 1.4rem;
+  line-height: 1.55;
+}
+
+@media screen and (max-width: 749px) {
+  .nh-blog-grid {
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1.8rem 1.2rem;
+  }
+
+  .nh-blog-card__excerpt {
+    font-size: 1.3rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+
+/* ==========================================================================
+   Product card (compact) — snippets/card-product.liquid
+   Applies everywhere the card renders: home tabbers, featured collection,
+   collection grid, search, related products.
+
+   - Card: white, hairline border, rounded; on hover the border warms to the
+     brand colour and a soft shadow appears.
+   - Image: one fixed, shorter image area on every card (--nh-card-media-ratio),
+     with the photo contained and inset, so every card is the same height
+     whatever the product photo's proportions.
+   - Content stacks tightly as a flex column (Dawn's 3-row grid centred the
+     text and left gaps). Buttons are pushed to the bottom so rows of cards
+     line up.
+   - Title: two lines, fixed height, so prices align across a row.
+   - Price: sale + compare-at on one line.
+   - Buttons: short, single-line, side by side. Add to cart is the secondary
+     button (dark fill, white label); the GoKwik Buy Now button keeps its
+     vendor-injected colour and is only resized here (never edit its snippet).
+   - Badge: a small pill in the image corner instead of the rotated ribbon.
+   ========================================================================== */
+.product-card-wrapper .card {
+  --nh-card-pad: 1.2rem;
+  --nh-card-media-ratio: 72%; /* image area height as a % of card width */
+
+  overflow: hidden;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.2rem;
+  background: var(--nh-surface);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Dawn draws the card border with a pseudo-element from the theme settings;
+   the real border above replaces it. */
+.product-card-wrapper .card.card--card::after,
+.product-card-wrapper .card .card__inner::after {
+  content: none;
+}
+
+@media (hover: hover) {
+  .product-card-wrapper .card:hover {
+    border-color: rgba(var(--nh-brand-rgb), 0.45);
+    box-shadow: 0 1rem 2.4rem rgba(0, 0, 0, 0.07);
+  }
+}
+
+.product-card-wrapper .card .card__inner {
+  border-radius: 0;
+}
+
+/* Dawn sets --ratio-percent inline from each photo's proportions, which made
+   cards different heights. !important beats that inline value. */
+.product-card-wrapper .card,
+.product-card-wrapper .card .card__inner {
+  --ratio-percent: var(--nh-card-media-ratio) !important;
+}
+
+.product-card-wrapper .card__media .media img {
+  box-sizing: border-box;
+  padding: 1rem 1rem 0.4rem;
+  object-fit: contain;
+}
+
+/* --- Content --------------------------------------------------------------- */
+.product-card-wrapper .card > .card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.6rem var(--nh-card-pad) var(--nh-card-pad);
+}
+
+.product-card-wrapper .card > .card__content .card__information {
+  padding: 0;
+}
+
+.product-card-wrapper .card__heading {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  height: calc(2 * 1.35em);
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.product-card-wrapper .card__heading a {
+  color: var(--nh-heading) !important;
+  text-decoration: none;
+}
+
+.product-card-wrapper .card__heading a:hover {
+  color: var(--nh-brand) !important;
+}
+
+/* Stars and review count share one row; the price always starts on its own
+   row below. The star row is reserved even when a product has no reviews
+   (Dawn still renders an empty .rating), so prices line up across a row. */
+.product-card-wrapper .card-information {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.4rem;
+  row-gap: 0.2rem;
+  margin-top: 0.3rem;
+}
+
+.product-card-wrapper .card-information > * {
+  margin: 0 !important;
+}
+
+.product-card-wrapper .card-information .caption-large:empty {
+  display: none;
+}
+
+.product-card-wrapper .card-information > .price,
+.product-card-wrapper .card-information > .card__information-volume-pricing-note,
+.product-card-wrapper .card-information > quantity-popover {
+  flex-basis: 100%;
+}
+
+/* Rating */
+.product-card-wrapper .rating {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.6rem;
+}
+
+.product-card-wrapper .rating-star {
+  --letter-spacing: 0.1;
+  --font-size: 1.3;
+  font-size: 1.3rem;
+  letter-spacing: 0.1rem;
+}
+
+.product-card-wrapper .rating-count {
+  font-size: 1.15rem;
+  line-height: 1.6rem;
+}
+
+/* Price: sale + compare-at on one baseline. The card renders the price snippet
+   with compact: true, so amounts have no trailing ".00" and "From" is a small
+   separate label (.price__from) instead of a full-size word. */
+.product-card-wrapper .price {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0;
+}
+
+.product-card-wrapper .price .price__container {
+  display: block;
+}
+
+.product-card-wrapper .price--on-sale .price__sale {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  column-gap: 0.6rem;
+  min-width: 0;
+}
+
+.product-card-wrapper .price--on-sale .price__sale > .price-item--sale {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* The compare-at price gives way first if space runs out. */
+.product-card-wrapper .price--on-sale .price__sale > span:last-of-type {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-card-wrapper .price__from {
+  margin-right: 0.1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--nh-muted);
+}
+
+.product-card-wrapper .price .price-item {
+  margin: 0 !important;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.product-card-wrapper .price .price-item--last,
+.product-card-wrapper .price__regular .price-item--regular {
+  font-size: 1.5rem;
+  color: var(--nh-heading);
+}
+
+.product-card-wrapper .price--on-sale .price-item--regular {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--nh-muted);
+}
+
+/* --- Buttons --------------------------------------------------------------- */
+.product-card-wrapper .quick-add {
+  margin: auto 0 0 !important; /* pinned to the bottom of the card */
+}
+
+.product-card-wrapper .quick-add__submit {
+  min-height: 3.3rem;
+  height: 3.3rem;
+  padding: 0 0.6rem;
+  border: 0 !important;
+  border-radius: 5px;
+  background-color: var(--nh-btn-secondary-bg) !important;
+  color: var(--nh-btn-secondary-label) !important;
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.product-card-wrapper .quick-add__submit::before,
+.product-card-wrapper .quick-add__submit::after {
+  display: none;
+}
+
+/* Same automatic darkening as every other filled button on the site. */
+.product-card-wrapper .quick-add__submit:hover {
+  filter: brightness(var(--nh-btn-hover-darken, 0.88));
+}
+
+.product-card-wrapper .quick-add:has(> .card-buy-now) {
+  gap: 0.6rem;
+}
+
+.product-card-wrapper .card-buy-now.gokwik-checkout button.card-buy-now__btn {
+  min-height: 3.3rem;
+  height: 3.3rem;
+  padding: 0 0.6rem;
+  border-radius: 5px;
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* --- Badge: small pill in the image corner --------------------------------- */
+.product-card-wrapper .card__inner .card__badge {
+  position: absolute;
+  top: 0;
+  left: 0.8rem;
+  right: auto;
+  bottom: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  transform: none;
+}
+
+.product-card-wrapper .card__badge .custom-badge {
+  width: auto;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 99rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+/* --- Phones: two cards per row are ~165px wide ------------------------------ */
+@media screen and (max-width: 749px) {
+  .product-card-wrapper .card {
+    --nh-card-pad: 0.8rem;
+
+    border-radius: 1rem;
+  }
+
+  .product-card-wrapper .card > .card__content {
+    gap: 0.5rem;
+    padding-top: 0.4rem;
+  }
+
+  .product-card-wrapper .card__media .media img {
+    padding: 0.6rem 0.6rem 0.2rem;
+  }
+
+  .product-card-wrapper .card__heading {
+    font-size: 1.25rem;
+  }
+
+  .product-card-wrapper .price,
+  .product-card-wrapper .price .price-item--last,
+  .product-card-wrapper .price__regular .price-item--regular {
+    font-size: 1.35rem;
+  }
+
+  .product-card-wrapper .price--on-sale .price-item--regular {
+    font-size: 1.1rem;
+  }
+
+  /* ~150px of text width: the price stays on one line (equal card heights);
+     the compare-at price is cut off with an ellipsis if it doesn't fit. */
+
+  .product-card-wrapper .price__from {
+    font-size: 1rem;
+  }
+
+  .product-card-wrapper .rating-star {
+    font-size: 1.15rem;
+  }
+
+  .product-card-wrapper .quick-add__submit,
+  .product-card-wrapper .card-buy-now.gokwik-checkout button.card-buy-now__btn {
+    min-height: 3.2rem;
+    height: 3.2rem;
+    padding: 0 0.3rem;
+    border-radius: 0.6rem;
+    font-size: 1.1rem;
+  }
+
+  .product-card-wrapper .quick-add:has(> .card-buy-now) {
+    gap: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-card-wrapper .card {
+    transition: none;
+  }
+
+  .collection-link-list__item {
+    transition: none;
+  }
+
+  .collection-link-list__item:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Collection link list (sections/collection-link-list.liquid)
+   The SEO link block at the foot of the home page: the shared two-tone display
+   heading over a tight wrap of pill links. Compact by design — it sits between the content
+   and the footer and should not compete with either.
+
+   On phones the list is clipped to --nh-ll-rows rows (a theme setting) with a
+   "Show all" toggle. The toggle is a hidden checkbox and its <label>, so the
+   section needs no JavaScript; both are hidden from 750px up, where the list
+   is short enough to show in full.
+   ========================================================================== */
+.collection-link-list {
+  --nh-ll-row: 3.6rem; /* chip height + row gap; drives the mobile clamp */
+
+  margin: 2.4rem 0 3.2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--nh-border);
+}
+
+/* Same heading as the carousels, just held tighter to the links below. */
+.collection-link-list .section-heading {
+  margin: 0 0 1.4rem !important;
+}
+
+.collection-link-list__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Soft filled chips: a neutral fill and no border, so a dense row reads as
+   one block rather than 24 outlines. On hover the chip fills with the dark
+   heading colour, the label turns white and it lifts a little. */
+.collection-link-list__item {
+  display: inline-flex;
+  align-items: center;
+  height: 3.2rem;
+  padding: 0 1.4rem;
+  border: 0;
+  border-radius: 1rem;
+  background: #f4f4f5;
+  color: var(--nh-heading);
+  font-size: 1.3rem;
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .collection-link-list__item:hover {
+    background: var(--nh-heading);
+    color: #fff;
+    box-shadow: 0 0.6rem 1.4rem rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+  }
+}
+
+.collection-link-list__item:active {
+  transform: translateY(0);
+}
+
+.collection-link-list__item:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+/* The checkbox is never seen, but stays in the page so it can be focused and
+   toggled with a keyboard. It is not `display: none`, partly for that reason
+   and partly because Dawn styles input[type='checkbox'], which outranks a
+   single class. The label shows only inside the mobile clamp below. */
+.collection-link-list__toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+  appearance: none;
+}
+
+.collection-link-list__more {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  .collection-link-list {
+    margin: 2rem 0 2.4rem;
+    padding-top: 1.6rem;
+  }
+
+  .collection-link-list__links {
+    gap: 0.6rem;
+    max-height: calc(var(--nh-ll-rows, 3) * var(--nh-ll-row));
+    overflow: hidden;
+  }
+
+  .collection-link-list__item {
+    height: 3rem;
+    padding: 0 1.2rem;
+    font-size: 1.25rem;
+  }
+
+  .collection-link-list__toggle:checked ~ .collection-link-list__links {
+    max-height: none;
+  }
+
+  .collection-link-list__more {
+    display: inline-block;
+    margin-top: 1.2rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--nh-heading);
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+    cursor: pointer;
+  }
+
+  .collection-link-list__more-hide,
+  .collection-link-list__toggle:checked ~ .collection-link-list__more .collection-link-list__more-show {
+    display: none;
+  }
+
+  .collection-link-list__toggle:checked ~ .collection-link-list__more .collection-link-list__more-hide {
+    display: inline;
+  }
+
+  /* Keyboard users get a visible ring on the label when the checkbox is focused. */
+  .collection-link-list__toggle:focus-visible ~ .collection-link-list__more {
+    outline: 2px solid var(--nh-brand);
+    outline-offset: 3px;
+  }
+}
+
+/* ==========================================================================
+   Blog hub (sections/blog-categories.liquid)
+   The /blogs landing page: an H1 + lede, an optional row of category tiles
+   that jump down the page, then one row per category (heading, view-all and
+   the category's most recent articles as .nh-blog-card in .nh-blog-grid).
+
+   The tiles reuse the visual language of the top-categories grid: a rounded
+   4:5 photo, a dark bottom gradient and the title overlaid in white, with the
+   border warming to the brand colour on hover.
+   ========================================================================== */
+.blog-hub__intro {
+  max-width: 72rem;
+  margin: 0 0 3.2rem;
+}
+
+.blog-hub__intro .section-heading {
+  margin: 0 0 1.2rem !important;
+}
+
+.blog-hub__lede {
+  color: var(--nh-muted);
+  font-size: 1.6rem;
+  line-height: 1.6;
+}
+
+.blog-hub__lede p {
+  margin: 0;
+}
+
+/* --- Category tiles -------------------------------------------------------- */
+.blog-hub__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 2rem;
+  margin: 0 0 5.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.blog-hub__tile-link {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.6rem;
+  text-decoration: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.blog-hub__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.blog-hub__tile-img--placeholder {
+  fill: var(--nh-muted);
+  opacity: 0.35;
+  background: #f2f2f2;
+}
+
+/* Gradient scrim so the overlaid title stays readable on any photo. */
+.blog-hub__tile-link::before {
+  content: '';
+  position: absolute;
+  inset: 40% 0 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.72) 100%);
+  pointer-events: none;
+}
+
+.blog-hub__tile-title {
+  position: absolute;
+  z-index: 2;
+  right: 1.6rem;
+  bottom: 1.6rem;
+  left: 1.6rem;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+@media (hover: hover) {
+  .blog-hub__tile-link:hover {
+    border-color: rgba(var(--nh-brand-rgb), 0.45);
+    box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.08);
+  }
+
+  .blog-hub__tile-link:hover .blog-hub__tile-img {
+    transform: scale(1.04);
+  }
+}
+
+/* --- Category rows --------------------------------------------------------- */
+.blog-hub__row {
+  margin: 0 0 5.6rem;
+  scroll-margin-top: 12rem;
+}
+
+.blog-hub__row:last-child {
+  margin-bottom: 0;
+}
+
+.blog-hub__row-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.6rem 2.4rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--nh-border);
+}
+
+.blog-hub__row-title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.blog-hub__row-title a {
+  color: var(--nh-heading);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.blog-hub__row-title a:hover {
+  color: var(--nh-brand);
+}
+
+.blog-hub__row-desc {
+  margin-top: 0.6rem;
+  color: var(--nh-muted);
+  font-size: 1.4rem;
+}
+
+.blog-hub__row-desc p {
+  margin: 0;
+}
+
+.blog-hub__row-link {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.blog-hub__row-count {
+  color: var(--nh-muted);
+}
+
+.blog-hub__empty {
+  margin: 4rem 0;
+  color: var(--nh-muted);
+  font-size: 1.6rem;
+}
+
+@media screen and (max-width: 749px) {
+  .blog-hub__intro {
+    margin-bottom: 2.4rem;
+  }
+
+  .blog-hub__lede {
+    font-size: 1.4rem;
+  }
+
+  .blog-hub__tiles {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 3.6rem;
+  }
+
+  .blog-hub__tile-title {
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    font-size: 1.3rem;
+  }
+
+  .blog-hub__row {
+    margin-bottom: 3.6rem;
+    scroll-margin-top: 8rem;
+  }
+
+  .blog-hub__row-header {
+    align-items: center;
+  }
+
+  .blog-hub__row-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-hub__tile-link,
+  .blog-hub__tile-img {
+    transition: none;
+  }
+
+  .blog-hub__tile-link:hover .blog-hub__tile-img {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Slider arrow buttons — ONE definition for every slider
+   A soft rounded-square white button, faded at rest so it never fights the
+   content, filling with the brand colour (white arrow) on hover, and faded
+   further when Owl disables it at the first/last slide.
+
+   Used by both shapes of slider on the site:
+   - side arrows inside .owl-carousel — product tabbers, sub-collections, the
+     PDP related slider — which hang just outside the track, vertically centred;
+   - header arrows in .nh-slider-nav — car carousel, blog slider — which Owl
+     renders next to the section heading (its navContainer option).
+
+   Everything except placement is shared. The older rules further up this file
+   set these with !important inside a min-width media query, so the overrides
+   below repeat !important where that is needed, and the header buttons undo
+   the absolute positioning those rules impose.
+   ========================================================================== */
+.owl-carousel .owl-nav button.owl-prev,
+.owl-carousel .owl-nav button.owl-next,
+.nh-slider-nav button.owl-prev,
+.nh-slider-nav button.owl-next {
+  display: grid;
+  place-items: center;
+  width: 3.8rem;
+  height: 3.5rem;
+  padding: 0 !important;
+  border: 1px solid var(--nh-border) !important;
+  border-radius: 1.2rem !important;
+  background: var(--nh-surface) !important;
+  color: var(--nh-heading) !important;
+  line-height: 0 !important;
+  box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.1);
+  opacity: 0.55;
+  cursor: pointer;
+  transition:
+    opacity 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.3s ease,
+    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.owl-carousel .owl-nav button.owl-prev svg,
+.owl-carousel .owl-nav button.owl-next svg,
+.nh-slider-nav button svg {
+  width: 2.3rem;
+  height: 2.4rem;
+}
+
+/* The global rule caps .owl-nav span at 8px, which crops the icon. */
+.owl-carousel .owl-nav button.owl-prev span,
+.owl-carousel .owl-nav button.owl-next span,
+.nh-slider-nav button span {
+  display: grid !important;
+  place-items: center;
+  height: auto !important;
+  line-height: 0;
+}
+
+@media (hover: hover) {
+  .owl-carousel .owl-nav button.owl-prev:not(.disabled):hover,
+  .owl-carousel .owl-nav button.owl-next:not(.disabled):hover,
+  .nh-slider-nav button:not(.disabled):hover {
+    opacity: 1;
+    color: var(--nh-on-brand) !important;
+    border-color: var(--nh-brand) !important;
+    background: var(--nh-brand) !important;
+    box-shadow: 0 0.6rem 1.8rem rgba(var(--nh-brand-rgb), 0.4);
+  }
+}
+
+/* Header arrows sit in normal flow; the older global rules pin every
+   button.owl-prev/next absolutely, which has to be undone here. */
+.nh-slider-nav button.owl-prev,
+.nh-slider-nav button.owl-next {
+  position: static;
+  inset: auto;
+  margin: 0;
+  transform: none;
+}
+
+.owl-carousel .owl-nav button.owl-prev:active,
+.owl-carousel .owl-nav button.owl-next:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.nh-slider-nav button:active {
+  transform: scale(0.92);
+}
+
+.owl-carousel .owl-nav button.owl-prev:focus-visible,
+.owl-carousel .owl-nav button.owl-next:focus-visible,
+.nh-slider-nav button:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+/* Resting opacity is a touch higher than the old pill so the softer square
+   shape still reads against a busy row of product photos. */
+.owl-carousel .owl-nav button.owl-prev,
+.owl-carousel .owl-nav button.owl-next,
+.nh-slider-nav button.owl-prev,
+.nh-slider-nav button.owl-next {
+  opacity: 0.6;
+}
+
+/* First/last slide: Owl adds .disabled. Faded right down, and not clickable. */
+.owl-carousel .owl-nav button.owl-prev.disabled,
+.owl-carousel .owl-nav button.owl-next.disabled,
+.nh-slider-nav button.disabled {
+  opacity: 0.25;
+  box-shadow: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owl-carousel .owl-nav button.owl-prev,
+  .owl-carousel .owl-nav button.owl-next {
+    transition: none;
+  }
+
+  .owl-carousel .owl-nav button.owl-prev:active,
+  .owl-carousel .owl-nav button.owl-next:active {
+    transform: translateY(-50%);
+  }
+
+  .nh-slider-nav button:active {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   FAQ accordion (sections/faq.liquid)
+   A 75% column, centred in the page, with the heading and intro centred above
+   it; the questions themselves stay left aligned. Rows are separated by
+   hairlines and each is a <details>: the whole row is the click target, and
+   the plus turns into a minus when open.
+
+   Opening animates: a <details> cannot be transitioned directly, so the
+   answer is animated through ::details-content with transition-behavior:
+   allow-discrete, and interpolate-size lets it animate to auto height.
+   Browsers without that support simply open instantly, as before.
+   ========================================================================== */
+.nh-faq {
+  interpolate-size: allow-keywords; /* lets the answer animate to auto height */
+  width: 80%;
+  margin: 3.2rem auto;
+}
+
+/* The display heading is left-aligned everywhere else on the site, so the
+   centring is set here rather than in the shared heading rules. */
+.nh-faq .section-heading,
+.nh-faq .section-heading--display {
+  margin: 0 0 1rem !important;
+  text-align: center;
+  width:auto;
+}
+
+.nh-faq__intro {
+  margin: 0 auto 2.4rem;
+  max-width: 70ch;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--nh-muted);
+}
+
+.nh-faq__list {
+  border-top: 1px solid var(--nh-border);
+}
+
+.nh-faq__item {
+  border-bottom: 1px solid var(--nh-border);
+}
+
+.nh-faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  padding: 1.3rem 0.4rem;
+  font-family: var(--font-body-family);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--nh-heading);
+  cursor: pointer;
+  list-style: none; /* the row draws its own +/- instead */
+  transition: color 0.2s ease;
+}
+
+.nh-faq__question::-webkit-details-marker {
+  display: none;
+}
+
+.nh-faq__question:hover,
+.nh-faq__item[open] .nh-faq__question {
+  color: var(--nh-brand);
+}
+
+.nh-faq__question:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+  border-radius: 0.6rem;
+}
+
+/* Plus that becomes a minus: two bars, the upright one collapses when open. */
+.nh-faq__icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  transition: background-color 0.25s ease;
+}
+
+.nh-faq__icon::before,
+.nh-faq__icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.2rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--nh-brand);
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nh-faq__icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.nh-faq__item[open] .nh-faq__icon {
+  background: rgba(var(--nh-brand-rgb), 0.16);
+}
+
+.nh-faq__item[open] .nh-faq__icon::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+/* The animated part. Chrome 131+/Safari 18.2+ honour this; elsewhere the
+   answer just appears, which is what happened before. */
+.nh-faq__item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    content-visibility 0.35s allow-discrete;
+}
+
+.nh-faq__item[open]::details-content {
+  block-size: auto;
+}
+
+.nh-faq__answer {
+  padding: 0 0.4rem 1.6rem;
+  font-size: 1.35rem;
+  line-height: 1.65;
+  color: var(--nh-body);
+}
+
+.nh-faq__answer > :first-child {
+  margin-top: 0;
+}
+
+.nh-faq__answer > :last-child {
+  margin-bottom: 0;
+}
+
+.nh-faq__answer a {
+  color: var(--nh-brand);
+}
+
+@media screen and (max-width: 749px) {
+  .nh-faq {
+    /* 75% would be too narrow to read on a phone. */
+    width: 100%;
+    margin: 2.4rem auto;
+  }
+
+  .nh-faq__question {
+    gap: 1.2rem;
+    padding: 1.2rem 0.2rem;
+    font-size: 1.35rem;
+  }
+
+  .nh-faq__icon {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .nh-faq__answer {
+    padding: 0 0.2rem 1.6rem;
+    font-size: 1.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nh-faq__icon,
+  .nh-faq__icon::before,
+  .nh-faq__icon::after {
+    transition: none;
+  }
+
+  .nh-faq__item::details-content {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Content with image (sections/content-with-image.liquid)
+   The long-form SEO copy at the foot of the home page, in two columns: the
+   copy (heading included) and an image, either way round per the "Image
+   position" setting.
+
+   The copy starts clipped to "Height before expanding" with a Read more
+   button under it, in both layouts.
+
+   From 990px the row is as tall as the image, whose height comes from the
+   "Image height" setting. The text column is taken out of the row's height
+   calculation (height: 0 + min-height: 100%), so the image alone sets it, and
+   the copy scrolls inside that column rather than growing the page. Below
+   990px the columns stack and the whole copy is shown.
+
+   The 50px breathing space sits on the copy column, not the section, so the
+   image still runs the full height of the row.
+   ========================================================================== */
+/* Full-bleed colour band; the copy and image stay inside page-width. Nothing
+   is painted unless a background colour is chosen in the theme editor. */
+.nh-content-image-wrap {
+  background: var(--nh-content-image-bg, transparent);
+}
+
+.nh-content-image {
+  margin: 3.2rem 0;
+  padding-top: 4.3rem;
+  padding-bottom: 4.3rem;
+}
+
+/* Plain single-colour heading, inside the copy column rather than above the
+   whole section. */
+.nh-content-image__heading {
+  margin: 0 0 1.4rem;
+  font-size: calc(var(--font-heading-scale) * 2rem);
+  line-height: 1.25;
+  color: var(--nh-heading);
+}
+
+.nh-content-image__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.4rem;
+}
+
+.nh-content-image__media {
+  height: var(--nh-content-image-media-h, 450px);
+  overflow: hidden;
+  background: #f4f4f5;
+}
+
+.nh-content-image__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nh-content-image__col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nh-content-image__body {
+  position: relative;
+  max-height: var(--nh-content-image-max, 18rem);
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Stacked: open means the whole copy, no inner scrolling. */
+.nh-content-image.is-open .nh-content-image__body {
+  max-height: none;
+  overflow: visible;
+}
+
+.nh-content-image__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  align-self: flex-start;
+  margin-top: 1.6rem;
+  padding: 1.1rem 2.2rem;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--nh-btn-primary-bg);
+  color: var(--nh-btn-primary-label);
+  font-family: var(--font-body-family);
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    filter 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+.nh-content-image__btn-icon {
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nh-content-image.is-open .nh-content-image__btn-icon {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .nh-content-image__btn:hover {
+    filter: brightness(var(--nh-btn-hover-darken, 0.88));
+    transform: translateY(-2px);
+    box-shadow: 0 0.8rem 2rem rgba(var(--nh-brand-rgb), 0.35);
+  }
+}
+
+.nh-content-image__btn:active {
+  transform: translateY(0);
+}
+
+.nh-content-image__btn:focus-visible {
+  outline: 2px solid var(--nh-heading);
+  outline-offset: 3px;
+}
+
+.nh-content-image__body:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 0.6rem;
+}
+
+/* --- Copy ------------------------------------------------------------------ */
+.nh-content-image__body h3 {
+  margin: 2.4rem 0 0.8rem;
+  font-family: var(--font-body-family);
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--nh-heading);
+}
+
+.nh-content-image__body h3:first-child {
+  margin-top: 0;
+}
+
+.nh-content-image__body p {
+  margin: 0 0 1.2rem;
+  font-size: 1.45rem;
+  line-height: 1.75;
+  color: var(--nh-body);
+}
+
+.nh-content-image__body ul {
+  margin: 0 0 1.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.nh-content-image__body li {
+  position: relative;
+  padding-left: 2.4rem;
+  margin-bottom: 0.6rem;
+  font-size: 1.45rem;
+  line-height: 1.6;
+  color: var(--nh-body);
+}
+
+/* Orange tick in place of the browser bullet. */
+.nh-content-image__body li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 1.4rem;
+  height: 0.8rem;
+  border-left: 2px solid var(--nh-brand);
+  border-bottom: 2px solid var(--nh-brand);
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+@media screen and (min-width: 990px) {
+  .nh-content-image__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4rem;
+    align-items: stretch;
+  }
+
+  /* The image comes first in the markup, so "left" needs no rule and
+     "right" moves it after the copy. */
+  .nh-content-image--media-right .nh-content-image__media {
+    order: 1;
+  }
+
+  /* height:0 keeps this column out of the row's height calculation, so the
+     image decides how tall the section is; min-height:100% then fills it. */
+  .nh-content-image__col {
+    height: 0;
+    min-height: 100%;
+  }
+
+  /* The copy fills the column and scrolls inside it, so the section stays as
+     tall as the image however long the copy is. */
+  .nh-content-image__body {
+    flex: 0 1 auto;
+    min-height: 0;
+    /* No visible scrollbar: the fades are the cue that there is more. */
+    scrollbar-width: none;
+  }
+
+  /* Opened beside the image: the copy fills the rest of the column and
+     scrolls there, so the section stays as tall as the image. */
+  .nh-content-image.is-open .nh-content-image__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
+  .nh-content-image__body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  /* Fades at the top and bottom of the scroll panel. They are sticky
+     pseudo-elements of the scroller itself (pulled back with negative margins
+     so they take no space), which keeps them pinned to the panel's edges
+     while the copy moves under them.
+
+     The top one only appears once you start scrolling and the bottom one
+     fades out at the end, driven by the panel's own scroll position — no
+     JavaScript. Browsers without scroll-driven animations keep the bottom
+     fade and simply never show the top one. */
+  .nh-content-image__body::before,
+  .nh-content-image__body::after {
+    content: '';
+    display: block;
+    position: sticky;
+    z-index: 2;
+    height: 9rem;
+    pointer-events: none;
+  }
+
+  .nh-content-image__body::before {
+    top: 0;
+    margin-bottom: -9rem;
+    opacity: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 0%,
+      color-mix(in srgb, var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 55%, transparent) 60%,
+      rgba(var(--nh-surface-rgb), 0) 100%
+    );
+  }
+
+  .nh-content-image__body::after {
+    bottom: 0;
+    margin-top: -9rem;
+    background: linear-gradient(
+      to top,
+      var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 0%,
+      color-mix(in srgb, var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 55%, transparent) 60%,
+      rgba(var(--nh-surface-rgb), 0) 100%
+    );
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .nh-content-image__body {
+      scroll-timeline-name: --nh-content-image-scroll;
+      scroll-timeline-axis: block;
+    }
+
+    .nh-content-image__body::before {
+      animation: nh-content-image-fade-in linear both;
+      animation-timeline: --nh-content-image-scroll;
+      animation-range: 0 6rem;
+    }
+
+    .nh-content-image__body::after {
+      animation: nh-content-image-fade-out linear both;
+      animation-timeline: --nh-content-image-scroll;
+      animation-range: calc(100% - 6rem) 100%;
+    }
+  }
+
+  /* No image: the copy runs full width and is shown in full. */
+  .nh-content-image--no-media .nh-content-image__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nh-content-image--no-media .nh-content-image__col {
+    height: auto;
+    min-height: 0;
+  }
+
+  .nh-content-image--no-media .nh-content-image__body {
+    overflow: visible;
+  }
+}
+
+@keyframes nh-content-image-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nh-content-image-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .nh-content-image {
+    margin: 2.4rem 0;
+  }
+
+  .nh-content-image__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+
+
+  .nh-content-image__heading {
+    font-size: calc(var(--font-heading-scale) * 1.7rem);
+  }
+
+  .nh-content-image__body h3 {
+    font-size: 1.55rem;
+  }
+
+  .nh-content-image__body p,
+  .nh-content-image__body li {
+    font-size: 1.35rem;
+  }
+
+}
+

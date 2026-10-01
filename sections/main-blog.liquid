@@ -1,5 +1,18 @@
-{{ 'component-article-card.css' | asset_url | stylesheet_tag }}
-{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Blog category page — one Shopify blog's articles.
+
+  The second level of the blog: hub (/blogs) -> category (/blogs/news) ->
+  article (/blogs/news/<handle>). The heading is the blog's own title; it used
+  to be hardcoded to "Blogs", which made every category page look identical.
+
+  Cards are the shared .nh-blog-card (snippets/nh-blog-card.liquid), so the
+  hub, this page and the homepage slider all look like one system. Styles live
+  in assets/style.css under "Blog category page" and "Blog card grid".
+
+  Also serves /blogs/<handle>/tagged/<tag>, where Shopify filters blog.articles
+  for us and sets current_tags.
+{%- endcomment -%}
+
 {{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
@@ -15,40 +28,143 @@
     }
   }
 {%- endstyle -%}
+
 {% render 'breadcrumb' %}
-{%- paginate blog.articles by 6 -%}
-  <div class="main-blog page-width section-{{ section.id }}-padding">
-    <h1 class="collection-hero__title title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-      {% comment %} {{ blog.title | escape }} {% endcomment %}Blogs
+
+{%- liquid
+  assign hub_url = settings.blog_hub_url
+  assign hub_label = settings.blog_hub_label | default: 'Blogs'
+
+  # Per-category intro, authored as a blog metafield so it travels with the
+  # blog rather than the template. Falls back to the section setting.
+  assign blog_intro = blog.metafields.custom.description.value
+  if blog_intro == blank
+    assign blog_intro = section.settings.intro
+  endif
+-%}
+
+<div class="main-blog page-width section-{{ section.id }}-padding">
+  <header class="main-blog__header">
+    <h1 class="main-blog__title collection-hero__title title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+      {{- blog.title | escape -}}
+      {%- if current_tags != blank -%}
+        <span class="main-blog__tag-suffix">{{ current_tags | join: ' + ' | escape }}</span>
+      {%- endif -%}
     </h1>
 
-    <div class="blog-articles {% if section.settings.layout == 'collage' %}blog-articles--collage{% endif %}">
-      {%- for article in blog.articles -%}
-        <div
-          class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {% if settings.animations_reveal_on_scroll %}
-            data-cascade
-            style="--animation-order: {{ forloop.index }};"
-          {% endif %}
-        >
-          {%- render 'article-card',
-            article: article,
-            media_height: section.settings.image_height,
-            media_aspect_ratio: article.image.aspect_ratio,
-            show_image: section.settings.show_image,
-            show_date: section.settings.show_date,
-            show_author: section.settings.show_author,
-            show_excerpt: true
-          -%}
-        </div>
-      {%- endfor -%}
-    </div>
-
-    {%- if paginate.pages > 1 -%}
-      {%- render 'pagination', paginate: paginate -%}
+    {%- if blog_intro != blank and current_tags == blank -%}
+      <div class="main-blog__intro rte">{{ blog_intro }}</div>
     {%- endif -%}
-  </div>
-{%- endpaginate -%}
+
+    {%- if hub_url != blank -%}
+      <a href="{{ hub_url }}" class="main-blog__back">
+        &larr; All {{ hub_label | escape | downcase }}
+      </a>
+    {%- endif -%}
+  </header>
+
+  {%- comment -%}
+    Tag chips. blog.all_tags is empty on untagged blogs, so this whole block
+    simply doesn't render until the merchant starts tagging articles.
+  {%- endcomment -%}
+  {%- if section.settings.show_tag_filter and blog.all_tags.size > 0 -%}
+    <ul class="main-blog__tags list-unstyled">
+      <li>
+        <a
+          href="{{ blog.url }}"
+          class="main-blog__tag{% if current_tags == blank %} main-blog__tag--active{% endif %}"
+        >
+          All
+        </a>
+      </li>
+      {%- for tag in blog.all_tags -%}
+        <li>
+          <a
+            href="{{ blog.url }}/tagged/{{ tag | handleize }}"
+            class="main-blog__tag{% if current_tags contains tag %} main-blog__tag--active{% endif %}"
+          >
+            {{- tag | escape -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+  {%- paginate blog.articles by section.settings.posts_per_page -%}
+    {%- if blog.articles_count == 0 -%}
+      <p class="main-blog__empty">
+        There are no articles in this category yet.
+        {%- if hub_url != blank %}
+          <a href="{{ hub_url }}">Browse the other categories</a>.
+        {%- endif -%}
+      </p>
+    {%- else -%}
+      {%- liquid
+        # Feature the newest article as a wide card, but only on page 1 and
+        # never on a tag-filtered view, where "newest overall" is misleading.
+        assign feature_article = ''
+        if section.settings.show_featured and paginate.current_page == 1 and current_tags == blank
+          assign feature_article = blog.articles.first
+        endif
+      -%}
+
+      {%- if feature_article != blank -%}
+        <a href="{{ feature_article.url }}" class="main-blog__feature">
+          <div class="main-blog__feature-media">
+            {%- liquid
+              assign feature_cover = feature_article.metafields.custom.mobile_cover_image.value
+              if feature_cover == blank
+                assign feature_cover = feature_article.image
+              endif
+            -%}
+            {%- if feature_cover != blank -%}
+              {{
+                feature_cover
+                | image_url: width: 1400
+                | image_tag:
+                  widths: '600, 900, 1200, 1400',
+                  sizes: '(min-width: 990px) 60vw, 100vw',
+                  loading: 'eager',
+                  fetchpriority: 'high',
+                  alt: feature_article.title,
+                  class: 'main-blog__feature-img'
+              }}
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'main-blog__feature-img' }}
+            {%- endif -%}
+          </div>
+          <div class="main-blog__feature-body">
+            <span class="main-blog__feature-kicker">Latest</span>
+            <h2 class="main-blog__feature-title">{{ feature_article.title | escape }}</h2>
+            {%- if feature_article.excerpt_or_content != blank -%}
+              <p class="main-blog__feature-excerpt">
+                {{- feature_article.excerpt_or_content | strip_html | truncatewords: 35 -}}
+              </p>
+            {%- endif -%}
+            <span class="main-blog__feature-cta">Read article</span>
+          </div>
+        </a>
+      {%- endif -%}
+
+      <div class="nh-blog-grid">
+        {%- for article in blog.articles -%}
+          {%- unless feature_article != blank and article.id == feature_article.id -%}
+            {% render 'nh-blog-card',
+              article: article,
+              show_date: section.settings.show_date,
+              show_read_time: section.settings.show_read_time,
+              show_excerpt: section.settings.show_excerpt
+            %}
+          {%- endunless -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        {%- render 'pagination', paginate: paginate -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
 
 {% schema %}
 {
@@ -57,56 +173,45 @@
   "class": "section",
   "settings": [
     {
-      "type": "header",
-      "content": "t:sections.main-blog.settings.header.content"
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro text",
+      "info": "Shown under the heading on every category. A blog metafield 'custom.description' overrides this per category."
     },
     {
-      "type": "select",
-      "id": "layout",
-      "options": [
-        {
-          "value": "grid",
-          "label": "t:sections.main-blog.settings.layout.options__1.label"
-        },
-        {
-          "value": "collage",
-          "label": "t:sections.main-blog.settings.layout.options__2.label"
-        }
-      ],
-      "default": "collage",
-      "label": "t:sections.main-blog.settings.layout.label",
-      "info": "t:sections.main-blog.settings.layout.info"
+      "type": "range",
+      "id": "posts_per_page",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "label": "Articles per page"
+    },
+    {
+      "type": "header",
+      "content": "Featured article"
     },
     {
       "type": "checkbox",
-      "id": "show_image",
+      "id": "show_featured",
       "default": true,
-      "label": "t:sections.main-blog.settings.show_image.label"
+      "label": "Feature the newest article",
+      "info": "Shows the most recent article as a wide card above the grid. Page 1 only."
     },
     {
-      "type": "select",
-      "id": "image_height",
-      "options": [
-        {
-          "value": "adapt",
-          "label": "t:sections.main-blog.settings.image_height.options__1.label"
-        },
-        {
-          "value": "small",
-          "label": "t:sections.main-blog.settings.image_height.options__2.label"
-        },
-        {
-          "value": "medium",
-          "label": "t:sections.main-blog.settings.image_height.options__3.label"
-        },
-        {
-          "value": "large",
-          "label": "t:sections.main-blog.settings.image_height.options__4.label"
-        }
-      ],
-      "default": "medium",
-      "label": "t:sections.main-blog.settings.image_height.label",
-      "info": "t:sections.main-blog.settings.image_height.info"
+      "type": "header",
+      "content": "Tags"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tag_filter",
+      "default": true,
+      "label": "Show tag filter",
+      "info": "Only appears once articles in this blog have tags."
+    },
+    {
+      "type": "header",
+      "content": "Article cards"
     },
     {
       "type": "checkbox",
@@ -116,13 +221,15 @@
     },
     {
       "type": "checkbox",
-      "id": "show_author",
-      "default": false,
-      "label": "t:sections.main-blog.settings.show_author.label"
+      "id": "show_read_time",
+      "default": true,
+      "label": "Show reading time"
     },
     {
-      "type": "paragraph",
-      "content": "t:sections.main-blog.settings.paragraph.content"
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "default": true,
+      "label": "Show excerpt"
     },
     {
       "type": "header",
@@ -136,7 +243,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_top",
-      "default": 36
+      "default": 24
     },
     {
       "type": "range",
@@ -146,7 +253,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "default": 48
     }
   ]
 }
