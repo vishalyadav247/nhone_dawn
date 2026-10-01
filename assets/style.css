@@ -4348,6 +4348,15 @@ background-color: transparent !important;
   margin-bottom: 0;
 }
 
+/* Heading above the quick-nav tiles. It reuses .blog-hub__row-title, so it
+   stays in step with the category headers below; only the wrapper spacing is
+   new. The page then reads as one rhythm: heading, tiles, heading, cards. */
+.blog-hub__tiles-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--nh-border);
+}
+
 .blog-hub__row-header {
   display: flex;
   align-items: flex-end;

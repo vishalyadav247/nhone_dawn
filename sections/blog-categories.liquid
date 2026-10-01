@@ -49,6 +49,11 @@
   {%- endcomment -%}
   {%- if section.settings.show_tiles -%}
     {%- assign tile_count = 0 -%}
+    {%- if section.settings.tiles_heading != blank -%}
+      <div class="blog-hub__tiles-header">
+        <h2 class="blog-hub__row-title">{{ section.settings.tiles_heading | escape }}</h2>
+      </div>
+    {%- endif -%}
     <ul class="blog-hub__tiles list-unstyled">
       {%- for block in section.blocks -%}
         {%- assign cat_blog = block.settings.blog -%}
@@ -200,6 +205,13 @@
     {
       "type": "header",
       "content": "Category tiles"
+    },
+    {
+      "type": "text",
+      "id": "tiles_heading",
+      "default": "Browse by category",
+      "label": "Tiles heading",
+      "info": "Shown above the category tiles. Leave empty to hide it."
     },
     {
       "type": "checkbox",
