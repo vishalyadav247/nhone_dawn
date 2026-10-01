@@ -43,6 +43,19 @@
         display: block;
         margin-top: 20px;
       }
+
+      /* Waiting for a tab's products (see the script below). */
+      &.is-loading {
+        border-radius: 1.2rem;
+        background: rgba(var(--color-foreground), 0.04);
+        animation: tab-pane-pulse 1.2s ease-in-out infinite;
+      }
+    }
+
+    @keyframes tab-pane-pulse {
+      50% {
+        opacity: 0.5;
+      }
     }
 
     .item {
@@ -76,11 +89,11 @@
 
     <!-- Tab Content -->
     {%- comment -%}
-      Only the first tab's cards are live DOM on page load. The other tabs are
-      wrapped in <template>, which the browser parses but never lays out,
-      fetches images for, or exposes to scripts — this keeps ~100 product
-      cards out of the initial render. The script below moves a template's
-      cards into the page the first time its tab is clicked.
+      Only the first tab's products are rendered with the page. Every other
+      tab is an empty pane holding its collection's Section Rendering API URL
+      (sections/home-tab-products.liquid); the script below fetches it when
+      the tab is hovered, focused or clicked. Rendering all tabs up front cost
+      ~100 product cards of server render time and page weight per view.
     {%- endcomment -%}
     <div class="tab-content">
       {% for block in section.blocks %}
@@ -89,38 +102,13 @@
         <div
           id="tab-{{ section.id }}-{{ block.id }}"
           class="tab-pane {% if forloop.first %}active{% endif %}"
-        >
-          {%- unless forloop.first -%}<template class="tab-pane__deferred">{%- endunless -%}
-          {% if collection.products_count > 0 %}
-            <div class="product-carousel owl-carousel carousel">
-              {% assign available_count = 0 %}
-
-              {% for product in collection.products %}
-                {% if product.available %}
-                  <div class="item">
-                    {% render 'card-product',
-                      card_product: product,
-                      media_aspect_ratio: 'adapt',
-                      image_shape: 'default',
-                      show_secondary_image: true,
-                      show_vendor: false,
-                      show_rating: true,
-                      quick_add: 'standard',
-                      section_id: section.id
-                    %}
-                  </div>
-
-                  {% assign available_count = available_count | plus: 1 %}
-                  {% if available_count == 15 %}
-                    {% break %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% else %}
-            <p>No products found in this collection.</p>
+          {% if forloop.first == false and collection != blank %}
+            data-tab-url="{{ collection.url }}?section_id=home-tab-products"
           {% endif %}
-          {%- unless forloop.first -%}</template>{%- endunless -%}
+        >
+          {%- if forloop.first or collection == blank -%}
+            {%- render 'home-tab-products', collection: collection, section_id: section.id -%}
+          {%- endif -%}
         </div>
       {% endfor %}
     </div>
@@ -138,11 +126,35 @@
     var NAV_ARROW_RIGHT =
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path></svg>';
 
-    // Move a deferred tab's cards out of its <template> into the page.
-    function hydrate(pane) {
-      var tpl = pane.querySelector('template.tab-pane__deferred');
-      if (!tpl) return;
-      pane.replaceChild(tpl.content, tpl);
+    // Tabs other than the first load their products on demand. Each URL is
+    // fetched once; hovering a tab starts the request so it is usually ready
+    // by the time the click lands.
+    var requests = {};
+
+    function load(pane) {
+      var url = pane.getAttribute('data-tab-url');
+      if (!url) return Promise.resolve();
+      if (!requests[url]) {
+        requests[url] = fetch(url)
+          .then(function (res) {
+            if (!res.ok) throw new Error(res.status);
+            return res.text();
+          })
+          .catch(function (err) {
+            delete requests[url]; // allow a retry on the next click
+            throw err;
+          });
+      }
+      return requests[url];
+    }
+
+    function fill(pane, html) {
+      if (!pane.hasAttribute('data-tab-url')) return;
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      var content = doc.querySelector('.product-carousel') || doc.querySelector('.shopify-section > p');
+      if (!content) return;
+      pane.replaceChildren(document.importNode(content, true));
+      pane.removeAttribute('data-tab-url');
 
       // Snapmint adds its EMI line to product cards in a single pass when it
       // loads, so cards added later need another pass. collectionList() is
@@ -166,8 +178,10 @@
         dots: false,
         navText: [NAV_ARROW_LEFT, NAV_ARROW_RIGHT],
         responsive: {
+          // No arrows on phones — the row is swipeable and the buttons
+          // crowded a 2-up grid. 750 is the theme's phone breakpoint.
           0: { items: 2, margin: 5, nav: false },
-          600: { items: 2 },
+          750: { items: 2 },
           1000: { items: 6 },
         },
       });
@@ -180,18 +194,45 @@
       initCarousel(section.querySelector('.tab-pane.active'));
 
       tabLinks.forEach(function (tab) {
+        function prefetch() {
+          var target = section.querySelector('#' + tab.getAttribute('data-tab'));
+          if (target) load(target).catch(function () {});
+        }
+        tab.addEventListener('pointerenter', prefetch);
+        tab.addEventListener('focus', prefetch);
+
         tab.addEventListener('click', function () {
           var target = section.querySelector('#' + tab.getAttribute('data-tab'));
           if (!target || target.classList.contains('active')) return;
+
+          // Hold the current row's height while the new tab loads, so the
+          // page below doesn't collapse and jump back.
+          var current = section.querySelector('.tab-pane.active');
+          if (current) target.style.minHeight = current.offsetHeight + 'px';
 
           tabLinks.forEach(function (el) { el.classList.remove('active'); });
           tabPanes.forEach(function (el) { el.classList.remove('active'); });
           tab.classList.add('active');
 
-          hydrate(target);
           target.classList.add('active');
-          // Owl measures its container, so wait until the pane is displayed.
-          requestAnimationFrame(function () { initCarousel(target); });
+
+          if (!target.hasAttribute('data-tab-url')) {
+            target.style.minHeight = '';
+            initCarousel(target);
+            return;
+          }
+          target.classList.add('is-loading');
+          load(target)
+            .then(function (html) {
+              fill(target, html);
+              // Owl measures its container, so wait until the pane is laid out.
+              requestAnimationFrame(function () { initCarousel(target); });
+            })
+            .catch(function () {})
+            .then(function () {
+              target.classList.remove('is-loading');
+              target.style.minHeight = '';
+            });
         });
       });
     }

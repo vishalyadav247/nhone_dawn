@@ -1,0 +1,37 @@
+{%- comment -%}
+  The product row of one home-page-tabbber tab: the first 15 available
+  products of a collection as an Owl carousel track.
+
+  Rendered inline for a tabber's first tab, and through the Section Rendering
+  API (sections/home-tab-products.liquid) for the other tabs when they are
+  opened, so only one tab per tabber is rendered on the server per page view.
+
+  Accepts:
+  - collection: {Collection} The collection to list.
+  - section_id: {String} Prefix for the cards' element IDs.
+{%- endcomment -%}
+{%- if collection.products_count > 0 -%}
+  <div class="product-carousel owl-carousel carousel">
+    {%- assign available_count = 0 -%}
+    {%- for product in collection.products -%}
+      {%- if product.available -%}
+        <div class="item">
+          {% render 'card-product',
+            card_product: product,
+            media_aspect_ratio: 'adapt',
+            image_shape: 'default',
+            show_secondary_image: true,
+            show_vendor: false,
+            show_rating: true,
+            quick_add: 'standard',
+            section_id: section_id
+          %}
+        </div>
+        {%- assign available_count = available_count | plus: 1 -%}
+        {%- if available_count == 15 -%}{%- break -%}{%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  <p>No products found in this collection.</p>
+{%- endif -%}

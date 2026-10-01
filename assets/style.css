@@ -652,7 +652,7 @@ h3.card__heading {
 
 .CarCarousel:not(.owl-loaded) {
   --pre-items: 4;
-  --pre-gap: 12px;
+  --pre-gap: 5px;
 }
 
 .product-carousel:not(.owl-loaded) {
@@ -731,7 +731,11 @@ h3.card__heading {
     padding: 0px !important;
   }
 
-  .owl-theme .owl-nav {
+  /* :not(.disabled) matters: Owl marks .owl-nav disabled when a breakpoint
+     sets nav:false (and when there is nothing to scroll to), and hides it with
+     .owl-nav.disabled{display:none}. Without the guard this rule forced the
+     arrows back on for every carousel below 990px. */
+  .owl-theme .owl-nav:not(.disabled) {
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -2939,7 +2943,7 @@ background-color: transparent !important;
 
   .top-categories-carousel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 0.5rem; /* same 5px phone gap as the carousels */
     margin-top: 1.6rem;
   }
 
@@ -3334,11 +3338,24 @@ background-color: transparent !important;
     margin-bottom: 2rem;
   }
 
-  /* Owl turns the strip into a slider; until it initialises the features
-     stack, so nothing jumps sideways on load. */
+  /* Owl turns the strip into a slider. Until it initialises, lay the features
+     out as the same one-slide row (first feature showing, the rest clipped)
+     so the bar neither shows all four stacked nor collapses when Owl runs.
+     No fade: the generic .owl-carousel transition would animate the swap. */
   .nh-trust {
     display: block;
     border-radius: 1.2rem;
+    transition: none;
+  }
+
+  .nh-trust:not(.owl-loaded) {
+    display: flex !important;
+    overflow: hidden;
+    opacity: 1 !important;
+  }
+
+  .nh-trust:not(.owl-loaded) > .nh-trust__item {
+    flex: 0 0 100%;
   }
 
   .nh-trust.owl-loaded .owl-stage {

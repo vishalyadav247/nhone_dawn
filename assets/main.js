@@ -47,7 +47,7 @@ $(function() {
 			responsive: {
 				0: {
 					items: 2,
-					margin: 7
+					margin: 5
 				},
 				600: {
 					items: 2
@@ -83,6 +83,7 @@ $(function() {
 		responsive: {
 			0: {
 			items: 3,
+			margin: 5,
 			nav: false,
 			},
 			600: {
@@ -156,7 +157,7 @@ $('.CarCarousel').each(function () {
 	responsive: {
 		0: {
 			items: 4,
-			margin: 12,
+			margin: 5,
 			nav:false
 		},
 		1000: {
@@ -196,6 +197,7 @@ $(".pdp-featured-collection").owlCarousel({
 	responsive: {
 		0: {
 			items: 2,
+			margin: 5,
 			dots:false
 		},
 		800: {
@@ -416,7 +418,7 @@ document.addEventListener('DOMContentLoaded', updateMobileCartBubble);
           </svg>`
         ],
         responsive: {
-          0: { items: 2, dots: false },
+          0: { items: 2, margin: 5, dots: false },
           800: { items: 3, dots: false },
           1000: { items: 4 },
           1300: { items: 6 }
