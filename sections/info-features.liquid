@@ -53,7 +53,7 @@
               {%- capture title_case -%}
                 {%- for word in title_words -%}{{ word | downcase | capitalize }}{% unless forloop.last %} {% endunless %}{%- endfor -%}
               {%- endcapture -%}
-              <h3 class="nh-trust__title">{{ title_case | escape }}</h3>
+              <h3 class="nh-trust__title">{{ title }}</h3>
             {%- endif -%}
             {%- if description != blank -%}
               <p class="nh-trust__description">{{ description | escape | newline_to_br }}</p>
