@@ -4965,6 +4965,9 @@ background-color: transparent !important;
   text-underline-offset: 0.4rem;
   transition: color 0.2s ease;
 }
+.nh-seo__btn[aria-expanded="true"]{
+  margin-top:1.4px;
+}
 
 .nh-seo__btn:hover {
   color: var(--nh-brand);
