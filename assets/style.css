@@ -4966,7 +4966,7 @@ background-color: transparent !important;
   transition: color 0.2s ease;
 }
 .nh-seo__btn[aria-expanded="true"]{
-  margin-top:1.4px;
+  margin-top:1.4rem;
 }
 
 .nh-seo__btn:hover {
