@@ -1767,9 +1767,6 @@ predictive-search:not([loading]) .predictive-search__loading-state{
 }
 
 @media screen and (max-width:767px){
-  .collection-hero__title{
-    margin-bottom:0 !important;
-  }
   .facets-vertical{
     .facets-wrapper{
       .mobile-facets__open{
@@ -1807,7 +1804,8 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   @media screen and (max-width:767px){
     font-size: 2.5rem;
     text-align:center;
-    margin-top:15px !important;
+    margin-top:0;
+    margin-bottom:0;
   }
 }
 
