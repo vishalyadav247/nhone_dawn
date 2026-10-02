@@ -4215,6 +4215,7 @@ background-color: transparent !important;
   .collection-link-list__more {
     display: inline-block;
     margin-top: 1rem;
+    margin-left: 1.2rem;
     font-size: 1rem;
     font-weight: 400;
     color: var(--nh-heading);
@@ -4801,344 +4802,213 @@ background-color: transparent !important;
 }
 
 /* ==========================================================================
-   Content with image (sections/content-with-image.liquid)
-   The long-form SEO copy at the foot of the home page, in two columns: the
-   copy (heading included) and an image, either way round per the "Image
-   position" setting.
+   SEO text (sections/seo-text.liquid)
+   The long-form copy at the foot of the home page. The copy is the point of
+   the section; the layout's only job is to make 800 words feel light.
 
-   The copy starts clipped to "Height before expanding" with a Read more
-   button under it, in both layouts.
+   The eyebrow, heading and summary run across the top, then the copy runs
+   full width, clipped to --nh-seo-lines lines (set inline from the "Lines
+   before expanding" setting) and faded out, with the button under it.
 
-   From 990px the row is as tall as the image, whose height comes from the
-   "Image height" setting. The text column is taken out of the row's height
-   calculation (height: 0 + min-height: 100%), so the image alone sets it, and
-   the copy scrolls inside that column rather than growing the page. Below
-   990px the columns stack and the whole copy is shown.
-
-   The 50px breathing space sits on the copy column, not the section, so the
-   image still runs the full height of the row.
+   The clip is a line count rather than a height, so a phone shows the same
+   number of lines as a desktop. All of the copy is in the HTML either way —
+   it is only ever clipped, never removed, so nothing is hidden from crawlers.
    ========================================================================== */
-/* Full-bleed colour band; the copy and image stay inside page-width. Nothing
-   is painted unless a background colour is chosen in the theme editor. */
-.nh-content-image-wrap {
-  background: var(--nh-content-image-bg, transparent);
+.nh-seo__head {
+  margin-bottom: 3.2rem;
 }
 
-.nh-content-image {
-  margin: 3.2rem 0;
-  padding-top: 4.3rem;
-  padding-bottom: 4.3rem;
-}
-
-/* Plain single-colour heading, inside the copy column rather than above the
-   whole section. */
-.nh-content-image__heading {
-  margin: 0 0 1.4rem;
-  font-size: calc(var(--font-heading-scale) * 2rem);
-  line-height: 1.25;
-  color: var(--nh-heading);
-}
-
-.nh-content-image__grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.4rem;
-}
-
-.nh-content-image__media {
-  height: var(--nh-content-image-media-h, 450px);
-  overflow: hidden;
-  background: #f4f4f5;
-}
-
-.nh-content-image__img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.nh-content-image__col {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.nh-content-image__body {
-  position: relative;
-  max-height: var(--nh-content-image-max, 18rem);
-  overflow: hidden;
-  transition: max-height 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-/* Stacked: open means the whole copy, no inner scrolling. */
-.nh-content-image.is-open .nh-content-image__body {
-  max-height: none;
-  overflow: visible;
-}
-
-.nh-content-image__btn {
+.nh-seo__eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
-  align-self: flex-start;
-  margin-top: 1.6rem;
-  padding: 1.1rem 2.2rem;
-  border: 0;
-  border-radius: 1rem;
-  background: var(--nh-btn-primary-bg);
-  color: var(--nh-btn-primary-label);
-  font-family: var(--font-body-family);
-  font-size: 1.35rem;
+  gap: 1rem;
+  margin: 0 0 1.6rem;
+  /* Brand orange is 2.3:1 on white, so the label text uses a darkened mix of
+     the same token and the raw brand colour carries the rule beside it. */
+  color: var(--nh-eyebrow-ink, var(--nh-heading));
+  font-size: 1.2rem;
   font-weight: 600;
-  cursor: pointer;
-  transition:
-    filter 0.25s ease,
-    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-    box-shadow 0.3s ease;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
-.nh-content-image__btn-icon {
-  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.nh-content-image.is-open .nh-content-image__btn-icon {
-  transform: rotate(180deg);
-}
-
-@media (hover: hover) {
-  .nh-content-image__btn:hover {
-    filter: brightness(var(--nh-btn-hover-darken, 0.88));
-    transform: translateY(-2px);
-    box-shadow: 0 0.8rem 2rem rgba(var(--nh-brand-rgb), 0.35);
+@supports (color: color-mix(in srgb, red, blue)) {
+  .nh-seo__eyebrow {
+    color: color-mix(in srgb, var(--nh-brand) 60%, #0a0a0a);
   }
 }
 
-.nh-content-image__btn:active {
-  transform: translateY(0);
+.nh-seo__eyebrow::before {
+  content: '';
+  flex: 0 0 2rem;
+  height: 2px;
+  background: var(--nh-brand);
 }
 
-.nh-content-image__btn:focus-visible {
+/* Same size as every other section heading on the site (2.4rem desktop,
+   2rem on phones) — this is a section title, not a page title. */
+.nh-seo__heading {
+  max-width: 90rem;
+  margin: 0 0 1.2rem;
+  color: var(--nh-heading);
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.nh-seo__summary {
+  max-width: 70rem;
+  margin: 0;
+  color: var(--nh-muted);
+  font-size: 1.6rem;
+  line-height: 1.6;
+}
+
+/* --- The copy -------------------------------------------------------------- */
+.nh-seo__body {
+  position: relative;
+  /* A line count, not a fixed height: lines x the copy's own line height, so
+     the same number of lines shows at every type size. */
+  max-height: calc(var(--nh-seo-lines, 4) * 1.75em);
+  overflow: hidden;
+  color: var(--nh-body);
+  font-size: 1.7rem;
+  line-height: 1.75;
+  transition: max-height 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nh-seo__body > *:first-child {
+  margin-top: 0;
+}
+
+.nh-seo__body > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Fades the cut instead of chopping a line in half. Dropped once open, so the
+   last paragraph is not greyed out. */
+.nh-seo__body::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 8rem;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--nh-surface, #fff) 92%);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.nh-seo__col.is-open .nh-seo__body::after {
+  opacity: 0;
+}
+
+.nh-seo__body > *:first-child {
+  margin-top: 0;
+}
+
+.nh-seo__body h3 {
+  margin: 3.2rem 0 1rem;
+  color: var(--nh-heading);
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.nh-seo__body p {
+  margin: 0 0 1.8rem;
+}
+
+.nh-seo__body ul,
+.nh-seo__body ol {
+  margin: 0 0 1.8rem;
+  padding-left: 2rem;
+  list-style-position: outside;
+}
+
+.nh-seo__body li {
+  margin-bottom: 0.6rem;
+}
+
+.nh-seo__body li::marker {
+  color: var(--nh-brand);
+}
+
+.nh-seo__body a {
+  color: var(--nh-heading);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--nh-brand-rgb), 0.5);
+  text-underline-offset: 0.35rem;
+}
+
+/* --- The toggle ------------------------------------------------------------
+   A text link, not a filled pill: it is a disclosure, not a call to action. */
+.nh-seo__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 4.4rem;
+  margin-top: 1.6rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nh-heading);
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--nh-brand-rgb), 0.5);
+  text-decoration-thickness: 0.15rem;
+  text-underline-offset: 0.4rem;
+  transition: color 0.2s ease;
+}
+
+.nh-seo__btn:hover {
+  color: var(--nh-brand);
+}
+
+.nh-seo__btn-icon {
+  transition: transform 0.3s ease;
+}
+
+.nh-seo__col.is-open .nh-seo__btn-icon {
+  transform: rotate(180deg);
+}
+
+.nh-seo__btn:focus-visible {
   outline: 2px solid var(--nh-heading);
   outline-offset: 3px;
 }
 
-.nh-content-image__body:focus-visible {
-  outline: 2px solid var(--nh-brand);
-  outline-offset: 0.6rem;
-}
-
-/* --- Copy ------------------------------------------------------------------ */
-.nh-content-image__body h3 {
-  margin: 2.4rem 0 0.8rem;
-  font-family: var(--font-body-family);
-  font-size: 1.7rem;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--nh-heading);
-}
-
-.nh-content-image__body h3:first-child {
-  margin-top: 0;
-}
-
-.nh-content-image__body p {
-  margin: 0 0 1.2rem;
-  font-size: 1.45rem;
-  line-height: 1.75;
-  color: var(--nh-body);
-}
-
-.nh-content-image__body ul {
-  margin: 0 0 1.6rem;
-  padding: 0;
-  list-style: none;
-}
-
-.nh-content-image__body li {
-  position: relative;
-  padding-left: 2.4rem;
-  margin-bottom: 0.6rem;
-  font-size: 1.45rem;
-  line-height: 1.6;
-  color: var(--nh-body);
-}
-
-/* Orange tick in place of the browser bullet. */
-.nh-content-image__body li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.6em;
-  width: 1.4rem;
-  height: 0.8rem;
-  border-left: 2px solid var(--nh-brand);
-  border-bottom: 2px solid var(--nh-brand);
-  transform: translateY(-50%) rotate(-45deg);
-}
-
-@media screen and (min-width: 990px) {
-  .nh-content-image__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 4rem;
-    align-items: stretch;
-  }
-
-  /* The image comes first in the markup, so "left" needs no rule and
-     "right" moves it after the copy. */
-  .nh-content-image--media-right .nh-content-image__media {
-    order: 1;
-  }
-
-  /* height:0 keeps this column out of the row's height calculation, so the
-     image decides how tall the section is; min-height:100% then fills it. */
-  .nh-content-image__col {
-    height: 0;
-    min-height: 100%;
-  }
-
-  /* The copy fills the column and scrolls inside it, so the section stays as
-     tall as the image however long the copy is. */
-  .nh-content-image__body {
-    flex: 0 1 auto;
-    min-height: 0;
-    /* No visible scrollbar: the fades are the cue that there is more. */
-    scrollbar-width: none;
-  }
-
-  /* Opened beside the image: the copy fills the rest of the column and
-     scrolls there, so the section stays as tall as the image. */
-  .nh-content-image.is-open .nh-content-image__body {
-    flex: 1 1 auto;
-    overflow-y: auto;
-  }
-
-  .nh-content-image__body::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-
-  /* Fades at the top and bottom of the scroll panel. They are sticky
-     pseudo-elements of the scroller itself (pulled back with negative margins
-     so they take no space), which keeps them pinned to the panel's edges
-     while the copy moves under them.
-
-     The top one only appears once you start scrolling and the bottom one
-     fades out at the end, driven by the panel's own scroll position — no
-     JavaScript. Browsers without scroll-driven animations keep the bottom
-     fade and simply never show the top one. */
-  .nh-content-image__body::before,
-  .nh-content-image__body::after {
-    content: '';
-    display: block;
-    position: sticky;
-    z-index: 2;
-    height: 9rem;
-    pointer-events: none;
-  }
-
-  .nh-content-image__body::before {
-    top: 0;
-    margin-bottom: -9rem;
-    opacity: 0;
-    background: linear-gradient(
-      to bottom,
-      var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 0%,
-      color-mix(in srgb, var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 55%, transparent) 60%,
-      rgba(var(--nh-surface-rgb), 0) 100%
-    );
-  }
-
-  .nh-content-image__body::after {
-    bottom: 0;
-    margin-top: -9rem;
-    background: linear-gradient(
-      to top,
-      var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 0%,
-      color-mix(in srgb, var(--nh-content-image-bg, rgb(var(--nh-surface-rgb))) 55%, transparent) 60%,
-      rgba(var(--nh-surface-rgb), 0) 100%
-    );
-  }
-
-  @supports (animation-timeline: scroll()) {
-    .nh-content-image__body {
-      scroll-timeline-name: --nh-content-image-scroll;
-      scroll-timeline-axis: block;
-    }
-
-    .nh-content-image__body::before {
-      animation: nh-content-image-fade-in linear both;
-      animation-timeline: --nh-content-image-scroll;
-      animation-range: 0 6rem;
-    }
-
-    .nh-content-image__body::after {
-      animation: nh-content-image-fade-out linear both;
-      animation-timeline: --nh-content-image-scroll;
-      animation-range: calc(100% - 6rem) 100%;
-    }
-  }
-
-  /* No image: the copy runs full width and is shown in full. */
-  .nh-content-image--no-media .nh-content-image__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .nh-content-image--no-media .nh-content-image__col {
-    height: auto;
-    min-height: 0;
-  }
-
-  .nh-content-image--no-media .nh-content-image__body {
-    overflow: visible;
-  }
-}
-
-@keyframes nh-content-image-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes nh-content-image-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
 @media screen and (max-width: 749px) {
-  .nh-content-image {
-    margin: 2.4rem 0;
+  .nh-seo__inner {
+    gap: 2rem;
   }
 
-  .nh-content-image__btn {
-    width: 100%;
-    justify-content: center;
+  .nh-seo__body {
+    font-size: 1.6rem;
   }
 
-
-
-  .nh-content-image__heading {
-    font-size: calc(var(--font-heading-scale) * 1.7rem);
+  .nh-seo__heading {
+    font-size: 2rem;
   }
 
-  .nh-content-image__body h3 {
-    font-size: 1.55rem;
+  .nh-seo__body h3 {
+    margin-top: 2.8rem;
+    font-size: 1.8rem;
   }
-
-  .nh-content-image__body p,
-  .nh-content-image__body li {
-    font-size: 1.35rem;
-  }
-
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .nh-seo__body,
+  .nh-seo__body::after,
+  .nh-seo__btn,
+  .nh-seo__btn-icon {
+    transition: none;
+  }
+}

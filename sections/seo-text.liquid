@@ -1,0 +1,238 @@
+{%- comment -%}
+  SEO text — the long-form copy at the foot of the home page.
+
+  The copy is the point of the section; the design's only job is to make 800
+  words feel light. The eyebrow, heading and summary run across the top, then
+  the copy runs full width with only the first few lines showing, faded out
+  into a Read more link.
+
+  "Lines before expanding" is a line count, not a height, so the same number
+  of lines shows on a phone as on a desktop even though the type is smaller.
+
+  The opening paragraphs are always visible. Everything from the first <h3>
+  onwards is clipped to "Collapsed height" and revealed by the button, so a
+  visitor gets the gist without clicking. Every word is in the HTML either
+  way — it is only ever clipped by CSS, so nothing is hidden from crawlers.
+
+  "Content" is an `html` setting rather than `richtext`, because the copy uses
+  <h3> and <ul>, which richtext strips.
+
+  Styles live in assets/style.css under "SEO text".
+{%- endcomment -%}
+
+{%- liquid
+  assign body_id = 'nh-seo-' | append: section.id
+
+-%}
+
+<div class="nh-seo section-{{ section.id }}-padding">
+  <div class="nh-seo__inner page-width">
+    <header class="nh-seo__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="nh-seo__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="nh-seo__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.summary != blank -%}
+        <p class="nh-seo__summary">{{ section.settings.summary | escape }}</p>
+      {%- endif -%}
+    </header>
+
+    <div class="nh-seo__col" id="{{ body_id }}-root" style="--nh-seo-lines: {{ section.settings.collapsed_lines | default: 4 }};">
+      {%- if section.settings.content != blank -%}
+        <div class="nh-seo__body rte" id="{{ body_id }}">{{ section.settings.content }}</div>
+
+        <button
+          class="nh-seo__btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="{{ body_id }}"
+          data-label-more="{{ section.settings.more_label | default: 'Read more' | escape }}"
+          data-label-less="{{ section.settings.less_label | default: 'Read less' | escape }}"
+        >
+          <span class="nh-seo__btn-text">{{ section.settings.more_label | default: 'Read more' | escape }}</span>
+          <svg class="nh-seo__btn-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"></path>
+          </svg>
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.getElementById('{{ body_id }}-root');
+    if (!root) return;
+
+    var body = root.querySelector('.nh-seo__body');
+    var btn = root.querySelector('.nh-seo__btn');
+    if (!body || !btn) return;
+
+    var text = btn.querySelector('.nh-seo__btn-text');
+
+    // Lines x the copy's own line height, so the same number of lines shows
+    // whatever the type size is.
+    function collapsedHeight() {
+      var cs = getComputedStyle(body);
+      var lines = parseFloat(getComputedStyle(root).getPropertyValue('--nh-seo-lines')) || 4;
+      var lh = parseFloat(cs.lineHeight);
+      if (!lh) lh = parseFloat(cs.fontSize) * 1.75;
+      return Math.round(lines * lh);
+    }
+
+    function fullHeight() {
+      var pinned = body.style.maxHeight;
+      body.style.maxHeight = 'none';
+      var h = body.getBoundingClientRect().height;
+      body.style.maxHeight = pinned;
+      void body.offsetHeight;
+      return h;
+    }
+
+    // Nothing clipped: drop the button rather than leave a dead control.
+    if (fullHeight() <= body.getBoundingClientRect().height + 8) {
+      btn.hidden = true;
+      return;
+    }
+
+    btn.addEventListener('click', function () {
+      var open = !root.classList.contains('is-open');
+
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      text.textContent = open ? btn.dataset.labelLess : btn.dataset.labelMore;
+
+      // Animate between two pixel heights: a transition from or to a keyword
+      // does not animate, so the current height is pinned and a reflow forced
+      // before the target is set.
+      body.style.maxHeight = body.getBoundingClientRect().height + 'px';
+      void body.offsetHeight;
+      root.classList.toggle('is-open', open);
+      body.style.maxHeight = (open ? fullHeight() : collapsedHeight()) + 'px';
+
+      if (!open) {
+        var top = root.getBoundingClientRect().top;
+        if (top < 0) {
+          window.scrollTo({
+            top: window.pageYOffset + top - 24,
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+          });
+        }
+      }
+    });
+
+    // Once open, let the copy reflow freely when the window changes width.
+    window.addEventListener('resize', function () {
+      if (root.classList.contains('is-open')) body.style.maxHeight = fullHeight() + 'px';
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SEO text",
+  "class": "nh-seo-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "About NH ONE",
+      "label": "Eyebrow",
+      "info": "Small label above the heading. Leave empty to hide it."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "summary",
+      "label": "Summary",
+      "info": "One line under the heading."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "html",
+      "id": "content",
+      "label": "Content",
+      "info": "The opening paragraphs stay visible; everything from the first heading onwards sits behind the button."
+    },
+    {
+      "type": "range",
+      "id": "collapsed_lines",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Lines before expanding",
+      "info": "The same number of lines shows on phones as on desktop."
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "default": "Read more",
+      "label": "Expand label"
+    },
+    {
+      "type": "text",
+      "id": "less_label",
+      "default": "Read less",
+      "label": "Collapse label"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56,
+      "label": "Padding top"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56,
+      "label": "Padding bottom"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SEO text"
+    }
+  ]
+}
+{% endschema %}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
