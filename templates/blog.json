@@ -12,16 +12,19 @@
     "main": {
       "type": "main-blog",
       "settings": {
+        "intro": "",
         "posts_per_page": 12,
         "show_featured": true,
         "show_tag_filter": true,
         "show_date": true,
         "show_read_time": true,
         "show_excerpt": true,
-        "padding_top": 24,
+        "padding_top": 8,
         "padding_bottom": 48
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
