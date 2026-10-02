@@ -46,12 +46,16 @@
         },
         "tags": {
           "type": "tags",
+          "disabled": true,
           "settings": {
-            "tags_title": "Tagged in"
+            "tags_title": "Tagged in",
+            "hidden_tag_prefix": "",
+            "hidden_tags": ""
           }
         },
         "share": {
           "type": "share",
+          "disabled": true,
           "settings": {
             "share_label": "Share",
             "show_whatsapp": true,
@@ -63,8 +67,13 @@
         },
         "author_box": {
           "type": "author_box",
+          "disabled": true,
           "settings": {
-            "author_heading": "Written by"
+            "author_heading": "Written by",
+            "default_author_name": "",
+            "default_author_role": "",
+            "default_author_bio": "",
+            "author_link": ""
           }
         }
       },
@@ -79,10 +88,10 @@
       ],
       "settings": {
         "hero_layout": "stacked",
-        "show_article_nav": true,
+        "show_article_nav": false,
         "nav_prev_label": "Previous article",
         "nav_next_label": "Next article",
-        "show_related": true,
+        "show_related": false,
         "related_heading": "You may also |like",
         "related_count": 4,
         "related_match_tags": true,
