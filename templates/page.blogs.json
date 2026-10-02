@@ -19,12 +19,13 @@
     },
     "blog_categories": {
       "type": "blog-categories",
-      "name": "Blog categories",
       "blocks": {
         "category_news": {
           "type": "category",
           "settings": {
             "blog": "news",
+            "heading": "",
+            "description": "",
             "view_all_label": "View all"
           }
         },
@@ -32,23 +33,33 @@
           "type": "category",
           "settings": {
             "blog": "blog",
+            "heading": "",
+            "description": "",
             "view_all_label": "View all"
           }
         }
       },
-      "block_order": ["category_news", "category_blog"],
+      "block_order": [
+        "category_news",
+        "category_blog"
+      ],
+      "name": "Blog categories",
       "settings": {
         "heading": "Our |Blogs",
         "intro": "<p>Guides, buying advice and news for everything that goes in, on and around your car.</p>",
+        "tiles_heading": "Browse by category",
         "show_tiles": true,
         "articles_per_category": 4,
         "show_date": true,
         "show_read_time": true,
         "show_excerpt": false,
-        "padding_top": 24,
+        "padding_top": 8,
         "padding_bottom": 48
       }
     }
   },
-  "order": ["main", "blog_categories"]
+  "order": [
+    "main",
+    "blog_categories"
+  ]
 }
