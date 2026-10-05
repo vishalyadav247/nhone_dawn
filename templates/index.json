@@ -47,10 +47,10 @@
         },
         "image_wbH8x3": {
           "type": "image",
-          "name": "Banner - Provision led",
+          "name": "Banner - Best Deal",
           "settings": {
             "image_desktop": "shopify://shop_images/Car_Accessories__Guaranteed_Best_Deals.png",
-            "image_mobile": "shopify://shop_images/LED_Festive_1710_Banner_1000_x_800_px_Revised.png",
+            "image_mobile": "shopify://shop_images/Premium_Car_Accessories_Deal_Banner.png",
             "image_alt": "Image description",
             "image_url": "shopify://collections/car-led-headlight-bulbs",
             "open_in_new_tab": false
