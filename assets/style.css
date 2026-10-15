@@ -4813,7 +4813,7 @@ background-color: transparent !important;
    it is only ever clipped, never removed, so nothing is hidden from crawlers.
    ========================================================================== */
 .nh-seo__head {
-  margin-bottom: 3.2rem;
+  margin-bottom: 1.2rem;
 }
 
 .nh-seo__eyebrow {
