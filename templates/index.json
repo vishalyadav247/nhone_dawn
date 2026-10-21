@@ -533,37 +533,37 @@
         "feature_tdmRmr": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Car_Charger_offer_banner.png",
+            "image": "shopify://shop_images/Premium_Car_Audio_Systems_Banner.png",
             "image_alt": "Feature Image",
             "button_text": "",
-            "link": "shopify://collections/car-phone-charger"
+            "link": "shopify://collections/car-music-system"
           }
         },
         "feature_Yp3c7X": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Headlight_bulb_offer_banner.png",
+            "image": "shopify://shop_images/Mahindra_Thar_Accessories_Adventure_Ad.png",
             "image_alt": "Check & Pay",
             "button_text": "",
-            "link": "shopify://collections/car-led-headlight-bulbs"
+            "link": "shopify://collections/thar"
           }
         },
         "feature_xrEXCe": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Car_Key_Cover_offer_banner.png",
+            "image": "shopify://shop_images/Off-Road_Lighting_Solutions.png",
             "image_alt": "Buy Car",
             "button_text": "",
-            "link": "shopify://collections/car-key-cover"
+            "link": "shopify://collections/car-led-headlight-bulbs"
           }
         },
         "feature_GgYMRW": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Cleaning_Care_offer_banner.png",
+            "image": "shopify://shop_images/Orange-Black_Dashcam_Showcase.png",
             "image_alt": "Feature Image",
             "button_text": "",
-            "link": "shopify://collections/car-interior-cleaning-products"
+            "link": "shopify://collections/dashcam"
           }
         }
       },
