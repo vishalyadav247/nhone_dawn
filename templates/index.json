@@ -12,6 +12,16 @@
     "banner_section_4ipiEf": {
       "type": "banner-section",
       "blocks": {
+        "image_dXxBYN": {
+          "type": "image",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Diwali_Car_Accessories_Mega_Offer.png",
+            "image_mobile": "shopify://shop_images/Diwali_Car_Accessories_Offer_Banner.png",
+            "image_alt": "Image description",
+            "image_url": "/",
+            "open_in_new_tab": false
+          }
+        },
         "image_NtLWxx": {
           "type": "image",
           "name": "Banner - Drive in Style",
@@ -58,6 +68,7 @@
         }
       },
       "block_order": [
+        "image_dXxBYN",
         "image_NtLWxx",
         "image_wbH8x3",
         "image_qbPDUU",
