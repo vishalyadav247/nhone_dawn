@@ -314,11 +314,65 @@ FacetFiltersForm.setListeners();
 class PriceRange extends HTMLElement {
   constructor() {
     super();
-    this.querySelectorAll('input').forEach((element) => {
+    // Only the From / To text fields: the NH slider's range inputs (see
+    // snippets/price-facet.liquid) carry no data-min / data-max, so
+    // adjustToValidValues would clamp them to 0.
+    this.querySelectorAll('.field__input').forEach((element) => {
       element.addEventListener('change', this.onRangeChange.bind(this));
       element.addEventListener('keydown', this.onKeyDown.bind(this));
     });
     this.setMinAndMaxValues();
+    this.initSlider();
+  }
+
+  // Two-thumb slider. Each move writes whole units into the hidden From / To
+  // fields; the range's own `input` event then bubbles to the filter form,
+  // which submits on its usual debounce. A thumb at either end leaves its
+  // field empty, so the full range means no price filter at all.
+  initSlider() {
+    const root = this.querySelector('.nh-price');
+    if (!root) return;
+
+    const lo = root.querySelector('.nh-price__range--lo');
+    const hi = root.querySelector('.nh-price__range--hi');
+    const [minField, maxField] = this.querySelectorAll('.field__input');
+    const loLabel = root.querySelector('[data-nh-price-lo]');
+    const hiLabel = root.querySelector('[data-nh-price-hi]');
+    const top = Number(hi.max);
+    const symbol = root.dataset.currency || '';
+    const format = (value) => symbol + Number(value).toLocaleString();
+
+    const paint = () => {
+      root.style.setProperty('--nh-lo', `${(Number(lo.value) / top) * 100}%`);
+      root.style.setProperty('--nh-hi', `${(Number(hi.value) / top) * 100}%`);
+      // With both thumbs parked at the top, the low one must be the one you
+      // grab, or neither could move.
+      lo.style.zIndex = Number(lo.value) >= top ? '3' : '';
+    };
+
+    const update = (moved) => {
+      // Dragging one thumb past the other pushes it along rather than
+      // blocking, so the pair can never lock together.
+      if (Number(lo.value) > Number(hi.value)) {
+        if (moved === lo) hi.value = lo.value;
+        else lo.value = hi.value;
+      }
+
+      minField.value = Number(lo.value) > 0 ? lo.value : '';
+      maxField.value = Number(hi.value) < top ? hi.value : '';
+      loLabel.textContent = format(lo.value);
+      hiLabel.textContent = format(hi.value);
+      this.setMinAndMaxValues();
+      paint();
+    };
+
+    lo.addEventListener('input', () => update(lo));
+    hi.addEventListener('input', () => update(hi));
+
+    // Same number format before and after the first drag.
+    loLabel.textContent = format(lo.value);
+    hiLabel.textContent = format(hi.value);
+    paint();
   }
 
   onRangeChange(event) {
@@ -334,7 +388,7 @@ class PriceRange extends HTMLElement {
   }
 
   setMinAndMaxValues() {
-    const inputs = this.querySelectorAll('input');
+    const inputs = this.querySelectorAll('.field__input');
     const minInput = inputs[0];
     const maxInput = inputs[1];
     if (maxInput.value) minInput.setAttribute('data-max', maxInput.value);
@@ -375,3 +429,102 @@ class FacetRemove extends HTMLElement {
 }
 
 customElements.define('facet-remove', FacetRemove);
+
+/* Mobile floating Filter button: out of the way while browsing.
+   Scrolling DOWN through the products tucks the button away; scrolling up,
+   pausing for a moment, or being near the top of the page brings it back.
+   Toggles .nh-fab-away on the drawer's <summary> (styled in
+   component-nh-facets.css). The class sits on the summary, not on the button
+   itself, because the button's contents are replaced after every filter
+   change while the summary stays put. Never hides while the drawer is open. */
+(() => {
+  const mobile = window.matchMedia('(max-width: 749px)');
+  const TOP_ZONE = 300; // px from the top where the button always shows
+  const NUDGE = 8; // ignore scroll jitter smaller than this
+  const IDLE_MS = 900;
+
+  let lastY = window.scrollY;
+  let ticking = false;
+  let idleTimer;
+
+  const wrapper = () => document.querySelector('.facets-vertical .mobile-facets__open-wrapper');
+
+  const setAway = (away) => {
+    const summary = wrapper();
+    if (!summary) return;
+    const drawerOpen = summary.parentElement && summary.parentElement.hasAttribute('open');
+    summary.classList.toggle('nh-fab-away', away && !drawerOpen);
+  };
+
+  const onScroll = () => {
+    ticking = false;
+    if (!mobile.matches) return;
+
+    const y = window.scrollY;
+    if (y < TOP_ZONE) setAway(false);
+    else if (y > lastY + NUDGE) setAway(true);
+    else if (y < lastY - NUDGE) setAway(false);
+    if (Math.abs(y - lastY) > NUDGE) lastY = y;
+
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => setAway(false), IDLE_MS);
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(onScroll);
+    },
+    { passive: true }
+  );
+})();
+
+/* Mobile filter drawer: one group open at a time.
+   The same behaviour as the mobile navigation drawer (assets/main.js): opening
+   a group closes the others and scrolls it up to the top of the list, where
+   its row is sticky, so its values start at the top of the screen.
+
+   `toggle` does not bubble, but it can be caught on the way down, so one
+   capturing listener covers groups that the AJAX filter refresh adds later.
+   Closing a sibling fires its own toggle, hence the early return when closed.
+
+   The siblings are closed WITHOUT their height animation (.nh-instant): a
+   group above the one you opened would otherwise still be collapsing when
+   the scroll target is measured, and the list would stop in the wrong place. */
+(() => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.addEventListener(
+    'toggle',
+    (event) => {
+      const details = event.target;
+      if (!(details instanceof HTMLDetailsElement)) return;
+      if (!details.classList.contains('mobile-facets__details') || !details.open) return;
+
+      const list = details.closest('.mobile-facets__main');
+      if (!list) return;
+
+      const siblings = Array.from(list.querySelectorAll('details.mobile-facets__details[open]')).filter(
+        (sibling) => sibling !== details
+      );
+      siblings.forEach((sibling) => {
+        sibling.classList.add('nh-instant');
+        sibling.removeAttribute('open');
+        sibling.classList.remove('menu-opening');
+        const summary = sibling.querySelector(':scope > summary');
+        if (summary) summary.setAttribute('aria-expanded', 'false');
+      });
+
+      // Measure the <details>, not its <summary>: the summary is sticky, so
+      // its rect reports where it is parked rather than where the group starts.
+      // The sticky offset is 0 — the list itself is the scroll container.
+      const top = list.scrollTop + details.getBoundingClientRect().top - list.getBoundingClientRect().top;
+      list.scrollTo({ top: Math.max(0, Math.round(top)), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+
+      requestAnimationFrame(() => siblings.forEach((sibling) => sibling.classList.remove('nh-instant')));
+    },
+    true
+  );
+})();

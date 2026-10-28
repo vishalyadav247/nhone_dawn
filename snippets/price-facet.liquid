@@ -43,3 +43,69 @@
     {{- 'products.facets.to' | t -}}
   </label>
 </div>
+
+{%- comment -%}
+  NH ONE price slider. Two range inputs over one track; dragging either one
+  writes into the From / To fields above (PriceRange in assets/facets.js),
+  which stay in the form, hidden by CSS, and are what Shopify filters on.
+  The range inputs have no name, so they are never submitted themselves.
+
+  Kept AFTER the two fields: PriceRange reads the first two .field__input
+  elements as min and max.
+
+  Whole currency units, in steps that keep a wide range draggable. The top of
+  the slider is rounded UP to a whole step, so the highest-priced product is
+  never cut off: at the top, the To field is left empty (no upper limit).
+{%- endcomment -%}
+{%- liquid
+  assign nh_units_max = filter.range_max | divided_by: 100.0 | ceil
+  assign nh_step = 1
+  if nh_units_max > 20000
+    assign nh_step = 100
+  elsif nh_units_max > 2000
+    assign nh_step = 10
+  endif
+  assign nh_units_max = nh_units_max | divided_by: nh_step | ceil | times: nh_step
+  if nh_units_max < nh_step
+    assign nh_units_max = nh_step
+  endif
+
+  assign nh_lo = filter.min_value.value | default: 0 | divided_by: 100 | floor
+  if filter.max_value.value
+    assign nh_hi = filter.max_value.value | divided_by: 100.0 | ceil
+  else
+    assign nh_hi = nh_units_max
+  endif
+-%}
+<div class="nh-price" data-currency="{{ cart.currency.symbol }}">
+  <div class="nh-price__values" aria-hidden="true">
+    <span class="nh-price__value" data-nh-price-lo>
+      {{- filter.min_value.value | default: 0 | money_without_trailing_zeros -}}
+    </span>
+    <span class="nh-price__dash"></span>
+    <span class="nh-price__value" data-nh-price-hi>
+      {{- filter.max_value.value | default: filter.range_max | money_without_trailing_zeros -}}
+    </span>
+  </div>
+  <div class="nh-price__slider">
+    <span class="nh-price__track"></span>
+    <input
+      type="range"
+      class="nh-price__range nh-price__range--lo"
+      min="0"
+      max="{{ nh_units_max }}"
+      step="{{ nh_step }}"
+      value="{{ nh_lo }}"
+      aria-label="{{ 'products.facets.from' | t }}"
+    >
+    <input
+      type="range"
+      class="nh-price__range nh-price__range--hi"
+      min="0"
+      max="{{ nh_units_max }}"
+      step="{{ nh_step }}"
+      value="{{ nh_hi }}"
+      aria-label="{{ 'products.facets.to' | t }}"
+    >
+  </div>
+</div>

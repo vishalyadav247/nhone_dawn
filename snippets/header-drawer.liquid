@@ -66,8 +66,13 @@
                           {%- endif -%}
                           {{ link.title | escape }}
                         </span>
-                        <span class="svg-wrapper">
-                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        {%- comment -%}
+                          The same arrow-in-a-disc as the mobile filter drawer;
+                          it turns to point down when the row is open. Styles:
+                          component-menu-drawer.css, "Row arrows".
+                        {%- endcomment -%}
+                        <span class="menu-drawer__arrow" aria-hidden="true">
+                          {{- 'icon-arrow.svg' | inline_asset_content -}}
                         </span>
                       </summary>
                       <div
@@ -105,14 +110,8 @@
                                       class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
                                     >
                                       {{ childlink.title | escape }}
-                                      {% comment %}
-                                        <span class="svg-wrapper">
-                                          {{- 'icon-arrow.svg' | inline_asset_content -}}
-                                        </span>
-                                      {% endcomment %}
-
-                                      <span class="svg-wrapper">
-                                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                                      <span class="menu-drawer__arrow" aria-hidden="true">
+                                        {{- 'icon-arrow.svg' | inline_asset_content -}}
                                       </span>
                                     </summary>
                                     <div

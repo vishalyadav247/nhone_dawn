@@ -112,71 +112,71 @@
   }
 }
 
-/* --- Applied filter chips (sidebar and mobile row) ------------------------ */
+/* --- Applied filter chips (sidebar and mobile row) ------------------------
+   Outlined: a white pill with a brand-tinted outline and a brand ×. Hover
+   firms the outline to the full brand colour over a faint brand wash, and the
+   × fills in, so the chip reads "tap to remove" without turning into a
+   solid button. The outline is a 1px border, not Dawn's box-shadow ring. */
 .facets-container .active-facets__button,
 .facets-vertical .active-facets__button {
-  margin: 0 0.6rem 0.6rem 0;
+  margin: 0 0.4rem 0.4rem 0;
   padding: 0;
 }
 
 .facets-container span.active-facets__button-inner {
-  gap: 0.6rem;
+  gap: 0.4rem;
   min-height: 0;
-  padding: 0.6rem 0.7rem 0.6rem 1.2rem;
+  padding: 0.3rem 0.4rem 0.3rem 0.9rem;
+  border: 1px solid rgba(var(--nh-brand-rgb), 0.45);
   border-radius: 999px;
-  background: rgba(var(--nh-brand-rgb), 0.1);
+  background: var(--nh-surface);
   box-shadow: none;
   color: var(--nh-heading);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 500;
   line-height: 1.3;
   filter: none;
   transition:
     background-color 0.2s ease,
-    color 0.2s ease;
+    border-color 0.2s ease;
 }
 
 .nh-chip__key {
   font-weight: 400;
   color: var(--nh-muted);
-  transition: color 0.2s ease;
 }
 
 .facets-container .active-facets__button .svg-wrapper {
   display: grid;
   place-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1.5rem;
+  height: 1.5rem;
   margin: 0;
   border-radius: 50%;
-  background: var(--nh-brand);
-  color: var(--nh-on-brand);
+  background: rgba(var(--nh-brand-rgb), 0.12);
+  color: var(--nh-brand);
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
 }
 
 .facets-container .active-facets__button .svg-wrapper svg {
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
   stroke-width: 1.6; /* the stroke-drawn ×, at 1px, vanishes at this size */
 }
 
 .facets-container .active-facets__button:hover span.active-facets__button-inner,
 .facets-container .active-facets__button--light:hover span.active-facets__button-inner {
-  background: var(--nh-brand);
+  border-color: var(--nh-brand);
+  background: rgba(var(--nh-brand-rgb), 0.06);
   box-shadow: none;
-  color: var(--nh-on-brand);
   filter: none;
 }
 
-.facets-container .active-facets__button:hover .nh-chip__key {
-  color: inherit;
-}
-
 .facets-container .active-facets__button:hover .svg-wrapper {
-  background: var(--nh-on-brand);
-  color: var(--nh-brand);
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
 }
 
 .facets-container a.active-facets__button:focus-visible span.active-facets__button-inner,
@@ -340,7 +340,7 @@
 
 .facets-layout-list.facets__list--vertical .facet-checkbox {
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
   padding: 0.8rem 1rem;
   border-radius: 1rem;
   color: var(--nh-body);
@@ -355,14 +355,11 @@
   }
 }
 
+/* A ticked row is shown by its checkbox and bolder label only. The row used
+   to be tinted as well, which with the filled box and the coloured count was
+   three signals for one state. */
 .facets-layout-list.facets__list--vertical .facet-checkbox.active {
-  background: rgba(var(--nh-brand-rgb), 0.06);
   color: var(--nh-heading);
-}
-
-.facets-layout-list.facets__list--vertical .facet-checkbox:has(:focus-visible) {
-  outline: 2px solid var(--nh-brand);
-  outline-offset: -2px;
 }
 
 /* Label on the left, count pill on the right. */
@@ -403,17 +400,24 @@
   }
 }
 
-.facets-layout-list .facets__label.active .nh-facet-count {
-  background: rgba(var(--nh-brand-rgb), 0.14);
-  color: var(--nh-brand);
-}
 
 /* --- Checkbox -----------------------------------------------------------
-   Dawn draws a square SVG over a hidden input. Here the input itself is the
-   box (rounded, brand-filled when ticked) and Dawn's checkmark sits on top of
-   it in white. The square SVG is not used. */
+   The input itself is the whole checkbox, tick included. Dawn draws a square
+   SVG over a hidden input and then positions a second SVG (the tick) on top
+   by fixed offsets; any change in row padding or a label wrapping onto two
+   lines knocks that tick off-centre. Here both of Dawn's SVGs are hidden and
+   the tick is the input's own background image, so it is always dead centre
+   of the box, desktop and mobile alike.
+
+   Unticked: a white rounded square with a mid-grey outline that turns brand
+   on hover. Ticked: filled brand with a bold white tick. Disabled values keep
+   Dawn's 40% opacity on the whole row.
+
+   The tick is drawn white (#fff) because a data: URI cannot read a CSS
+   variable; --nh-on-brand, the text colour used on brand fills, is white. */
 .facets-layout-list--text .facet-checkbox > svg,
-.mobile-facets__label > svg:not(.icon-checkmark) {
+.facets-layout-list--text .facet-checkbox > .svg-wrapper,
+.mobile-facets__label > svg {
   display: none;
 }
 
@@ -424,45 +428,57 @@
   left: auto;
   z-index: 0;
   flex-shrink: 0;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2rem;
+  height: 2rem;
   margin: 0;
-  border: 1.5px solid #c9c9cc;
-  border-radius: 0.5rem;
-  background: var(--nh-surface);
+  border: 1.5px solid #b4b4ba;
+  border-radius: 0.6rem;
+  background-color: var(--nh-surface);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1.3rem;
   opacity: 1;
+  cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.facets-layout-list--text .facet-checkbox:hover input[type='checkbox'],
-.mobile-facets__label:hover input.mobile-facets__checkbox {
-  border-color: var(--nh-brand);
+@media (hover: hover) {
+  .facets-layout-list--text .facet-checkbox:hover input[type='checkbox'],
+  .mobile-facets__label:hover input.mobile-facets__checkbox {
+    border-color: var(--nh-brand);
+  }
 }
 
 .facets-layout-list--text .facet-checkbox input[type='checkbox']:checked,
 .mobile-facets__label input.mobile-facets__checkbox:checked {
   border-color: var(--nh-brand);
-  background: var(--nh-brand);
+  background-color: var(--nh-brand);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.4l2.9 2.9 6.1-6.6' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Centred on the box: row padding + (box - tick) / 2. */
-.facets-layout-list--text .facet-checkbox .svg-wrapper {
-  top: 50%;
-  left: 1.35rem;
-  z-index: 1;
-  width: 1.1rem;
-  height: 1.1rem;
-  color: var(--nh-on-brand);
-  transform: translateY(-50%);
+/* Keyboard focus rings the box, not the whole row. */
+.facets-layout-list--text .facet-checkbox input[type='checkbox']:focus-visible,
+.mobile-facets__label input.mobile-facets__checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.3rem rgba(var(--nh-brand-rgb), 0.3);
 }
 
-.facets-layout-list--text .facet-checkbox .svg-wrapper svg {
-  width: 100%;
-  height: 100%;
+.facets-layout-list.facets__list--vertical .facet-checkbox:has(:focus-visible) {
+  outline: none;
+}
+
+/* Dawn underlines the label on hover, and keeps it underlined for as long as
+   the checkbox has focus — i.e. after every click, ticked or not. The row's
+   soft fill is the hover cue here. */
+.facets-layout-list .facets__label:hover .facet-checkbox__text-label,
+.facets-layout-list input:focus ~ .facet-checkbox__text-label,
+.facets-layout-list input:focus ~ .facet-checkbox__text .facet-checkbox__text-label {
+  text-decoration: none;
 }
 
 /* --- Show more ------------------------------------------------------------ */
@@ -542,6 +558,152 @@
   color: var(--nh-muted);
 }
 
+/* --- Price slider (snippets/price-facet.liquid) ---------------------------
+   Replaces the From / To boxes. The boxes stay in the form, hidden, and the
+   slider writes into them (PriceRange, assets/facets.js). Two pills show the
+   chosen range; the track is grey with the chosen stretch in the brand
+   colour, painted from --nh-lo / --nh-hi, which the script keeps updated. */
+.facets__price:has(.nh-price) {
+  display: block;
+}
+
+.facets__price:has(.nh-price) .field,
+.facets__price:has(.nh-price) .field-currency {
+  display: none;
+}
+
+.nh-price {
+  --nh-lo: 0%;
+  --nh-hi: 100%;
+  --nh-thumb: 2.2rem;
+  width: 100%;
+}
+
+.nh-price__values {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.nh-price__value {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 1rem;
+  background: var(--nh-facet-soft);
+  color: var(--nh-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.nh-price__dash {
+  flex: 0 0 1rem;
+  height: 1px;
+  background: var(--nh-muted);
+}
+
+.nh-price__slider {
+  position: relative;
+  height: 3.2rem;
+}
+
+/* Inset by half a thumb each side: a thumb's centre only travels that far,
+   so the brand stretch lines up with the thumbs exactly. */
+.nh-price__track {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--nh-thumb) / 2);
+  left: calc(var(--nh-thumb) / 2);
+  height: 0.4rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(
+    to right,
+    var(--nh-border) var(--nh-lo),
+    var(--nh-brand) var(--nh-lo),
+    var(--nh-brand) var(--nh-hi),
+    var(--nh-border) var(--nh-hi)
+  );
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* The two inputs lie on top of each other; only their thumbs take the
+   pointer, so either thumb can be grabbed wherever it sits. */
+.nh-price__range {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.nh-price__range::-webkit-slider-runnable-track {
+  height: 100%;
+  background: none;
+  border: 0;
+}
+
+.nh-price__range::-moz-range-track {
+  background: none;
+  border: 0;
+}
+
+.nh-price__range::-webkit-slider-thumb {
+  width: var(--nh-thumb);
+  height: var(--nh-thumb);
+  margin-top: calc((3.2rem - var(--nh-thumb)) / 2); /* centre on the track */
+  border: 2px solid var(--nh-brand);
+  border-radius: 50%;
+  background: var(--nh-surface);
+  box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.18);
+  cursor: grab;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.nh-price__range::-moz-range-thumb {
+  width: var(--nh-thumb);
+  height: var(--nh-thumb);
+  box-sizing: border-box;
+  border: 2px solid var(--nh-brand);
+  border-radius: 50%;
+  background: var(--nh-surface);
+  box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.18);
+  cursor: grab;
+  pointer-events: auto;
+  transition: box-shadow 0.2s ease;
+}
+
+.nh-price__range:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+.nh-price__range:active::-moz-range-thumb {
+  cursor: grabbing;
+}
+
+.nh-price__range:focus {
+  outline: none;
+}
+
+.nh-price__range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 0.4rem rgba(var(--nh-brand-rgb), 0.25);
+}
+
+.nh-price__range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 0.4rem rgba(var(--nh-brand-rgb), 0.25);
+}
+
 /* --- Sort (bar above the grid, and the row in the mobile drawer) ---------- */
 .facets-vertical-sort .facet-filters__label {
   margin-right: 1rem;
@@ -590,27 +752,78 @@
 }
 
 /* --- Mobile: floating Filter button --------------------------------------
-   A dark pill floating just above the bottom tab bar (5.6rem tall, plus the
-   iPhone home-indicator inset), with a brand badge when filters are on. */
+   A frosted dark-glass pill floating just above the bottom tab bar (5.6rem,
+   plus the iPhone home-indicator inset). It leads with a brand disc holding a
+   line-drawn "sliders" icon; the number of applied filters sits on the disc
+   as a white badge, so the button says "3 filters on" without extra words.
+
+   - It rises in once the page has settled, so it reads as a control laid
+     over the grid rather than part of it.
+   - It steps out of the way while you scroll DOWN through the products and
+     comes back as soon as you scroll up or pause (assets/facets.js toggles
+     .nh-fab-away on the <summary>). The products stay unobstructed while
+     browsing, and the button is there the moment you look for it.
+   - It sinks slightly when pressed.
+
+   Centred with auto margins rather than translateX(-50%), so `transform` is
+   free for the hide and press motion. */
+@keyframes nh-fab-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.6rem) scale(0.96);
+  }
+}
+
 @media screen and (max-width: 749px) {
   .facets-vertical .mobile-facets__open,
   .facets-vertical .mobile-facets__open:hover {
     position: fixed;
-    left: 50%;
-    bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px) + 1.2rem);
+    right: 0;
+    bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px) + 1.4rem);
+    left: 0;
     z-index: 99;
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
     width: fit-content;
-    padding: 1rem 1.8rem;
+    margin: 0 auto;
+    padding: 0.5rem 2rem 0.5rem 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 999px;
-    background: var(--nh-heading);
+    background-color: rgba(23, 23, 23, 0.86);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+    box-shadow:
+      0 1.4rem 3.2rem -0.8rem rgba(0, 0, 0, 0.45),
+      0 0.2rem 0.6rem rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
     color: #fff;
-    box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.22);
     font-size: 1.4rem;
     font-weight: 600;
-    transform: translateX(-50%);
+    letter-spacing: 0.01em;
+    transform: none;
+    transition:
+      transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 0.25s ease;
+    animation: nh-fab-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s both;
+  }
+
+  /* Where the glass is unsupported, a solid dark pill rather than see-through. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .facets-vertical .mobile-facets__open,
+    .facets-vertical .mobile-facets__open:hover {
+      background-color: var(--nh-heading);
+    }
+  }
+
+  .facets-vertical .mobile-facets__open:active {
+    transform: scale(0.96);
+  }
+
+  .facets-vertical .mobile-facets__open-wrapper.nh-fab-away .mobile-facets__open {
+    opacity: 0;
+    transform: translateY(calc(100% + 9rem));
+    pointer-events: none;
   }
 
   .facets-vertical .mobile-facets__open > * + * {
@@ -620,26 +833,56 @@
   .facets-vertical .mobile-facets__open:hover .mobile-facets__open-label {
     text-decoration: none;
   }
-
-  .facets-vertical .mobile-facets__open .svg-wrapper {
-    width: 2rem;
-    height: 2rem;
-    color: #fff;
-  }
 }
 
-.nh-facets__badge {
-  display: inline-grid;
+.nh-fab__icon {
+  position: relative;
+  display: grid;
   place-items: center;
-  min-width: 2rem;
-  height: 2rem;
-  padding: 0 0.6rem;
-  border-radius: 999px;
+  flex-shrink: 0;
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: 50%;
   background: var(--nh-brand);
   color: var(--nh-on-brand);
-  font-size: 1.1rem;
+  box-shadow: 0 0.4rem 1.2rem rgba(var(--nh-brand-rgb), 0.45);
+}
+
+.nh-fab__icon svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* The applied-filter count, pinned to the disc's corner. White on the dark
+   pill so it stands apart from the brand disc beneath it. */
+.nh-fab__icon .nh-facets__badge {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.5rem;
+  display: grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border: 2px solid rgb(23, 23, 23);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--nh-heading);
+  font-size: 1.05rem;
   font-weight: 700;
   line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .facets-vertical .mobile-facets__open,
+  .facets-vertical .mobile-facets__open:hover {
+    animation: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .facets-vertical .mobile-facets__open-wrapper.nh-fab-away .mobile-facets__open {
+    transform: none;
+  }
 }
 
 /* --- Mobile drawer ------------------------------------------------------- */
@@ -721,6 +964,12 @@
 
 .mobile-facets__details[open]::details-content {
   block-size: auto;
+}
+
+/* Set for one frame by assets/facets.js while it closes the other groups, so
+   they collapse at once and the scroll target is measured correctly. */
+.mobile-facets__details.nh-instant::details-content {
+  transition: none;
 }
 
 .mobile-facets__summary {
@@ -838,22 +1087,10 @@
 }
 
 /* The tick, centred on the box: row padding + (box - tick) / 2. */
-.mobile-facets__label > svg.icon-checkmark {
-  position: absolute;
-  top: 50%;
-  left: 3.55rem;
-  z-index: 2;
-  width: 1.1rem;
-  height: 0.9rem;
-  margin: 0;
-  background: none;
-  color: var(--nh-on-brand);
-  transform: translateY(-50%);
-}
-
+/* Dawn's tinted wash behind a ticked row; the checkbox alone marks it here,
+   as on desktop. */
 .mobile-facets__highlight {
-  background-color: rgba(var(--nh-brand-rgb), 0.06);
-  pointer-events: none;
+  display: none;
 }
 
 .mobile-facets__sort {
@@ -882,18 +1119,37 @@
   align-self: stretch;
 }
 
-.mobile-facets__clear {
+/* Remove all and Apply are one matched pair of pills, the shape of the
+   floating Filter button that opens this drawer: same height, same type,
+   outlined beside filled. Apply is Dawn's .button, whose outline is drawn by
+   ::before / ::after box-shadows with their own radius, so those are rounded
+   (and the ring dropped) as well. */
+.mobile-facets__footer {
+  --nh-footer-btn-height: 4.6rem;
+}
+
+.mobile-facets__clear,
+.mobile-facets__footer .button {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
-  min-height: 4.5rem;
-  border: 1px solid var(--nh-btn-outline-border);
-  color: var(--nh-btn-outline-label);
+  height: var(--nh-footer-btn-height);
+  min-height: var(--nh-footer-btn-height);
+  margin: 0;
+  padding: 0 1.6rem;
+  border-radius: 999px;
   font-size: 1.4rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
   text-decoration: none;
+}
+
+.mobile-facets__clear {
+  border: 1.5px solid var(--nh-btn-outline-border);
+  background: var(--nh-surface);
+  color: var(--nh-btn-outline-label);
   transition:
     border-color 0.2s ease,
     color 0.2s ease;
@@ -902,6 +1158,12 @@
 .mobile-facets__clear:hover {
   border-color: var(--nh-btn-outline-border-hover);
   color: var(--nh-brand);
+}
+
+.mobile-facets__footer .button::before,
+.mobile-facets__footer .button::after {
+  border-radius: 999px;
+  box-shadow: none;
 }
 
 /* --- Reduced motion ------------------------------------------------------- */

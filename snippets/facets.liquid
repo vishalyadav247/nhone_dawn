@@ -599,8 +599,22 @@
     <details class="mobile-facets__disclosure disclosure-has-popup">
       <summary class="mobile-facets__open-wrapper focus-offset">
         <span class="mobile-facets__open{% if filter_type == 'drawer' and enable_filtering == false %} medium-hide large-up-hide{% endif %}">
-          <span class="svg-wrapper">
-            {{- 'icon-filter.svg' | inline_asset_content -}}
+          {%- comment -%}
+            Floating filter button (mobile). A line-drawn "sliders" icon in a
+            brand disc, with the number of applied filters as a badge on the
+            disc. The whole of .mobile-facets__open is refreshed from the server
+            after each filter change (facets.js), so the badge stays current.
+            Styles: component-nh-facets.css, "Mobile: floating Filter button".
+          {%- endcomment -%}
+          <span class="nh-fab__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" focusable="false">
+              <path d="M4 7h8.5M17.5 7H20M4 17h2.5M11.5 17H20"/>
+              <circle cx="15" cy="7" r="2.5"/>
+              <circle cx="9" cy="17" r="2.5"/>
+            </svg>
+            {%- if nh_active_count > 0 -%}
+              <span class="nh-facets__badge">{{ nh_active_count }}</span>
+            {%- endif -%}
           </span>
           <span class="mobile-facets__open-label button-label medium-hide large-up-hide">
             {%- if enable_filtering and enable_sorting -%}
@@ -617,7 +631,7 @@
             {%- endif -%}
           </span>
           {%- if nh_active_count > 0 -%}
-            <span class="nh-facets__badge">{{ nh_active_count }}</span>
+            <span class="visually-hidden">({{ nh_active_count }})</span>
           {%- endif -%}
         </span>
         <span tabindex="0" class="mobile-facets__close">

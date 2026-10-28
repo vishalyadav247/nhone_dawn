@@ -51,13 +51,10 @@
       justify-content: space-between;
     }
   }
-  details[open] > summary .svg-wrapper {
-    transform: rotate(0deg);
-  }
-
-  details > summary .svg-wrapper {
-    transform: rotate(-90deg);
-  }
+  /* The caret rotation that used to live here was written against
+     `summary .svg-wrapper`, which also matched the menu icons (they carry
+     .svg-wrapper too), so every icon on an expandable row was drawn turned on
+     its side. The row arrow is .menu-drawer__arrow now — see "Row arrows". */
 }
 
 /* --- Accordion Core Mechanics --- */
@@ -100,10 +97,55 @@ details[open] > .menu-drawer__submenu {
   transform: scaleY(1);
 } 
 
-/* --- Caret/Icon Handling --- */
-.menu-drawer__menu-item .svg-wrapper {
-  width: 15px;
-  transition: transform 0.3s ease-out;
+/* --- Row arrows --------------------------------------------------------
+   The arrow-in-a-disc from the mobile filter drawer (component-nh-facets.css,
+   .mobile-facets__arrow), so both drawers share one control: it points right
+   when closed and turns down when the row opens, with the disc deepening.
+   Level two (brands) gets a smaller disc, in step with its smaller rows.
+   (This used to size `.menu-drawer__menu-item .svg-wrapper` to 15px, which
+   also shrank the menu icons on expandable rows.) */
+.menu-drawer__arrow {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-left: 1.2rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  color: var(--nh-brand);
+  transition: background-color 0.25s ease;
+}
+
+.menu-drawer__arrow svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+details[open] > summary > .menu-drawer__arrow {
+  background: rgba(var(--nh-brand-rgb), 0.16);
+}
+
+details[open] > summary > .menu-drawer__arrow svg {
+  transform: rotate(90deg);
+}
+
+.level-two .menu-drawer__arrow {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.level-two .menu-drawer__arrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-drawer__arrow,
+  .menu-drawer__arrow svg {
+    transition: none;
+  }
 }
 
 /* --- Utility Links --- */
@@ -329,12 +371,6 @@ header-drawer {
     color: var(--nh-brand);
     font-weight: 600;
   }
-
-  /* The caret already rotates between -90deg (closed) and 0deg (open) further
-     up this file; give it the same brand tint as its open row. */
-  details[open] > summary .svg-wrapper {
-    color: var(--nh-brand);
-  }
 }
 
 /* ==========================================================================
@@ -487,19 +523,35 @@ header-drawer .level-two > li > details[open] > summary {
   min-width: 0;
 }
 
+/* Each icon sits in a brand-tinted disc — the same treatment as the filter
+   panel's title icon and the home page trust strip — so the column of icons
+   reads as one set and lines every label up on the same left edge. The disc
+   deepens on the row you have open. */
 .menu-drawer__icon {
   flex-shrink: 0;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  /* Takes up only the 2.2rem the bare icon did, so the row keeps its height:
+     the sticky brand rows are offset by exactly one category row
+     (--nh-drawer-row-height) and would overlap a taller one. */
+  margin-block: -0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
   color: var(--nh-brand);
+  transition: background-color 0.25s ease;
 }
 
 .menu-drawer__icon svg {
-  width: 100%;
-  height: 100%;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+details[open] > summary .menu-drawer__icon,
+.menu-drawer__menu-item--active .menu-drawer__icon {
+  background: rgba(var(--nh-brand-rgb), 0.18);
 }
 
 /* Several of Dawn's icons (icon-washing and icon-truck among them) ship with
@@ -517,8 +569,8 @@ header-drawer .level-two > li > details[open] > summary {
 .menu-drawer__icon .icon-padlock,
 .menu-drawer__icon .icon-discount,
 .menu-drawer__icon .icon-perfume {
-  width: 85%;
-  height: 85%;
+  width: 1.55rem;
+  height: 1.55rem;
 }
 
 /* --- Utility footer ----------------------------------------------------- */
@@ -543,32 +595,17 @@ header-drawer .menu-drawer__utility-links {
 }
 
 /* --- Drawer ground ------------------------------------------------------ */
-/* Frosted panels only read as frosted when there is something behind them to
-   blur, and a flat white drawer gave the masthead and footer nothing to work
-   with. Two soft brand washes — warm at the top where the masthead sits, a
-   cooler echo down by the footer — give both bars something to pick up, and
-   give the drawer some depth of its own without putting any colour behind the
-   body text: at these alphas the ground stays above 10:1 against the row text.
-
-   `background-attachment: scroll` is doing real work here. The drawer is the
-   scroll container, and on a scroll container `scroll` pins the background to
-   the box while `local` would drag it along with the content — so the washes
-   stay put behind the list rather than sliding away on the first flick.
+/* A clean white ground, matching the mobile filter drawer. Colour is kept for
+   where it means something: the branch you opened (brand rail + faint wash,
+   "level hierarchy" above), the row icons' tinted discs and the row arrows.
+   This replaces two strong brand washes (34% and 26%) in the corners, which
+   tinted the whole drawer and competed with the list.
 
    Addressed by id so it beats Dawn's `.gradient`, whose `background`
-   shorthand would otherwise wipe the image out. */
+   shorthand would otherwise win. */
 #menu-drawer.menu-drawer {
-  background-color: rgb(var(--color-background));
-  background-image:
-    /* Warm corner behind the masthead. */
-    radial-gradient(135% 42% at 0% 0%, rgba(var(--nh-brand-rgb), 0.34), rgba(var(--nh-brand-rgb), 0) 72%),
-    /* Deeper pool behind the utility footer. */
-    radial-gradient(115% 34% at 100% 100%, rgba(var(--nh-brand-rgb), 0.26), rgba(var(--nh-brand-rgb), 0) 74%),
-    /* A quiet vertical tint so the middle of the list is not flat white
-       between the two corners. */
-    linear-gradient(to bottom, rgba(var(--nh-brand-rgb), 0.07), rgba(var(--nh-brand-rgb), 0.03));
-  background-repeat: no-repeat;
-  background-attachment: scroll;
+  background-color: var(--nh-surface);
+  background-image: none;
 }
 
 /* The rows have to stop painting over that ground. Dawn gives an open submenu
