@@ -15,6 +15,12 @@
 {{ 'component-show-more.css' | asset_url | stylesheet_tag }}
 {{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
 {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  NH ONE filter design. Loaded here, not from style.css: component-facets.css
+  is emitted by the section in <body>, after style.css, so rules in style.css
+  would lose to it at equal specificity. This tag comes after it.
+{%- endcomment -%}
+{{ 'component-nh-facets.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign sort_by = results.sort_by | default: results.default_sort_by
@@ -59,11 +65,14 @@
                 <div class="active-facets-vertical-filter">
                   {%- unless results.filters == empty -%}
                     <h2
-                      class="facets__heading facets__heading--vertical caption-large text-body"
+                      class="facets__heading facets__heading--vertical nh-facets__title caption-large text-body"
                       id="verticalTitle"
                       tabindex="-1"
                     >
-                      {{ 'products.facets.filter_by_label' | t }}
+                      <span class="nh-facets__title-icon" aria-hidden="true">
+                        {{- 'icon-filter.svg' | inline_asset_content -}}
+                      </span>
+                      {{ 'products.facets.filter_by_label' | t | remove: ':' }}
                     </h2>
                   {%- endunless -%}
                   <facet-remove class="active-facets__button-wrapper">
@@ -77,7 +86,7 @@
                     <facet-remove>
                       <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
                         <span class="active-facets__button-inner button button--tertiary">
-                          {{ filter.label | escape }}: {{ value.label | escape }}
+                          <span class="nh-chip__key">{{ filter.label | escape }}:</span> {{ value.label | escape }}
                           <span class="svg-wrapper">
                             {{- 'icon-close-small.svg' | inline_asset_content -}}
                           </span>
@@ -202,8 +211,8 @@
                           {{- filter.label | escape }}
                           {%- if filter_type == 'vertical' -%}
                             <span class="facets__selected{% if filter.active_values.size == 0 %} hidden{% endif %}">
-                              ({{ filter.active_values.size }})</span
-                            >
+                              {{- filter.active_values.size -}}
+                            </span>
                           {%- endif -%}
                         </span>
                         {%- if filter_type == 'vertical' and filter.operator == 'AND' -%}
@@ -211,7 +220,11 @@
                             {{ 'products.facets.filter_and_operator_subtitle' | t }}
                           </span>
                         {%- endif -%}
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                        {%- if filter_type == 'vertical' -%}
+                          <span class="nh-facet-toggle" aria-hidden="true"></span>
+                        {%- else -%}
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        {%- endif -%}
                       </div>
                     </summary>
                     <div
@@ -274,7 +287,8 @@
 
                             {%- capture text_value -%}
                               <span class="facet-checkbox__text" aria-hidden="true">
-                                <span class="facet-checkbox__text-label">{{- value.label | escape }}</span> ({{- value.count -}})
+                                <span class="facet-checkbox__text-label">{{- value.label | escape }}</span>
+                                <span class="nh-facet-count">{{- value.count -}}</span>
                               </span>
                               <span class="visually-hidden">
                                 {{- value.label | escape }} (
@@ -374,8 +388,12 @@
                   >
                     <summary class="facets__summary caption-large focus-offset">
                       <div>
-                        <span>{{ filter.label | escape }}</span>
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                        <span class="facets__summary-label">{{ filter.label | escape }}</span>
+                        {%- if filter_type == 'vertical' -%}
+                          <span class="nh-facet-toggle" aria-hidden="true"></span>
+                        {%- else -%}
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        {%- endif -%}
                       </div>
                     </summary>
                     <div
@@ -411,7 +429,7 @@
                   <facet-remove>
                     <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
                       <span class="active-facets__button-inner button button--tertiary">
-                        {{ filter.label | escape }}: {{ value.label | escape }}
+                        <span class="nh-chip__key">{{ filter.label | escape }}:</span> {{ value.label | escape }}
                         <span class="svg-wrapper">
                           {{- 'icon-close-small.svg' | inline_asset_content -}}
                         </span>
@@ -507,6 +525,20 @@
     </facet-filters-form>
   {%- endif -%}
   {% comment %}  Drawer and mobile filter {% endcomment %}
+  {%- liquid
+    # Badge on the mobile Filter button. Counted here rather than reusing
+    # total_active_values, which only the desktop loop fills and which leaves
+    # out an active price range.
+    assign nh_active_count = 0
+    for filter in results.filters
+      assign nh_active_count = nh_active_count | plus: filter.active_values.size
+      if filter.type == 'price_range'
+        if filter.min_value.value != null or filter.max_value.value != null
+          assign nh_active_count = nh_active_count | plus: 1
+        endif
+      endif
+    endfor
+  -%}
   <menu-drawer
     class="mobile-facets__wrapper{% if filter_type == 'horizontal' or filter_type == 'vertical' %} medium-hide large-up-hide{% endif %}"
     data-breakpoint="mobile"
@@ -531,6 +563,9 @@
               {{ 'products.facets.filter_button' | t }}
             {%- endif -%}
           </span>
+          {%- if nh_active_count > 0 -%}
+            <span class="nh-facets__badge">{{ nh_active_count }}</span>
+          {%- endif -%}
         </span>
         <span tabindex="0" class="mobile-facets__close">
           <span class="svg-wrapper">
@@ -702,7 +737,8 @@
 
                               {%- capture text_value -%}
                                 <span class="facet-checkbox__text" aria-hidden="true">
-                                  <span class="facet-checkbox__text-label">{{- value.label | escape }}</span> ({{- value.count -}})
+                                  <span class="facet-checkbox__text-label">{{- value.label | escape }}</span>
+                                <span class="nh-facet-count">{{- value.count -}}</span>
                                 </span>
                                 <span class="visually-hidden">
                                   {{- value.label | escape }} (
@@ -915,7 +951,7 @@
         <facet-remove>
           <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
             <span class="active-facets__button-inner button button--tertiary">
-              {{ filter.label | escape }}: {{ value.label | escape }}
+              <span class="nh-chip__key">{{ filter.label | escape }}:</span> {{ value.label | escape }}
               <span class="svg-wrapper">
                 {{- 'icon-close-small.svg' | inline_asset_content -}}
               </span>
@@ -1024,7 +1060,7 @@
               <facet-remove>
                 <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
                   <span class="active-facets__button-inner button button--tertiary">
-                    {{ filter.label | escape }}: {{ value.label | escape }}
+                    <span class="nh-chip__key">{{ filter.label | escape }}:</span> {{ value.label | escape }}
                     <span class="svg-wrapper">
                       {{- 'icon-close-small.svg' | inline_asset_content -}}
                     </span>

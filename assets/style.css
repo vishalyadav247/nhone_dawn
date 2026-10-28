@@ -1766,25 +1766,8 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   }
 }
 
-@media screen and (max-width:767px){
-  .facets-vertical{
-    .facets-wrapper{
-      .mobile-facets__open{
-        position: fixed;
-        background: black;
-        z-index: 99;
-        color: #fff;
-        padding: 10px 20px;
-        display: flex;
-        border-radius: 29px;
-        bottom: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: fit-content;
-      }
-    }
-  }
-}
+/* The floating mobile "Filter and sort" button now lives with the rest of the
+   filter design in assets/component-nh-facets.css. */
 
 
 @media screen and (max-width:767px){

@@ -1,0 +1,827 @@
+/* ==========================================================================
+   Collection & search filters (snippets/facets.liquid)
+   NH ONE design for Dawn's vertical filter sidebar, its mobile drawer and the
+   sort bar above the grid. Built from the home page's own patterns so the
+   listing pages read as the same site:
+
+   - The sidebar is one hairline-bordered white panel, rounded like the info
+     features trust strip (.nh-trust), titled with a brand-tinted icon disc.
+   - Each filter group is an FAQ-style row (.nh-faq): hairline dividers, a
+     plus that turns into a minus in a tinted disc, brand colour when open,
+     and the same animated open via ::details-content.
+   - Options are soft-fill rows (the collection link chips' #f4f4f5) with a
+     rounded checkbox that fills with the brand colour, and a count pill.
+   - Applied filters are pill chips in the brand tint that fill with the
+     brand on hover, like the blog tag chips (.main-blog__tag--active).
+
+   Loaded from facets.liquid, AFTER component-facets.css, so rules here win
+   at equal specificity. Colours come only from the --nh-* tokens in
+   style.css, so recolouring the brand in Theme settings recolours this too.
+   ========================================================================== */
+/* The sort bar is rendered by the section, outside .facets-container, so it
+   needs the tokens too. */
+.facets-container,
+.facets-vertical-sort {
+  --nh-facet-soft: #f4f4f5;        /* Soft fill: hover rows, inputs, count pill */
+  --nh-facet-soft-hover: #ebebed;
+  --nh-facet-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* --- Panel -------------------------------------------------------------- */
+@media screen and (min-width: 750px) {
+  .facets-vertical .facets-wrapper {
+    padding-right: 2.4rem;
+  }
+
+  .facets-vertical .facets__form-vertical {
+    interpolate-size: allow-keywords; /* lets a group animate to auto height */
+    width: 100%;
+    padding: 1.8rem 1.8rem 0.8rem;
+    border: 1px solid var(--nh-border);
+    border-radius: 1.4rem;
+    background: var(--nh-surface);
+  }
+}
+
+/* --- Panel header: title, Remove all, applied chips ---------------------- */
+.facets-vertical .active-facets-vertical-filter {
+  align-items: center;
+  margin-bottom: 1.4rem;
+}
+
+.facets__heading--vertical.nh-facets__title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--nh-heading-ink);
+}
+
+.nh-facets__title-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.12);
+  color: var(--nh-brand);
+}
+
+.nh-facets__title-icon svg {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+.facets-vertical .active-facets-vertical-filter .active-facets__button-wrapper {
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.facets-container .active-facets__button-remove {
+  padding: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--nh-brand);
+  text-decoration: none;
+}
+
+.facets-container .active-facets__button-remove span {
+  font-size: inherit;
+}
+
+.facets-container .active-facets__button-remove:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+@media screen and (min-width: 750px) {
+  .facets-vertical .active-facets {
+    margin: 0;
+  }
+
+  /* The chips sit in a row under the title; the last one leaves a little air
+     before the first group's hairline. */
+  .facets-vertical .active-facets facet-remove:last-of-type {
+    margin-bottom: 1.2rem;
+  }
+}
+
+/* --- Applied filter chips (sidebar and mobile row) ------------------------ */
+.facets-container .active-facets__button,
+.facets-vertical .active-facets__button {
+  margin: 0 0.6rem 0.6rem 0;
+  padding: 0;
+}
+
+.facets-container span.active-facets__button-inner {
+  gap: 0.6rem;
+  min-height: 0;
+  padding: 0.6rem 0.7rem 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  box-shadow: none;
+  color: var(--nh-heading);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.3;
+  filter: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.nh-chip__key {
+  font-weight: 400;
+  color: var(--nh-muted);
+  transition: color 0.2s ease;
+}
+
+.facets-container .active-facets__button .svg-wrapper {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.facets-container .active-facets__button .svg-wrapper svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.6; /* the stroke-drawn ×, at 1px, vanishes at this size */
+}
+
+.facets-container .active-facets__button:hover span.active-facets__button-inner,
+.facets-container .active-facets__button--light:hover span.active-facets__button-inner {
+  background: var(--nh-brand);
+  box-shadow: none;
+  color: var(--nh-on-brand);
+  filter: none;
+}
+
+.facets-container .active-facets__button:hover .nh-chip__key {
+  color: inherit;
+}
+
+.facets-container .active-facets__button:hover .svg-wrapper {
+  background: var(--nh-on-brand);
+  color: var(--nh-brand);
+}
+
+.facets-container a.active-facets__button:focus-visible span.active-facets__button-inner,
+.facets-container a.active-facets__button.focused span.active-facets__button-inner {
+  box-shadow: none;
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+/* --- Filter groups: FAQ-style rows -------------------------------------- */
+@media screen and (min-width: 750px) {
+  .facets__disclosure-vertical {
+    border-top: 1px solid var(--nh-border);
+  }
+
+  .facets-vertical .facets__summary {
+    padding: 1.3rem 0;
+  }
+
+  /* The panel's own padding closes the last group, so the hairline under the
+     title is the only divider that is not between two groups. */
+  .facets__display-vertical {
+    padding-bottom: 1.2rem;
+  }
+}
+
+.facets__disclosure-vertical .facets__summary {
+  color: var(--nh-heading);
+  font-family: var(--font-body-family);
+  font-size: 1.45rem;
+  font-weight: 600;
+  list-style: none;
+  transition: color 0.2s ease;
+}
+
+.facets__disclosure-vertical .facets__summary::-webkit-details-marker {
+  display: none;
+}
+
+.facets__disclosure-vertical .facets__summary > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.2rem;
+}
+
+.facets__disclosure-vertical .facets__summary-label {
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Dawn underlines the label on hover; these rows signal with colour instead. */
+.facets__disclosure-vertical .facets__summary:hover .facets__summary-label {
+  text-decoration: none;
+}
+
+.facets__disclosure-vertical .facets__summary:hover,
+.facets__disclosure-vertical[open] > .facets__summary {
+  color: var(--nh-brand);
+}
+
+.facets__disclosure-vertical .facets__summary:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+  border-radius: 0.6rem;
+}
+
+.facets__disclosure-vertical .facets__and-helptext {
+  order: 3;
+  width: 100%;
+  margin-top: 0.2rem;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--nh-muted);
+}
+
+/* How many values are ticked in this group: a small brand pill. */
+.facets__disclosure-vertical .facets__summary .facets__selected {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  margin-left: 0.8rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Plus that becomes a minus — the FAQ icon. */
+.nh-facet-toggle {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  transition: background-color 0.25s ease;
+}
+
+.nh-facet-toggle::before,
+.nh-facet-toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--nh-brand);
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s var(--nh-facet-ease);
+}
+
+.nh-facet-toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.facets__disclosure-vertical[open] .nh-facet-toggle {
+  background: rgba(var(--nh-brand-rgb), 0.16);
+}
+
+.facets__disclosure-vertical[open] .nh-facet-toggle::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+/* Opening animates the height (Chrome 131+ / Safari 18.2+); elsewhere the
+   group just opens. Dawn's own fade-in is switched off so the two don't
+   stack. */
+.facets__disclosure-vertical::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.35s var(--nh-facet-ease),
+    content-visibility 0.35s allow-discrete;
+}
+
+.facets__disclosure-vertical[open]::details-content {
+  block-size: auto;
+}
+
+.facets__disclosure-vertical[open] .facets__display-vertical {
+  animation: none;
+}
+
+/* --- Options -------------------------------------------------------------
+   The list is pulled out by the row padding, so the checkboxes line up with
+   the group title above while the hover fill still has room around it. */
+.facets__list--vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0 -1rem;
+}
+
+.facets-layout-list.facets__list--vertical .facet-checkbox {
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  color: var(--nh-body);
+  font-size: 1.35rem;
+  line-height: 1.35;
+  transition: background-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .facets-layout-list.facets__list--vertical .facet-checkbox:hover {
+    background: var(--nh-facet-soft);
+  }
+}
+
+.facets-layout-list.facets__list--vertical .facet-checkbox.active {
+  background: rgba(var(--nh-brand-rgb), 0.06);
+  color: var(--nh-heading);
+}
+
+.facets-layout-list.facets__list--vertical .facet-checkbox:has(:focus-visible) {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: -2px;
+}
+
+/* Label on the left, count pill on the right. */
+.facets-layout-list .facet-checkbox__text {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.facets-layout-list .facets__label.active .facet-checkbox__text-label {
+  font-weight: 600;
+}
+
+.nh-facet-count {
+  color: var(--nh-muted);
+  font-size: 1.15rem;
+}
+
+.facets-layout-list .nh-facet-count {
+  flex-shrink: 0;
+  min-width: 2.6rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: var(--nh-facet-soft);
+  line-height: 1.4;
+  text-align: center;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .facets-layout-list .facet-checkbox:hover .nh-facet-count {
+    background: var(--nh-surface);
+  }
+}
+
+.facets-layout-list .facets__label.active .nh-facet-count {
+  background: rgba(var(--nh-brand-rgb), 0.14);
+  color: var(--nh-brand);
+}
+
+/* --- Checkbox -----------------------------------------------------------
+   Dawn draws a square SVG over a hidden input. Here the input itself is the
+   box (rounded, brand-filled when ticked) and Dawn's checkmark sits on top of
+   it in white. The square SVG is not used. */
+.facets-layout-list--text .facet-checkbox > svg,
+.mobile-facets__label > svg:not(.icon-checkmark) {
+  display: none;
+}
+
+.facets-layout-list--text .facet-checkbox input[type='checkbox'],
+.mobile-facets__label input.mobile-facets__checkbox {
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: 0;
+  flex-shrink: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 0;
+  border: 1.5px solid #c9c9cc;
+  border-radius: 0.5rem;
+  background: var(--nh-surface);
+  opacity: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.facets-layout-list--text .facet-checkbox:hover input[type='checkbox'],
+.mobile-facets__label:hover input.mobile-facets__checkbox {
+  border-color: var(--nh-brand);
+}
+
+.facets-layout-list--text .facet-checkbox input[type='checkbox']:checked,
+.mobile-facets__label input.mobile-facets__checkbox:checked {
+  border-color: var(--nh-brand);
+  background: var(--nh-brand);
+}
+
+/* Centred on the box: row padding + (box - tick) / 2. */
+.facets-layout-list--text .facet-checkbox .svg-wrapper {
+  top: 50%;
+  left: 1.35rem;
+  z-index: 1;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--nh-on-brand);
+  transform: translateY(-50%);
+}
+
+.facets-layout-list--text .facet-checkbox .svg-wrapper svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Show more ------------------------------------------------------------ */
+.facets__disclosure-vertical .button-show-more {
+  margin-top: 0.6rem;
+  padding: 0.4rem 0;
+  color: var(--nh-brand);
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.facets__disclosure-vertical .button-show-more:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+/* --- Price range ---------------------------------------------------------- */
+.facets__header-vertical .facets__selected,
+.mobile-facets__info {
+  color: var(--nh-muted);
+  font-size: 1.25rem;
+}
+
+@media screen and (min-width: 750px) {
+  .facets__header-vertical {
+    padding: 0 0 1rem;
+  }
+
+  .facets-vertical .facets__price {
+    padding: 0 0 0.4rem;
+  }
+
+  .facets-vertical .facets__price .field:last-of-type {
+    margin-left: 0.8rem;
+  }
+}
+
+.facets__price {
+  align-items: center;
+}
+
+.facets__price .field-currency {
+  color: var(--nh-muted);
+  font-size: 1.35rem;
+}
+
+/* Soft filled fields with no outline, the brand ring appearing on focus. */
+.facets__price .field::before,
+.facets__price .field::after {
+  content: none;
+}
+
+.facets__price .field__input {
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  background: var(--nh-facet-soft);
+  color: var(--nh-heading);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.facets__price .field__input:hover {
+  background: var(--nh-facet-soft-hover);
+}
+
+.facets__price .field__input:focus,
+.facets__price .field__input:focus-visible {
+  border-color: var(--nh-brand);
+  background: var(--nh-surface);
+  box-shadow: 0 0 0 3px rgba(var(--nh-brand-rgb), 0.15);
+}
+
+.facets__price .field__label {
+  color: var(--nh-muted);
+}
+
+/* --- Sort (bar above the grid, and the row in the mobile drawer) ---------- */
+.facets-vertical-sort .facet-filters__label {
+  margin-right: 1rem;
+  color: var(--nh-muted);
+  font-size: 1.35rem;
+}
+
+.facets-vertical-sort .select {
+  position: relative;
+}
+
+.facets-vertical-sort .facet-filters__sort,
+.mobile-facets__sort .select__select {
+  height: 4rem;
+  margin: 0;
+  padding: 0 3.6rem 0 1.4rem;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--nh-facet-soft);
+  box-shadow: none;
+  color: var(--nh-heading);
+  font-size: 1.35rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.facets-vertical-sort .facet-filters__sort:hover,
+.mobile-facets__sort .select__select:hover {
+  background: var(--nh-facet-soft-hover);
+}
+
+.facets-vertical-sort .facet-filters__sort:focus,
+.facets-vertical-sort .facet-filters__sort:focus-visible,
+.mobile-facets__sort .select__select:focus,
+.mobile-facets__sort .select__select:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+.facets-vertical-sort .select .svg-wrapper,
+.mobile-facets__sort .select .svg-wrapper {
+  right: 1.4rem;
+  color: var(--nh-brand);
+}
+
+/* --- Mobile: floating Filter button --------------------------------------
+   A dark pill floating just above the bottom tab bar (5.6rem tall, plus the
+   iPhone home-indicator inset), with a brand badge when filters are on. */
+@media screen and (max-width: 749px) {
+  .facets-vertical .mobile-facets__open,
+  .facets-vertical .mobile-facets__open:hover {
+    position: fixed;
+    left: 50%;
+    bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px) + 1.2rem);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: fit-content;
+    padding: 1rem 1.8rem;
+    border-radius: 999px;
+    background: var(--nh-heading);
+    color: #fff;
+    box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.22);
+    font-size: 1.4rem;
+    font-weight: 600;
+    transform: translateX(-50%);
+  }
+
+  .facets-vertical .mobile-facets__open > * + * {
+    margin-left: 0;
+  }
+
+  .facets-vertical .mobile-facets__open:hover .mobile-facets__open-label {
+    text-decoration: none;
+  }
+
+  .facets-vertical .mobile-facets__open .svg-wrapper {
+    width: 2rem;
+    height: 2rem;
+    color: #fff;
+  }
+}
+
+.nh-facets__badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* --- Mobile drawer ------------------------------------------------------- */
+.mobile-facets__header {
+  padding: 1.6rem 6.4rem 1.6rem 2rem; /* right side clears the close button */
+  border-bottom: 1px solid var(--nh-border);
+  text-align: left;
+  background: var(--nh-surface);
+}
+
+.mobile-facets__heading {
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--nh-heading);
+}
+
+.mobile-facets__count {
+  margin-top: 0.2rem;
+  color: var(--nh-muted);
+  font-size: 1.25rem;
+}
+
+.mobile-facets__close {
+  top: 1rem;
+  right: 1.4rem;
+}
+
+.mobile-facets__close .svg-wrapper {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background: var(--nh-facet-soft);
+  color: var(--nh-heading);
+}
+
+.mobile-facets__close .svg-wrapper svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.mobile-facets__main {
+  padding-top: 0.4rem;
+}
+
+.mobile-facets__summary {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--nh-border);
+  color: var(--nh-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.mobile-facets__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  color: var(--nh-brand);
+}
+
+.mobile-facets__arrow svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Submenu header ("<- Car Brand"). */
+.mobile-facets__close-button {
+  width: 100%;
+  margin-top: 0;
+  padding: 1.6rem 2rem;
+  border-bottom: 1px solid var(--nh-border);
+  color: var(--nh-heading);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.mobile-facets__close-button .icon-arrow {
+  width: 1.4rem;
+  margin-right: 1.2rem;
+  color: var(--nh-brand);
+}
+
+.mobile-facets__close-button > .facets__and-helptext {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--nh-muted);
+}
+
+.mobile-facets__list {
+  padding: 0.8rem 0;
+}
+
+.mobile-facets__label {
+  position: relative;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.1rem 2rem;
+  color: var(--nh-body);
+  font-size: 1.4rem;
+}
+
+.mobile-facets__label.active {
+  color: var(--nh-heading);
+}
+
+/* The tick, centred on the box: row padding + (box - tick) / 2. */
+.mobile-facets__label > svg.icon-checkmark {
+  position: absolute;
+  top: 50%;
+  left: 2.35rem;
+  z-index: 2;
+  width: 1.1rem;
+  height: 0.9rem;
+  margin: 0;
+  background: none;
+  color: var(--nh-on-brand);
+  transform: translateY(-50%);
+}
+
+.mobile-facets__highlight {
+  background-color: rgba(var(--nh-brand-rgb), 0.06);
+  pointer-events: none;
+}
+
+.mobile-facets__sort {
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--nh-heading);
+}
+
+.mobile-facets__details:has(.mobile-facets__sort) .mobile-facets__summary {
+  border-bottom: 0;
+}
+
+/* Footer: Clear as an outline button beside the primary Apply. */
+.mobile-facets__footer {
+  gap: 1rem;
+  padding: 1.4rem 2rem;
+  border-top: 1px solid var(--nh-border);
+}
+
+.mobile-facets__footer > * + * {
+  margin-left: 0;
+}
+
+.mobile-facets__clear-wrapper {
+  align-self: stretch;
+}
+
+.mobile-facets__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 4.5rem;
+  border: 1px solid var(--nh-btn-outline-border);
+  color: var(--nh-btn-outline-label);
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.mobile-facets__clear:hover {
+  border-color: var(--nh-btn-outline-border-hover);
+  color: var(--nh-brand);
+}
+
+/* --- Reduced motion ------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .nh-facet-toggle,
+  .nh-facet-toggle::before,
+  .nh-facet-toggle::after,
+  .facets__disclosure-vertical::details-content,
+  .facets-container span.active-facets__button-inner,
+  .facets-layout-list.facets__list--vertical .facet-checkbox {
+    transition: none;
+  }
+}
