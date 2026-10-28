@@ -236,6 +236,18 @@ class FacetFiltersForm extends HTMLElement {
     if (sourceFacetsList && targetFacetsList) {
       targetFacetsList.outerHTML = sourceFacetsList.outerHTML;
     }
+
+    // The mobile groups are an accordion, so the group being edited stays open
+    // with its row in view; refresh the row's selected-count badge as well.
+    // innerHTML, not outerHTML, so the <summary> keeps MenuDrawer's listener.
+    const targetSummary = target.querySelector('.mobile-facets__summary');
+    const sourceSummary = source.querySelector('.mobile-facets__summary');
+
+    if (sourceSummary && targetSummary) {
+      targetSummary.innerHTML = sourceSummary.innerHTML;
+      const label = sourceSummary.getAttribute('aria-label');
+      if (label) targetSummary.setAttribute('aria-label', label);
+    }
   }
 
   static updateURLHash(searchParams) {

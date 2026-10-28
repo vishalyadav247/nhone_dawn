@@ -206,15 +206,64 @@
   {% if section.settings.image_shape == 'arch' %}
     {{ 'mask-arch.svg' | inline_asset_content }}
   {%- endif -%}
+  {%- comment -%}
+    Collection description under the grid, in the home page's SEO text design
+    (sections/seo-text.liquid): eyebrow, heading, then the copy clipped to a
+    few lines and faded into a Read more toggle. All of the copy stays in the
+    HTML; it is only clipped by CSS. Styles: assets/style.css, "SEO text".
+    Behaviour: assets/nh-seo-text.js.
+  {%- endcomment -%}
   {%- if section.settings.show_collection_description and collection.description != blank -%}
-    <div class="collection_bottom_description">
-      <div class="read-more-content-wrapper">
-        <div class="container page-width">
-          <div class="read-more-text">{{ collection.description }}</div>
-          <button class="read-more-btn">Read More</button>
+    {%- assign seo_body_id = 'nh-seo-' | append: section.id -%}
+    <div class="nh-seo nh-seo--collection">
+      <div class="nh-seo__inner page-width">
+        {%- if section.settings.description_eyebrow != blank or section.settings.description_show_title -%}
+          <header class="nh-seo__head">
+            {%- if section.settings.description_eyebrow != blank -%}
+              <span class="nh-seo__eyebrow">{{ section.settings.description_eyebrow | escape }}</span>
+            {%- endif -%}
+            {%- if section.settings.description_show_title -%}
+              <h2 class="nh-seo__heading">{{ collection.title | escape }}</h2>
+            {%- endif -%}
+          </header>
+        {%- endif -%}
+
+        <div
+          class="nh-seo__col"
+          data-nh-seo
+          style="--nh-seo-lines: {{ section.settings.description_lines | default: 4 }};"
+        >
+          <div class="nh-seo__body rte" id="{{ seo_body_id }}">{{ collection.description }}</div>
+
+          <button
+            class="nh-seo__btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="{{ seo_body_id }}"
+            data-label-more="Read more"
+            data-label-less="Read less"
+          >
+            <span class="nh-seo__btn-text">Read more</span>
+            <svg
+              class="nh-seo__btn-icon"
+              aria-hidden="true"
+              focusable="false"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
+    <script src="{{ 'nh-seo-text.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 </div>
 
@@ -229,6 +278,29 @@
       "label": "Show Collection Description",
       "default": false,
       "info": "Show Collection Description in bottom"
+    },
+    {
+      "type": "text",
+      "id": "description_eyebrow",
+      "label": "Description eyebrow",
+      "default": "About this collection",
+      "info": "Small label above the description heading. Leave empty to hide it."
+    },
+    {
+      "type": "checkbox",
+      "id": "description_show_title",
+      "label": "Show collection title as description heading",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "description_lines",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Description lines before Read more",
+      "info": "The same number of lines shows on phones as on desktop."
     },
     {
       "type": "range",

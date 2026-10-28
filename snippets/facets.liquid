@@ -34,6 +34,72 @@
   endif
 -%}
 
+{%- comment -%}
+  Car brand / car model scoping. Worked out once here and used by both the
+  desktop sidebar and the mobile drawer, so the two always agree.
+
+  - car-brand template (one collection per brand, e.g. "Honda"): the "Car
+    Brand" filter is hidden — the page already is that brand — and the "Car
+    Model" filter only lists models that belong to it. Shopify's own values
+    would include every model a product here also fits, so a seat cover that
+    fits a Honda City and a Hyundai Creta would put "Creta" on the Honda page.
+    The brand's models are read from each product's custom.car_model list
+    (car_model metaobjects with a `brand` reference and a `model_name`),
+    keeping those whose brand is the "Car Brand" filter value whose label
+    matches this collection's title.
+  - car-model template: both "Car Brand" and "Car Model" are hidden — the
+    page is already one model.
+  - Every other template shows both filters as Shopify returns them.
+
+  Any filter group left with no values to show is not rendered at all (see
+  nh_visible_count in the loops below).
+
+  Limitation: collection.products is the CURRENT PAGE of results inside
+  paginate, so a model whose products all sit on page 2+ is not listed on
+  page 1.
+{%- endcomment -%}
+{%- liquid
+  assign nh_scope_models = false
+  assign brand_models = '' | split: ''
+
+  if template.suffix == 'car-brand'
+    assign nh_scope_models = true
+    assign current_brand_title = collection.title | strip
+    assign brand_gid = ''
+
+    for filter in results.filters
+      if filter.label == 'Car Brand'
+        for value in filter.values
+          if value.label == current_brand_title
+            assign brand_gid = value.value | strip | remove: '"'
+          endif
+        endfor
+      endif
+    endfor
+
+    if brand_gid != ''
+      for product in collection.products
+        assign models = product.metafields.custom.car_model.value
+        for model in models
+          assign model_brand_norm = model.brand | strip | remove: '"'
+          if model_brand_norm == brand_gid
+            assign product_model = model.model_name | strip
+            if product_model != blank
+              unless brand_models contains product_model
+                # Split on a delimiter that never occurs to get a one-item
+                # array, so a model name containing a comma stays whole.
+                assign one_model = product_model | split: '~~nh~~'
+                assign brand_models = brand_models | concat: one_model
+              endunless
+            endif
+          endif
+        endfor
+      endfor
+      assign brand_models = brand_models | sort
+    endif
+  endif
+-%}
+
 <div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
   {%- if filter_type == 'vertical' or filter_type == 'horizontal' -%}
     <facet-filters-form class="facets small-hide">
@@ -119,65 +185,48 @@
             <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
             {% comment %} Filters for both horizontal and vertical filter {% endcomment %}
 
-            {% comment %} variables to filter car brand models {% endcomment %}
-            {% assign current_brand_title = collection.title | strip %}
-            {% assign brand_gid = '' %}
-            {% assign brand_models = '' | split: '' %}
-
+            {%- assign nh_first_open_done = false -%}
             {%- for filter in results.filters -%}
-              {% comment %} getting car brand id {% endcomment %}
-              {% if template.suffix == 'car-brand' and filter.label == 'Car Brand' %}
-                {% for value in filter.values %}
-                  {% if value.label == current_brand_title %}
-                    {% assign brand_gid = value.value %}
-                  {% endif %}
-                {% endfor %}
+              {%- liquid
+                # Brand / model scoping: see the comment at the top of this file.
+                if template.suffix == 'car-brand' and filter.label == 'Car Brand'
+                  continue
+                endif
+                if template.suffix == 'car-model'
+                  if filter.label == 'Car Brand' or filter.label == 'Car Model'
+                    continue
+                  endif
+                endif
 
-                {% continue %}
-              {% endif %}
+                # How many values this group will actually list. A group with
+                # none (e.g. "Car Model" on a brand page whose models could not
+                # be matched) is skipped outright instead of rendering as an
+                # empty heading.
+                assign nh_visible_count = 1
+                if filter.type == 'boolean' or filter.type == 'list'
+                  assign nh_visible_count = 0
+                  for value in filter.values
+                    if nh_scope_models and filter.label == 'Car Model'
+                      assign model_name = value.label | strip
+                      unless brand_models contains model_name
+                        continue
+                      endunless
+                    endif
+                    assign nh_visible_count = nh_visible_count | plus: 1
+                  endfor
+                endif
+                if nh_visible_count == 0
+                  continue
+                endif
 
-              {% if template.suffix == 'car-model'
-                and filter.label == 'Car Brand'
-                or template.suffix == 'car-model'
-                and filter.label == 'Car Model'
-              %}
-                {% continue %}
-              {% endif %}
-
-              {% comment %} collecting car model array from products {% endcomment %}
-              {% if template.suffix == 'car-brand' and filter.label == 'Car Model' %}
-                {% if brand_gid != '' %}
-                  {% assign brand_models = '' | split: '' %}
-
-                  {% for product in collection.products %}
-                    {% assign models = product.metafields.custom.car_model.value %}
-                    {% if models %}
-                      {% for model in models %}
-                        {% assign model_brand_norm = model.brand | strip | remove: '"' %}
-                        {% assign brand_gid_norm = brand_gid | strip | remove: '"' %}
-                        {% if model_brand_norm == brand_gid_norm %}
-                          {% assign product_model = model.model_name | strip %}
-
-                          {% unless brand_models contains product_model %}
-                            {% if brand_models.size > 0 %}
-                              {% assign brand_models = brand_models
-                                | join: ','
-                                | append: ','
-                                | append: product_model
-                                | split: ','
-                              %}
-                            {% else %}
-                              {% assign brand_models = product_model | split: ',' %}
-                            {% endif %}
-                          {% endunless %}
-                        {% endif %}
-                      {% endfor %}
-                    {% endif %}
-                  {% endfor %}
-
-                  {% assign brand_models = brand_models | sort %}
-                {% endif %}
-              {% endif %}
+                # The first group actually rendered opens by default.
+                # (forloop.index == 1 missed it whenever filter 1 was skipped.)
+                assign nh_open = false
+                if filter_type == 'vertical' and nh_first_open_done == false
+                  assign nh_open = true
+                  assign nh_first_open_done = true
+                endif
+              -%}
 
               {% liquid
                 assign total_active_values = total_active_values | plus: filter.active_values.size
@@ -198,7 +247,7 @@
                     id="Details-{{ filter.param_name | escape }}-{{ section.id }}"
                     class="{% if filter_type == 'horizontal' %}disclosure-has-popup facets__disclosure{% else %} facets__disclosure-vertical{% endif %} js-filter"
                     data-index="{{ forloop.index }}"
-                    {% if filter_type == 'vertical' and forloop.index == 1 %}
+                    {% if nh_open %}
                       open
                     {% endif %}
                   >
@@ -265,9 +314,10 @@
                           class="{{ visual_layout_class }}{% if filter_type == 'vertical' %} facets__list--vertical{% else %} facets__list{% endif %} list-unstyled"
                           role="list"
                         >
+                          {%- assign nh_shown = 0 -%}
                           {%- for value in sorted_values -%}
-                            {% comment %} filter car model according to car brand {% endcomment %}
-                            {% if filter.label == 'Car Model' %}
+                            {% comment %} On brand pages, only that brand's models (see top of file) {% endcomment %}
+                            {% if nh_scope_models and filter.label == 'Car Model' %}
                               {% assign model_name = value.label | strip %}
 
                               {% unless brand_models contains model_name %}
@@ -275,6 +325,9 @@
                               {% endunless %}
                             {% endif %}
                             {% liquid
+                              # Position among the values actually listed, so "Show more"
+                              # hides the 11th shown value, not the 11th returned one.
+                              assign nh_shown = nh_shown | plus: 1
                               assign input_id = 'Filter-' | append: filter.param_name | escape | append: '-' | append: forloop.index
                               assign is_disabled = false
                               if value.count == 0 and value.active == false
@@ -301,7 +354,7 @@
                               </span>
                             {%- endcapture -%}
 
-                            <li class="list-menu__item facets__item{% if forloop.index > show_more_number and filter_type == 'vertical' %} show-more-item hidden{% endif %}">
+                            <li class="list-menu__item facets__item{% if nh_shown > show_more_number and filter_type == 'vertical' %} show-more-item hidden{% endif %}">
                               {%- if presentation == 'swatch' -%}
                                 <div class="{{ label_class }}">
                                   <div class="swatch-input-wrapper">
@@ -359,7 +412,7 @@
                           {%- endfor -%}
                         </ul>
                       </fieldset>
-                      {%- if filter.values.size > show_more_number and filter_type == 'vertical' -%}
+                      {%- if nh_visible_count > show_more_number and filter_type == 'vertical' -%}
                         <show-more-button>
                           <button
                             class="button-show-more link underlined-link"
@@ -382,7 +435,7 @@
                     id="Details-{{ filter.param_name | escape }}-{{ section.id }}"
                     class="{% if filter_type == 'horizontal' %}disclosure-has-popup facets__disclosure{% else %} facets__disclosure-vertical{% endif %} js-filter"
                     data-index="{{ forloop.index }}"
-                    {% if filter_type == 'vertical' and forloop.index == 1 %}
+                    {% if nh_open %}
                       open
                     {% endif %}
                   >
@@ -608,60 +661,44 @@
             </div>
             <div
               id="FacetsWrapperMobile"
-              class="mobile-facets__main has-submenu gradient"
+              class="mobile-facets__main gradient"
             >
+              {%- comment -%}
+                No `has-submenu` here: the groups below are an inline accordion,
+                like the mobile navigation drawer. MenuDrawer (global.js) hides
+                the closest `.has-submenu` when a group opens, which is right
+                for Dawn's slide-in panels but would blank this list.
+              {%- endcomment -%}
               {%- if enable_filtering -%}
-                {% comment %} variables to filter car brand models {% endcomment %}
-                {% assign current_brand_title = collection.title | strip %}
-                {% assign brand_gid = '' %}
-                {% assign brand_models = '' | split: '' %}
-
                 {%- for filter in results.filters -%}
-                  {% comment %} getting car brand id {% endcomment %}
-                  {% if template.suffix == 'car-brand' and filter.label == 'Car Brand' %}
-                    {% for value in filter.values %}
-                      {% if value.label == current_brand_title %}
-                        {% assign brand_gid = value.value %}
-                      {% endif %}
-                    {% endfor %}
+                  {%- liquid
+                    # Same rules as the desktop sidebar: see the top of this file.
+                    if template.suffix == 'car-brand' and filter.label == 'Car Brand'
+                      continue
+                    endif
+                    if template.suffix == 'car-model'
+                      if filter.label == 'Car Brand' or filter.label == 'Car Model'
+                        continue
+                      endif
+                    endif
 
-                    {% continue %}
-                  {% endif %}
-
-                  {% comment %} collecting car model array from products {% endcomment %}
-                  {% if template.suffix == 'car-brand' and filter.label == 'Car Model' %}
-                    {% if brand_gid != '' %}
-                      {% assign brand_models = '' | split: '' %}
-
-                      {% for product in collection.products %}
-                        {% assign models = product.metafields.custom.car_model.value %}
-                        {% if models %}
-                          {% for model in models %}
-                            {% assign model_brand_norm = model.brand | strip | remove: '"' %}
-                            {% assign brand_gid_norm = brand_gid | strip | remove: '"' %}
-                            {% if model_brand_norm == brand_gid_norm %}
-                              {% assign product_model = model.model_name | strip %}
-
-                              {% unless brand_models contains product_model %}
-                                {% if brand_models.size > 0 %}
-                                  {% assign brand_models = brand_models
-                                    | join: ','
-                                    | append: ','
-                                    | append: product_model
-                                    | split: ','
-                                  %}
-                                {% else %}
-                                  {% assign brand_models = product_model | split: ',' %}
-                                {% endif %}
-                              {% endunless %}
-                            {% endif %}
-                          {% endfor %}
-                        {% endif %}
-                      {% endfor %}
-
-                      {% assign brand_models = brand_models | sort %}
-                    {% endif %}
-                  {% endif %}
+                    assign nh_visible_count = 1
+                    if filter.type == 'boolean' or filter.type == 'list'
+                      assign nh_visible_count = 0
+                      for value in filter.values
+                        if nh_scope_models and filter.label == 'Car Model'
+                          assign model_name = value.label | strip
+                          unless brand_models contains model_name
+                            continue
+                          endunless
+                        endif
+                        assign nh_visible_count = nh_visible_count | plus: 1
+                      endfor
+                    endif
+                    if nh_visible_count == 0
+                      continue
+                    endif
+                  -%}
 
                   {% liquid
                     assign presentation = filter.presentation | default: default_presentation
@@ -679,31 +716,37 @@
                         class="mobile-facets__details js-filter"
                         data-index="mobile-{{ forloop.index }}"
                       >
-                        <summary class="mobile-facets__summary focus-inset">
+                        <summary
+                          class="mobile-facets__summary focus-inset"
+                          aria-label="{{ filter.label | escape }} ({{ 'products.facets.filters_selected.one' | t: count: filter.active_values.size }})"
+                        >
                           <div>
-                            <span>{{ filter.label | escape }}</span>
+                            <span class="mobile-facets__summary-label">
+                              {{- filter.label | escape -}}
+                              <span class="facets__selected{% if filter.active_values.size == 0 %} hidden{% endif %}">
+                                {{- filter.active_values.size -}}
+                              </span>
+                            </span>
                             <span class="mobile-facets__arrow">
                               {{- 'icon-arrow.svg' | inline_asset_content -}}
                             </span>
-                          </div>
-                        </summary>
-                        <div
-                          id="FacetMobile-{{ forloop.index }}-{{ section.id }}"
-                          class="mobile-facets__submenu gradient"
-                        >
-                          <button
-                            class="mobile-facets__close-button link link--text focus-inset"
-                            aria-expanded="true"
-                            type="button"
-                          >
-                            {{- 'icon-arrow.svg' | inline_asset_content -}}
-                            <span>{{ filter.label | escape }}</span>
                             {%- if filter.operator == 'AND' -%}
                               <span class="facets__and-helptext">
                                 {{ 'products.facets.filter_and_operator_subtitle' | t }}
                               </span>
                             {%- endif -%}
-                          </button>
+                          </div>
+                        </summary>
+                        {%- comment -%}
+                          Opens in place under its row (accordion). Dawn's back
+                          button and per-group Clear / Apply footer are gone: the
+                          drawer's own footer below has Remove all / Apply, and
+                          each applied value has its own chip.
+                        {%- endcomment -%}
+                        <div
+                          id="FacetMobile-{{ forloop.index }}-{{ section.id }}"
+                          class="mobile-facets__submenu"
+                        >
                           <ul class="{{ visual_layout_class }} mobile-facets__list list-unstyled" role="list">
                             {%- liquid
                               assign sorted_values = filter.values
@@ -715,8 +758,8 @@
                               endif
                             -%}
                             {%- for value in sorted_values -%}
-                              {% comment %} filter car model according to car brand {% endcomment %}
-                              {% if filter.label == 'Car Model' %}
+                              {% comment %} On brand pages, only that brand's models (see top of file) {% endcomment %}
+                              {% if nh_scope_models and filter.label == 'Car Model' %}
                                 {% assign model_name = value.label | strip %}
 
                                 {% unless brand_models contains model_name %}
@@ -807,21 +850,6 @@
                               </li>
                             {%- endfor -%}
                           </ul>
-
-                          <div class="mobile-facets__footer gradient">
-                            <facet-remove class="mobile-facets__clear-wrapper">
-                              <a href="{{ filter.url_to_remove }}" class="mobile-facets__clear underlined-link">
-                                {{- 'products.facets.clear' | t -}}
-                              </a>
-                            </facet-remove>
-                            <button
-                              type="button"
-                              class="button button--primary"
-                              onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
-                            >
-                              {{ 'products.facets.apply' | t }}
-                            </button>
-                          </div>
                         </div>
                       </details>
                     {% when 'price_range' %}
@@ -832,7 +860,7 @@
                       >
                         <summary class="mobile-facets__summary focus-inset">
                           <div>
-                            <span>{{ filter.label | escape }}</span>
+                            <span class="mobile-facets__summary-label">{{ filter.label | escape }}</span>
                             <span class="mobile-facets__arrow">
                               {{- 'icon-arrow.svg' | inline_asset_content -}}
                             </span>
@@ -840,17 +868,8 @@
                         </summary>
                         <div
                           id="FacetMobile-{{ forloop.index }}-{{ section.id }}"
-                          class="mobile-facets__submenu gradient"
+                          class="mobile-facets__submenu"
                         >
-                          <button
-                            class="mobile-facets__close-button link link--text focus-inset"
-                            aria-expanded="true"
-                            type="button"
-                          >
-                            {{- 'icon-arrow.svg' | inline_asset_content -}}
-                            {{ filter.label | escape }}
-                          </button>
-
                           {%- assign max_price_amount = filter.range_max | money | strip_html | escape -%}
                           <p class="mobile-facets__info">
                             {{ 'products.facets.max_price' | t: price: max_price_amount }}
@@ -859,20 +878,6 @@
                           <price-range class="facets__price">
                             {% render 'price-facet', filter: filter, id_prefix: 'Mobile-Filter-' %}
                           </price-range>
-                          <div class="mobile-facets__footer">
-                            <facet-remove class="mobile-facets__clear-wrapper">
-                              <a href="{{ filter.url_to_remove }}" class="mobile-facets__clear underlined-link">
-                                {{- 'products.facets.clear' | t -}}
-                              </a>
-                            </facet-remove>
-                            <button
-                              type="button"
-                              class="button button--primary"
-                              onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
-                            >
-                              {{ 'products.facets.apply' | t }}
-                            </button>
-                          </div>
                         </div>
                       </details>
                   {% endcase %}

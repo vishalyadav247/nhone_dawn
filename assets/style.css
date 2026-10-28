@@ -1773,9 +1773,8 @@ predictive-search:not([loading]) .predictive-search__loading-state{
 @media screen and (max-width:767px){
 }
 
-.collection_bottom_description{
-  margin-top:50px;
-}
+/* The collection description under the grid uses the SEO text design — see
+   "SEO text" further down this file. */
 
 .collection-hero__title{
   font-size: 3.6rem;
@@ -4891,7 +4890,11 @@ background-color: transparent !important;
   margin-top: 0;
 }
 
-.nh-seo__body h3 {
+/* h2/h4 as well: collection descriptions are written in the Shopify admin
+   editor, whose heading picker makes h2-h6, while the home copy uses h3. */
+.nh-seo__body h2,
+.nh-seo__body h3,
+.nh-seo__body h4 {
   margin: 3.2rem 0 1rem;
   color: var(--nh-heading);
   font-size: 1.9rem;
@@ -4980,9 +4983,36 @@ background-color: transparent !important;
     font-size: 2rem;
   }
 
-  .nh-seo__body h3 {
+  .nh-seo__body h2,
+  .nh-seo__body h3,
+  .nh-seo__body h4 {
     margin-top: 2.8rem;
     font-size: 1.8rem;
+  }
+}
+
+/* --- Collection description (sections/main-collection-product-grid.liquid) ---
+   Same block, sitting under the product grid and pagination instead of at the
+   foot of the home page: a hairline separates it from the products above, as
+   the collection link list does on the home page. */
+.nh-seo--collection {
+  --nh-seo-gap: 3.2rem;
+  margin-top: 4.8rem;
+}
+
+/* Drawn inside .page-width so the rule is exactly as wide as the grid. */
+.nh-seo--collection .nh-seo__inner::before {
+  content: '';
+  display: block;
+  height: 1px;
+  margin-bottom: var(--nh-seo-gap);
+  background: var(--nh-border);
+}
+
+@media screen and (max-width: 749px) {
+  .nh-seo--collection {
+    --nh-seo-gap: 2.4rem;
+    margin-top: 3.2rem;
   }
 }
 

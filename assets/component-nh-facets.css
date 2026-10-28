@@ -256,7 +256,8 @@
 }
 
 /* How many values are ticked in this group: a small brand pill. */
-.facets__disclosure-vertical .facets__summary .facets__selected {
+.facets__disclosure-vertical .facets__summary .facets__selected,
+.mobile-facets__summary .facets__selected {
   display: inline-grid;
   place-items: center;
   min-width: 2rem;
@@ -680,65 +681,145 @@
   height: 1.4rem;
 }
 
+/* --- Mobile drawer: accordion groups -------------------------------------
+   Each group opens in place under its row, like the mobile navigation drawer
+   (component-menu-drawer.css), instead of Dawn's panel sliding in from the
+   right. Same cues as that drawer: the open row turns brand-coloured and
+   stays pinned at the top while its values scroll under it, and the open
+   group carries a brand rail down its left edge over a faint brand wash.
+   The arrow is kept, and turns to point down when the group is open.
+
+   The scroll container is .mobile-facets__main, so `top: 0` pins the open
+   row directly under the drawer header without measuring anything. */
+.mobile-facets__inner {
+  interpolate-size: allow-keywords; /* lets a group animate to auto height */
+}
+
 .mobile-facets__main {
-  padding-top: 0.4rem;
+  padding-top: 0;
+}
+
+/* Undo Dawn's off-canvas panel: absolutely positioned, pushed off to the
+   right and hidden until `.menu-opening`. The closed <details> hides its
+   content natively. */
+.js .mobile-facets .mobile-facets__submenu {
+  position: static;
+  z-index: auto;
+  display: block;
+  visibility: visible;
+  transform: none;
+  transition: none;
+}
+
+.mobile-facets__details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.35s var(--nh-facet-ease),
+    content-visibility 0.35s allow-discrete;
+}
+
+.mobile-facets__details[open]::details-content {
+  block-size: auto;
 }
 
 .mobile-facets__summary {
-  padding: 1.5rem 2rem;
+  padding: 1.4rem 2rem;
   border-bottom: 1px solid var(--nh-border);
   color: var(--nh-heading);
   font-size: 1.5rem;
   font-weight: 600;
+  list-style: none;
+  transition: color 0.2s ease;
 }
 
-.mobile-facets__arrow {
-  display: grid;
-  place-items: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 50%;
-  background: rgba(var(--nh-brand-rgb), 0.1);
-  color: var(--nh-brand);
+.mobile-facets__summary::-webkit-details-marker {
+  display: none;
 }
 
-.mobile-facets__arrow svg {
-  width: 1.2rem;
-  height: 1.2rem;
+.mobile-facets__summary > div {
+  flex-wrap: wrap;
+  column-gap: 1.2rem;
 }
 
-/* Submenu header ("<- Car Brand"). */
-.mobile-facets__close-button {
+.mobile-facets__summary-label {
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-facets__summary .facets__and-helptext {
+  order: 3;
   width: 100%;
-  margin-top: 0;
-  padding: 1.6rem 2rem;
-  border-bottom: 1px solid var(--nh-border);
-  color: var(--nh-heading);
-  font-size: 1.6rem;
-  font-weight: 600;
-}
-
-.mobile-facets__close-button .icon-arrow {
-  width: 1.4rem;
-  margin-right: 1.2rem;
-  color: var(--nh-brand);
-}
-
-.mobile-facets__close-button > .facets__and-helptext {
+  margin-top: 0.2rem;
   font-size: 1.2rem;
   font-weight: 400;
   color: var(--nh-muted);
 }
 
+/* The open row: brand colour, pinned while its values scroll, frosted like
+   the navigation drawer's pinned rows. */
+.mobile-facets__details[open] > .mobile-facets__summary {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  color: var(--nh-brand);
+  background-color: rgba(var(--nh-surface-rgb), 0.86);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .mobile-facets__details[open] > .mobile-facets__summary {
+    background-color: var(--nh-surface);
+  }
+}
+
+.mobile-facets__arrow {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  color: var(--nh-brand);
+  transition: background-color 0.25s ease;
+}
+
+.mobile-facets__arrow svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  transition: transform 0.3s var(--nh-facet-ease);
+}
+
+.mobile-facets__details[open] .mobile-facets__arrow {
+  background: rgba(var(--nh-brand-rgb), 0.16);
+}
+
+.mobile-facets__details[open] .mobile-facets__arrow svg {
+  transform: rotate(90deg);
+}
+
+/* The open group: brand rail + faint wash, as in the navigation drawer. */
+.mobile-facets__details[open] > .mobile-facets__submenu {
+  border-bottom: 1px solid var(--nh-border);
+  background-color: rgba(var(--nh-brand-rgb), 0.025);
+  box-shadow: inset 0.3rem 0 0 rgba(var(--nh-brand-rgb), 0.35);
+}
+
+/* Values are indented one step under their group title. */
 .mobile-facets__list {
-  padding: 0.8rem 0;
+  padding: 0.6rem 0;
+  overflow: visible;
 }
 
 .mobile-facets__label {
   position: relative;
   align-items: center;
   gap: 1.2rem;
-  padding: 1.1rem 2rem;
+  padding: 1.1rem 2rem 1.1rem 3.2rem;
   color: var(--nh-body);
   font-size: 1.4rem;
 }
@@ -747,11 +828,20 @@
   color: var(--nh-heading);
 }
 
+.mobile-facets__submenu .mobile-facets__info {
+  margin: 0;
+  padding: 1.2rem 2rem 0 3.2rem;
+}
+
+.mobile-facets__submenu .facets__price {
+  padding: 1rem 2rem 1.6rem 3.2rem;
+}
+
 /* The tick, centred on the box: row padding + (box - tick) / 2. */
 .mobile-facets__label > svg.icon-checkmark {
   position: absolute;
   top: 50%;
-  left: 2.35rem;
+  left: 3.55rem;
   z-index: 2;
   width: 1.1rem;
   height: 0.9rem;
@@ -820,6 +910,8 @@
   .nh-facet-toggle::before,
   .nh-facet-toggle::after,
   .facets__disclosure-vertical::details-content,
+  .mobile-facets__details::details-content,
+  .mobile-facets__arrow svg,
   .facets-container span.active-facets__button-inner,
   .facets-layout-list.facets__list--vertical .facet-checkbox {
     transition: none;
