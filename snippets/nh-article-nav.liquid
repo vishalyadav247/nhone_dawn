@@ -1,0 +1,83 @@
+{%- comment -%}
+  Previous / next article navigation.
+
+  blog.previous_article is the NEWER article, blog.next_article the OLDER one —
+  both are article-template-only properties computed server-side across the
+  whole blog, so unlike walking blog.articles they are NOT subject to the
+  50-iteration for-loop cap and stay correct on a blog of any size.
+
+  The fallback walk exists because some Liquid revisions returned a bare URL
+  string from these properties rather than an article object. It throws its
+  result away rather than guessing when the current article isn't found.
+
+  Accepts:
+  - article, blog: the current article and its blog
+  - prev_label, next_label: {String} kicker labels
+
+  Usage:
+  {% render 'nh-article-nav', article: article, blog: blog, prev_label: '...', next_label: '...' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign prev_a = blog.previous_article
+  assign next_a = blog.next_article
+
+  if prev_a == blank and next_a == blank
+    assign found_current = false
+    for a in blog.articles limit: 50
+      if found_current
+        assign next_a = a
+        break
+      endif
+      if a.id == article.id
+        assign found_current = true
+      else
+        assign prev_a = a
+      endif
+    endfor
+    # Article older than the 50 most recent: prev_a is holding an unrelated
+    # article and next_a never got set. Discard both rather than link wrongly.
+    unless found_current
+      assign prev_a = blank
+      assign next_a = blank
+    endunless
+  endif
+
+  # If a property ever resolves to a plain URL string, .url is blank and the
+  # default falls back to the string itself.
+  assign prev_url = prev_a.url | default: prev_a
+  assign next_url = next_a.url | default: next_a
+  assign prev_title = prev_a.title | default: prev_label
+  assign next_title = next_a.title | default: next_label
+-%}
+
+{%- if prev_url != blank or next_url != blank -%}
+  <nav class="nh-article-nav page-width page-width--narrow" aria-label="Article navigation">
+    {%- if prev_url != blank -%}
+      <a class="nh-article-nav__item nh-article-nav__item--prev" href="{{ prev_url }}" rel="prev">
+        <span class="nh-article-nav__kicker">
+          <span class="nh-article-nav__arrow" aria-hidden="true">
+            {{- 'icon-arrow.svg' | inline_asset_content -}}
+          </span>
+          {{ prev_label | escape }}
+        </span>
+        <span class="nh-article-nav__title">{{ prev_title | escape }}</span>
+      </a>
+    {%- else -%}
+      {%- comment -%} Keeps a lone "next" card in the right-hand column. {%- endcomment -%}
+      <span class="nh-article-nav__spacer" aria-hidden="true"></span>
+    {%- endif -%}
+
+    {%- if next_url != blank -%}
+      <a class="nh-article-nav__item nh-article-nav__item--next" href="{{ next_url }}" rel="next">
+        <span class="nh-article-nav__kicker">
+          {{ next_label | escape }}
+          <span class="nh-article-nav__arrow" aria-hidden="true">
+            {{- 'icon-arrow.svg' | inline_asset_content -}}
+          </span>
+        </span>
+        <span class="nh-article-nav__title">{{ next_title | escape }}</span>
+      </a>
+    {%- endif -%}
+  </nav>
+{%- endif -%}

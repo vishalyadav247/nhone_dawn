@@ -1,0 +1,167 @@
+{%- comment -%}
+  Renders the article body, plus a table of contents built from its H2s.
+
+  WHY THIS IS DONE IN LIQUID AND NOT JS
+  The TOC changes the page layout (one column -> body + 28rem rail). Liquid
+  knows the heading count before anything paints, so the grid is correct in the
+  first frame. A JS-built TOC would either shift the body sideways after
+  hydration or reserve an empty rail on the many articles that have no H2s.
+  Liquid-injected ids also mean the anchors work with JS blocked, and stay
+  crawlable. The one thing Liquid cannot do is scroll-spy — that, and only
+  that, is assets/nh-article-toc.js.
+
+  HOW THE PARSE WORKS
+  The body is split on the opening '<h2' tag and re-emitted chunk by chunk so
+  each heading can be given a stable anchor id. '</h2>' does not contain '<h2'
+  (the character after '<' is '/'), so the split only ever catches opening tags.
+
+  Accepts:
+  - article: {Object} the article
+  - block:   {Object} the 'content' block, for its TOC settings
+
+  Sets (for the caller, via the rendered markup only):
+  - .nh-article-body--with-toc on the wrapper when a TOC was produced.
+
+  Usage:
+  {% render 'nh-article-body', article: article, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign toc_on = block.settings.enable_toc
+  assign min_h = block.settings.toc_min_headings | default: 2
+  assign max_h = block.settings.toc_max_items | default: 20
+  assign toc_position = block.settings.toc_position | default: 'right'
+  # A blank title would leave the disclosure and the aside unlabelled.
+  assign toc_label = block.settings.toc_title | default: 'In this article'
+
+  # Normalise tags pasted from Word/Docs. These are tag tokens, never prose.
+  assign body = article.content | replace: '<H2', '<h2' | replace: '</H2>', '</h2>'
+
+  assign chunks = body | split: '<h2'
+  # split keeps the leading chunk (everything before the first heading), so the
+  # heading count is one less than the chunk count.
+  assign h_count = chunks.size | minus: 1
+
+  if h_count < min_h
+    assign toc_on = false
+  endif
+
+  # Hard safety valve. Liquid caps `for` at 50 iterations over paginatable
+  # arrays; a plain split array is not documented as capped, but if it ever
+  # were, the rebuild loop below would silently DROP THE TAIL OF THE ARTICLE.
+  # Never risk that on published content — bail out to the raw body instead.
+  if h_count > 40
+    assign toc_on = false
+  endif
+-%}
+
+{%- if toc_on -%}
+  {%- liquid
+    assign toc_items = 0
+  -%}
+
+  {%- capture toc_list -%}
+    {%- for chunk in chunks offset: 1 -%}
+      {%- liquid
+        # Everything up to the first '>' is the rest of the opening tag.
+        assign tag_rest = chunk | split: '>' | first
+        assign head_text = '<h2' | append: chunk | split: '</h2>' | first | strip_html | strip
+
+        if tag_rest contains ' id="'
+          # The merchant already anchored this heading — reuse their id.
+          assign head_id = tag_rest | split: ' id="' | last | split: '"' | first
+        else
+          assign head_slug = head_text | handleize | truncate: 40, ''
+          if head_slug == blank
+            assign head_slug = 'section'
+          endif
+          assign head_id = head_slug | append: '-' | append: forloop.index
+        endif
+      -%}
+      {%- unless head_text == blank -%}
+        {%- if toc_items < max_h -%}
+          <li class="nh-toc__item">
+            <a class="nh-toc__link" href="#{{ head_id }}" data-nh-toc-link="{{ head_id }}">
+              {{- head_text | escape_once -}}
+            </a>
+          </li>
+          {%- assign toc_items = toc_items | plus: 1 -%}
+        {%- endif -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- if toc_items == 0 -%}
+    {%- assign toc_on = false -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- capture body_html -%}
+  {%- if toc_on -%}
+    {{- chunks[0] -}}
+    {%- for chunk in chunks offset: 1 -%}
+      {%- liquid
+        assign tag_rest = chunk | split: '>' | first
+        assign head_text = '<h2' | append: chunk | split: '</h2>' | first | strip_html | strip
+
+        if tag_rest contains ' id="'
+          # Already anchored by the merchant — pass the tag through untouched.
+          assign h2_open = '<h2'
+        else
+          assign head_slug = head_text | handleize | truncate: 40, ''
+          if head_slug == blank
+            assign head_slug = 'section'
+          endif
+          assign h2_open = '<h2 id="' | append: head_slug | append: '-' | append: forloop.index | append: '"'
+        endif
+      -%}
+      {%- comment -%}
+        The opening tag is assembled as a string rather than written literally:
+        it is deliberately left unclosed here, because `chunk` begins with the
+        remainder of the tag ('>Heading…' or ' class="x">Heading…'). Written as
+        literal HTML it would also trip the Liquid/HTML parser, which sees an
+        element opened inside a branch and never closed.
+      {%- endcomment -%}
+      {{- h2_open }}{{ chunk -}}
+    {%- endfor -%}
+  {%- else -%}
+    {{- article.content -}}
+  {%- endif -%}
+{%- endcapture -%}
+
+<div
+  class="nh-article-body{% if toc_on %} nh-article-body--with-toc nh-article-body--toc-{{ toc_position }}{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  {%- if toc_on -%}
+    {%- comment -%}
+      The list is emitted twice — a collapsible one for phones and a sticky rail
+      for desktop. One <details> reskinned by CSS would depend on overriding the
+      UA style on closed-<details> children, which has shifted under Chrome's
+      ::details-content work. Duplicating ~0.5KB of <li> is the cheaper bet.
+      Neither copy carries an id; the links share data-nh-toc-link.
+    {%- endcomment -%}
+    <details class="nh-toc nh-toc--mobile"{% unless block.settings.toc_mobile_collapsed %} open{% endunless %}>
+      <summary class="nh-toc__summary">{{ toc_label | escape }}</summary>
+      <ol class="nh-toc__list">{{ toc_list }}</ol>
+    </details>
+
+    <aside
+      class="nh-toc nh-toc--desktop{% if block.settings.toc_sticky %} nh-toc--sticky{% endif %}"
+      aria-labelledby="nh-toc-title-{{ article.id }}"
+    >
+      <p class="nh-toc__title" id="nh-toc-title-{{ article.id }}">{{ toc_label | escape }}</p>
+      <nav aria-label="{{ toc_label | escape }}">
+        <ol class="nh-toc__list">{{ toc_list }}</ol>
+      </nav>
+    </aside>
+  {%- endif -%}
+
+  <div class="article-template__content rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+    {{ body_html }}
+  </div>
+</div>
+
+{%- if toc_on -%}
+  <script src="{{ 'nh-article-toc.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}

@@ -12,12 +12,22 @@
     "banner_section_4ipiEf": {
       "type": "banner-section",
       "blocks": {
+        "image_dXxBYN": {
+          "type": "image",
+          "settings": {
+            "image_desktop": "shopify://shop_images/Diwali_Car_Accessories_Mega_Offer.png",
+            "image_mobile": "shopify://shop_images/Diwali_Car_Accessories_Offer_Banner.png",
+            "image_alt": "Image description",
+            "image_url": "/",
+            "open_in_new_tab": false
+          }
+        },
         "image_NtLWxx": {
           "type": "image",
           "name": "Banner - Drive in Style",
           "settings": {
-            "image_desktop": "shopify://shop_images/ChatGPT_Image_Aug_22_2026_01_18_18_PM.png",
-            "image_mobile": "shopify://shop_images/ChatGPT_Image_Aug_22_2026_01_28_01_PM.png",
+            "image_desktop": "shopify://shop_images/Genuine_Car_Accessories_Sunset_Banner.png",
+            "image_mobile": "shopify://shop_images/Genuine_Car_Accessories_Showcase.png",
             "image_alt": "Image description",
             "image_url": "",
             "open_in_new_tab": false
@@ -30,7 +40,7 @@
             "image_desktop": "shopify://shop_images/Car_Accessories__Guaranteed_Best_Deals.png",
             "image_mobile": "shopify://shop_images/Premium_Car_Accessories_Deal_Banner.png",
             "image_alt": "Image description",
-            "image_url": "",
+            "image_url": "shopify://collections/car-led-headlight-bulbs",
             "open_in_new_tab": false
           }
         },
@@ -58,6 +68,7 @@
         }
       },
       "block_order": [
+        "image_dXxBYN",
         "image_NtLWxx",
         "image_wbH8x3",
         "image_qbPDUU",
@@ -65,6 +76,25 @@
       ],
       "settings": {
         "color_scheme": ""
+      }
+    },
+    "info_features_dQaP6T": {
+      "type": "info-features",
+      "name": "Info Features",
+      "settings": {
+        "heading": "",
+        "feature1_title": "FREE DELIVERY",
+        "feature1_description": "Across the Country",
+        "feature1_icon": "shopify://shop_images/free-delivery.png",
+        "feature2_title": "EASY RETURNS",
+        "feature2_description": "7 Days Return Policy",
+        "feature2_icon": "shopify://shop_images/product-return.png",
+        "feature3_title": "COMFORT PAYMENTS",
+        "feature3_description": "COD and Online Payment",
+        "feature3_icon": "shopify://shop_images/payment-method.png",
+        "feature4_title": "CUSTOMER SUPPORT",
+        "feature4_description": "24 x 7 (Support)",
+        "feature4_icon": "shopify://shop_images/customer-service.png"
       }
     },
     "car_carousel_W9niJY": {
@@ -221,6 +251,7 @@
       "name": "Category Carousel",
       "settings": {
         "section-heading": "Shop By | Category",
+        "card_style": "image",
         "reverse_direction": true,
         "color_scheme": "",
         "secondary_background": false
@@ -379,6 +410,7 @@
       "name": "Brand Carousel",
       "settings": {
         "section-heading": "Shop By | Brand",
+        "card_style": "logo",
         "reverse_direction": false,
         "color_scheme": "",
         "secondary_background": false
@@ -512,37 +544,37 @@
         "feature_tdmRmr": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Car_Charger_offer_banner.png",
+            "image": "shopify://shop_images/Premium_Car_Audio_Systems_Banner.png",
             "image_alt": "Feature Image",
             "button_text": "",
-            "link": "shopify://collections/car-phone-charger"
+            "link": "shopify://collections/car-music-system"
           }
         },
         "feature_Yp3c7X": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Headlight_bulb_offer_banner.png",
+            "image": "shopify://shop_images/Mahindra_Thar_Accessories_Adventure_Ad.png",
             "image_alt": "Check & Pay",
             "button_text": "",
-            "link": "shopify://collections/car-led-headlight-bulbs"
+            "link": "shopify://collections/thar"
           }
         },
         "feature_xrEXCe": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Car_Key_Cover_offer_banner.png",
+            "image": "shopify://shop_images/Off-Road_Lighting_Solutions.png",
             "image_alt": "Buy Car",
             "button_text": "",
-            "link": "shopify://collections/car-key-cover"
+            "link": "shopify://collections/car-led-headlight-bulbs"
           }
         },
         "feature_GgYMRW": {
           "type": "feature",
           "settings": {
-            "image": "shopify://shop_images/Cleaning_Care_offer_banner.png",
+            "image": "shopify://shop_images/Orange-Black_Dashcam_Showcase.png",
             "image_alt": "Feature Image",
             "button_text": "",
-            "link": "shopify://collections/car-interior-cleaning-products"
+            "link": "shopify://collections/dashcam"
           }
         }
       },
@@ -554,24 +586,6 @@
       ],
       "name": "Feature Box Grid",
       "settings": {}
-    },
-    "info_features_dQaP6T": {
-      "type": "info-features",
-      "name": "Info Features",
-      "settings": {
-        "feature1_title": "FREE DELIVERY",
-        "feature1_description": "Across the Country",
-        "feature1_icon": "shopify://shop_images/free-delivery.png",
-        "feature2_title": "EASY RETURNS",
-        "feature2_description": "7 Days Return Policy",
-        "feature2_icon": "shopify://shop_images/product-return.png",
-        "feature3_title": "COMFORT PAYMENTS",
-        "feature3_description": "COD and Online Payment",
-        "feature3_icon": "shopify://shop_images/payment-method.png",
-        "feature4_title": "CUSTOMER SUPPORT",
-        "feature4_description": "24 x 7 (Support)",
-        "feature4_icon": "shopify://shop_images/customer-service.png"
-      }
     },
     "home_page_tabbber_rjDEBe": {
       "type": "home-page-tabbber",
@@ -640,18 +654,100 @@
     },
     "custom_blog_slider_q3PnbU": {
       "type": "custom-blog-slider",
+      "blocks": {
+        "blog_news": {
+          "type": "blog",
+          "settings": {
+            "blog": "news"
+          }
+        },
+        "blog_blog": {
+          "type": "blog",
+          "settings": {
+            "blog": "blog"
+          }
+        }
+      },
+      "block_order": [
+        "blog_news",
+        "blog_blog"
+      ],
       "name": "Custom Blog Slider",
       "settings": {
         "heading": "LATEST FROM | OUR BLOGS",
         "content": "",
-        "blog": "blog",
-        "article_limit": 6
+        "show_category": true,
+        "article_limit": 6,
+        "view_all_label": "View all",
+        "view_all_url": ""
       }
     },
     "read_more_content_VTWaD8": {
-      "type": "Read-more-content",
-      "name": "Read More Content Section",
-      "settings": {}
+      "type": "seo-text",
+      "name": "SEO text",
+      "settings": {
+        "eyebrow": "About NH ONE",
+        "heading": "NH ONE: India's Trusted Online Car Accessories Store",
+        "summary": "",
+        "content": "<p>\nWe have been serving Indian car owners since 1991 as a flagship retail store, and since 2023 as a fully stocked online car accessories destination available to every car owners across the country. In over three decades, we have built one of the widest, most carefully curated car accessories catalogues available from a single Indian source, covering every major category a car owner needs, every major brand worth buying from, and every major Indian car model from the earliest hatchbacks to the latest EVs.\n</p>\n<p>\nOur catalogue today carries more than 1,400 products across 100 plus accessory categories, with compatibility support for more than 180 car models from every manufacturer sold in India. Every product we list is sourced from brands that meet the compliance standards relevant to their category. Every order we ship reaches the customer in 3 to 6 working days anywhere in India. And every purchase is backed by a 7-day return window and brand-specific warranty support.\n</p>\n\n<h3>What You Can Find at NH ONE</h3>\n<p>\nOur range is organised across two navigation paths: shop by car model or shop by accessory category. Both paths lead to the same 1,400 plus products, but the model-based path ensures compatibility is confirmed before you browse.\n</p>\n\n<h3>Car Audio and Music Systems</h3>\n<p>\nOur music system range covers car Android players with wireless CarPlay and Android Auto, car speakers in coaxial and component formats, subwoofers, amplifiers, DSP processors, car android boxes, and pillar pods. Brands include Blaupunkt, Nakamichi, Pioneer, Onkyo, JBL, Sony, Infinity, Morel, Alpine, ZAPCO, and JL Audio.\n</p>\n\n<h3>Car Cameras and Dashcams</h3>\n<p>\nOur camera range covers dashcams in single, dual, and triple-channel formats, car rear cameras in AHD and CVBS formats, car front cameras, and 360-degree surround view systems. Brands include Blaupunkt, YueMi, Qubo, Pricol, CP PLUS, and Blockbuster.\n</p>\n\n<h3>Car Lighting</h3>\n<p>\nLED headlight bulbs across H4, H7, H11, HB3, HB4, and other fitments, fog lights, fog lamp brackets, focus lights, and ambient cabin lighting systems. Brands include OSRAM, Hella, and NH ONE branded LED units with a 2-year replacement warranty.\n</p>\n\n<h3>Car Floor Mats and Trunk Mats</h3>\n<p>\nCustom-fit 3D and 7D car floor mats and boot mats for 15 car manufacturers, all from GFX, covering hatchbacks, sedans, SUVs, MPVs, and EVs.\n</p>\n\n<h3>Car Exterior Accessories</h3>\n<p>\nBatman-style mirror covers, stainless steel door sill guards, car door visors, body side beadings, rear spoilers, front lip spoilers, and car body covers for 24 car manufacturers.\n</p>\n\n<h3>Car Interior Accessories</h3>\n<p>\nCar damping sheets from professional audio brands, god idols for car dashboards covering all major deities in multiple colour finishes, car perfumes and air fresheners, key covers, car chargers, and safety accessories.\n</p>\n\n<h3>Car Window Sun Shades</h3>\n<p>\nCustom fit side window shade sets in 4-piece and 6-piece configurations, and automatic rolling curtain sun shades for 15 car manufacturers.\n</p>\n\n<h3>Car Android Frames</h3>\n<p>\nModel-specific 9-inch, 10-inch, and 10.1-inch android stereo fitting frames for 12 car manufacturers, covering 164 models and generation variants.\n</p>\n\n<h3>Car Cleaning and Care</h3>\n<p>\nInterior cleaning products, dashboard polish, upholstery cleaners, leather care, microfiber cloths, car dusters, body polish, ceramic spray wax, and complete car care kits from 3M, Formula 1, and Motomax.\n</p>\n\n<h3>Car Models We Serve</h3>\n<p>\nNH ONE carries model-specific compatible products for virtually every car sold in India across the last 25 years. Our compatibility library covers Maruti Suzuki, Tata Motors, Hyundai, Mahindra, Toyota, Honda, KIA, MG, Volkswagen, Skoda, Renault, Ford, Nissan, Citroen, and more. Use the Shop By Car menu at the top of the page to navigate directly to products verified for your specific model and generation year.\n</p>\n\n<h3>Why Car Owners Across India Choose NH ONE</h3>\n<ul>\n<li>\n<strong>Over 30 years in the car accessories business:</strong> The product knowledge, supplier relationships, and understanding of what Indian car owners need have been built over three decades, not months.\n</li>\n<li>\n<strong>10,000 plus satisfied customers:</strong> Across retail and online, more than ten thousand customers have upgraded their vehicles through NH ONE. Our 4.5 out of 5 customer rating reflects consistent product quality and after-sales support.\n</li>\n<li>\n<strong>Brand-certified products only:</strong> Every product in our catalogue comes from brands with the relevant compliance certifications for their category, whether IP68 waterproofing for cameras, CE and RoHS compliance for electronics, or BIS certification where applicable. We do not list uncertified products.\n</li>\n<li>\n<strong>Pan India delivery in 3 to 6 days:</strong> Every order placed on nhone.in reaches you anywhere in India within 3 to 6 working days. Express shipping is available on prepaid orders.\n</li>\n<li>\n<strong>Compatibility guidance before you buy:</strong> Our team is available via WhatsApp at +91 9996775500 from Monday to Saturday, 9 AM to 7 PM, for pre-purchase compatibility checks, fitment questions, and after-sales support.\n</li>\n<li>\n<strong>7-day returns:</strong> If a product does not meet your expectation, our 7-day return window from the date of delivery ensures a straightforward resolution.\n</li>\n</ul>\n\n<h3>Shop by What Your Car Needs Most</h3>\n<p>\nWhether you are upgrading your car's audio system with a new Android player and premium speakers, protecting your floors with custom-fit 3D mats, adding a dashcam for road safety documentation, upgrading your headlights to bright LED output, or simply looking for a car perfume and dashboard idol to complete the feel of your cabin, NH ONE is the single destination for every car accessory need on every Indian road.\n</p>\n<p>\nBrowse by category above or use the Shop By Car menu to find everything compatible with your specific vehicle today.\n</p>",
+        "collapsed_lines": 4,
+        "more_label": "Read more",
+        "less_label": "Read less",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "home_faq": {
+      "type": "faq",
+      "blocks": {
+        "faq_1": {
+          "type": "faq",
+          "settings": {
+            "question": "What are the essential car accessories every driver in India should own?",
+            "answer": "<p>Every driver should consider LED headlights, protective car mats, fast mobile chargers, key covers, and car cleaning kits.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "faq",
+          "settings": {
+            "question": "Are NH ONE’s accessories compatible with all car models?",
+            "answer": "<p>Yes, most products are designed to fit a wide range of popular car models in India.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "faq",
+          "settings": {
+            "question": "Why should I upgrade my car lights to LEDs?",
+            "answer": "<p>LED headlights offer better visibility, energy efficiency, and longer lifespan compared to halogen bulbs.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "faq",
+          "settings": {
+            "question": "Is it safe to shop for car accessories online from NH ONE?",
+            "answer": "<p>Absolutely. We offer secure payments, nationwide delivery, and easy return policies.</p>"
+          }
+        },
+        "faq_5": {
+          "type": "faq",
+          "settings": {
+            "question": "How can I make my car look stylish with accessories?",
+            "answer": "<p>You can enhance your car’s style with custom key covers, premium mats, and modern LED lights.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ],
+      "settings": {
+        "heading": "Frequently Asked |Questions",
+        "subheading": "Quick answers about car accessories, fitment and delivery.",
+        "open_first": false
+      }
     },
     "1757748884bdaad3ec": {
       "type": "apps",
@@ -846,23 +942,27 @@
       ],
       "name": "Collection Link List",
       "settings": {
-        "section_heading": "Popular Car Accessories List"
+        "section_heading": "Popular Car |Accessories List",
+        "mobile_rows": 3,
+        "show_all_label": "Show all",
+        "show_less_label": "Show less"
       }
     }
   },
   "order": [
     "banner_section_4ipiEf",
+    "info_features_dQaP6T",
     "car_carousel_W9niJY",
     "car_carousel_4JN3Rr",
     "top_category_section_tVBBqj",
     "home_page_tabbber_KiTEVe",
     "featured_box_section_W7xpeT",
-    "info_features_dQaP6T",
     "home_page_tabbber_rjDEBe",
     "content_section_NJcANL",
     "shopping_guide_section_4KLxKh",
     "custom_blog_slider_q3PnbU",
     "read_more_content_VTWaD8",
+    "home_faq",
     "1757748884bdaad3ec",
     "collection_link_list_pADwVb"
   ]

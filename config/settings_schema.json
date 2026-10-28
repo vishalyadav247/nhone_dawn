@@ -1592,6 +1592,32 @@
   ]
 },
 {
+  "name": "Blog",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Blog hub"
+    },
+    {
+      "type": "paragraph",
+      "content": "Shopify has no built-in page that lists every blog category, so the hub is a normal page using the 'page.blogs' template. Create it under Content > Pages with the handle 'blogs', then pick it here. To make /blogs reach it, add a URL redirect from /blogs to /pages/blogs under Content > URL redirects."
+    },
+    {
+      "type": "url",
+      "id": "blog_hub_url",
+      "label": "Blog hub page",
+      "info": "Used by the breadcrumb trail, the category pages' 'All categories' link and the site map. Leave empty to drop the hub level from breadcrumbs."
+    },
+    {
+      "type": "text",
+      "id": "blog_hub_label",
+      "label": "Blog hub label",
+      "default": "Blogs",
+      "info": "The word used for the hub in breadcrumb trails."
+    }
+  ]
+},
+{
   "name": "Gokwik",
   "settings": [
     {

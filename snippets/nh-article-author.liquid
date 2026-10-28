@@ -1,0 +1,83 @@
+{%- comment -%}
+  Author box.
+
+  Three fallback tiers so every already-published article shows something
+  without any data entry:
+    1. per-article metafields (custom.author_name / _role / _bio / _image / _url)
+    2. the article's Shopify staff profile (article.author, article.user.*)
+    3. the block's fallback settings
+
+  The metafield definitions have to be created in the admin before tier 1 does
+  anything; tiers 2 and 3 carry the page until then.
+
+  Accepts:
+  - article
+  - block: {Object} the 'author_box' block
+
+  Usage:
+  {% render 'nh-article-author', article: article, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign a_name = article.metafields.custom.author_name.value | default: article.author
+  if a_name == blank
+    assign a_name = block.settings.default_author_name
+  endif
+
+  assign a_bio = article.metafields.custom.author_bio.value
+  if a_bio == blank
+    assign a_bio = article.user.bio
+  endif
+  if a_bio == blank
+    assign a_bio = block.settings.default_author_bio
+  endif
+
+  assign a_img = article.metafields.custom.author_image.value
+  if a_img == blank
+    assign a_img = article.user.image
+  endif
+  if a_img == blank
+    assign a_img = block.settings.default_author_image
+  endif
+
+  assign a_role = article.metafields.custom.author_role.value | default: block.settings.default_author_role
+  assign a_link = article.metafields.custom.author_url.value | default: block.settings.author_link
+-%}
+
+{%- if a_name != blank or a_bio != blank -%}
+  <div class="nh-author page-width page-width--narrow" {{ block.shopify_attributes }}>
+    {%- if a_img != blank -%}
+      <div class="nh-author__avatar">
+        {{
+          a_img
+          | image_url: width: 160
+          | image_tag: widths: '80, 120, 160', loading: 'lazy', alt: a_name, class: 'nh-author__img'
+        }}
+      </div>
+    {%- endif -%}
+
+    <div class="nh-author__body">
+      {%- if block.settings.author_heading != blank -%}
+        <p class="nh-author__kicker">{{ block.settings.author_heading | escape }}</p>
+      {%- endif -%}
+
+      {%- if a_name != blank -%}
+        <p class="nh-author__name">
+          {%- if a_link != blank -%}
+            <a href="{{ a_link }}">{{ a_name | escape }}</a>
+          {%- else -%}
+            {{ a_name | escape }}
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+
+      {%- if a_role != blank -%}
+        <p class="nh-author__role">{{ a_role | escape }}</p>
+      {%- endif -%}
+
+      {%- if a_bio != blank -%}
+        <div class="nh-author__bio rte">{{ a_bio }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

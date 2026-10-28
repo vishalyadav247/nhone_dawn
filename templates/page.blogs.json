@@ -11,42 +11,55 @@
   "sections": {
     "main": {
       "type": "main-page",
+      "disabled": true,
       "settings": {
         "padding_top": 28,
         "padding_bottom": 28
       }
     },
-    "banner_section_LC3xw7": {
-      "type": "banner-section",
+    "blog_categories": {
+      "type": "blog-categories",
       "blocks": {
-        "image_gH997V": {
-          "type": "image",
+        "category_news": {
+          "type": "category",
           "settings": {
-            "image_desktop": "shopify://shop_images/IMG_8761.png",
-            "image_mobile": "shopify://shop_images/IMG_8761.png",
-            "image_alt": "Image description",
-            "image_url": "/",
-            "open_in_new_tab": false
+            "blog": "news",
+            "heading": "",
+            "description": "",
+            "view_all_label": "View all"
+          }
+        },
+        "category_blog": {
+          "type": "category",
+          "settings": {
+            "blog": "blog",
+            "heading": "",
+            "description": "",
+            "view_all_label": "View all"
           }
         }
       },
       "block_order": [
-        "image_gH997V"
+        "category_news",
+        "category_blog"
       ],
-      "disabled": true,
+      "name": "Blog categories",
       "settings": {
-        "color_scheme": ""
+        "heading": "Our |Blogs",
+        "intro": "<p>Guides, buying advice and news for everything that goes in, on and around your car.</p>",
+        "tiles_heading": "Browse by category",
+        "show_tiles": true,
+        "articles_per_category": 4,
+        "show_date": true,
+        "show_read_time": true,
+        "show_excerpt": false,
+        "padding_top": 0,
+        "padding_bottom": 48
       }
-    },
-    "tabber_478rrg": {
-      "type": "tabber",
-      "disabled": true,
-      "settings": {}
     }
   },
   "order": [
     "main",
-    "banner_section_LC3xw7",
-    "tabber_478rrg"
+    "blog_categories"
   ]
 }

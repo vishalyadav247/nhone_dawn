@@ -1,11 +1,32 @@
-<section class="page-width color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}">
-  {% render 'section-heading', heading: section.settings['section-heading'] %}
+{%- comment -%}
+  Car carousel — an auto-scrolling row of linked image cards (Owl Carousel,
+  initialised in assets/main.js).
+
+  Used twice on the home page: "Shop by Category" (product photos) and
+  "Shop by Brand" (logos). The "Card style" setting tunes the card for each:
+  - image: the photo fills a soft gradient well.
+  - logo:  logos on a white card with a thin border, always in full colour.
+
+  The prev/next arrows render into .nh-slider-nav beside the heading
+  (Owl's navContainer option), not over the slides.
+
+  Styles live in assets/style.css under "Car carousel".
+{%- endcomment -%}
+
+<section
+  class="car-carousel-section car-carousel--{{ section.settings.card_style | default: 'image' }} page-width color-{{ section.settings.color_scheme }} {% if section.settings.secondary_background %}background-secondary{% else %}gradient{% endif %}"
+>
+  <div class="car-carousel__header">
+    {% render 'section-heading', heading: section.settings['section-heading'] %}
+    <div class="nh-slider-nav"></div>
+  </div>
+
   {% assign textFound = false %}
   <div class="CarCarousel owl-carousel" data-rtl="{{ section.settings.reverse_direction }}">
     {% for block in section.blocks %}
       {% if block.settings.Car_text != blank %}
         {% assign textFound = true %}
-        <div class="carousel-item">
+        <div class="carousel-item" {{ block.shopify_attributes }}>
           <a
             href="{{ block.settings.link_url | default: '#' }}"
             class="carousel-link"
@@ -14,13 +35,22 @@
             {% endif %}
           >
             <figure class="carousel-figure">
-              <img
-                src="{{ block.settings.image_desktop | image_url: width: 600 }}"
-                alt="{{ block.settings.image_alt | escape }}"
-                loading="lazy"
-                width="100%"
-                height="100%"
-              >
+              <span class="carousel-media">
+                {%- if block.settings.image_desktop -%}
+                  {{
+                    block.settings.image_desktop
+                    | image_url: width: 400
+                    | image_tag:
+                      widths: '160, 240, 320, 400',
+                      sizes: '(min-width: 1200px) 140px, (min-width: 750px) 180px, 30vw',
+                      loading: 'lazy',
+                      alt: block.settings.image_alt,
+                      class: 'carousel-img'
+                  }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'carousel-img carousel-img--placeholder' }}
+                {%- endif -%}
+              </span>
               <figcaption class="carousel-caption">
                 {{ block.settings.Car_text }}
               </figcaption>
@@ -44,6 +74,16 @@
       "id": "section-heading",
       "label": "Section Heading",
       "info": "Put a pipe before the words you want in the brand colour, e.g. \"SHOP BY |CATEGORY\". The pipe itself is not shown."
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "image", "label": "Product images" },
+        { "value": "logo", "label": "Brand logos" }
+      ],
+      "default": "image"
     },
     {
       "type": "checkbox",

@@ -2,6 +2,73 @@
 <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
+<style>
+  #shopify-tabber-{{ section.id }} {
+
+    .owl-stage-outer{
+      padding-bottom:2px;
+    }
+  
+    .tab-nav {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 0 !important;
+      color:var(--nh-heading);
+
+      span.tab-nav{
+        gap: 10px;
+      }
+
+      li {
+        padding: 8px 16px;
+        border: 1px solid var(--nh-brand);
+        cursor: pointer;
+        border-radius: 4rem;
+        transition: 0.3s;
+
+        &.active {
+          background-color: var(--nh-brand);
+          color: #fff;
+          border-color: var(--nh-brand);
+        }
+      }
+    }
+    .tab-pane {
+      display: none;
+
+      &.active {
+        display: block;
+        margin-top: 20px;
+      }
+
+      /* Waiting for a tab's products (see the script below). */
+      &.is-loading {
+        border-radius: 1.2rem;
+        background: rgba(var(--color-foreground), 0.04);
+        animation: tab-pane-pulse 1.2s ease-in-out infinite;
+      }
+    }
+
+    @keyframes tab-pane-pulse {
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .item {
+      text-align: center;
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+  }
+</style>
 
 <section class="shopify-tabber" id="shopify-tabber-{{ section.id }}">
   <div class="page-width">
@@ -21,6 +88,13 @@
     </ul>
 
     <!-- Tab Content -->
+    {%- comment -%}
+      Only the first tab's products are rendered with the page. Every other
+      tab is an empty pane holding its collection's Section Rendering API URL
+      (sections/home-tab-products.liquid); the script below fetches it when
+      the tab is hovered, focused or clicked. Rendering all tabs up front cost
+      ~100 product cards of server render time and page weight per view.
+    {%- endcomment -%}
     <div class="tab-content">
       {% for block in section.blocks %}
         {% assign collection = block.settings.collection %}
@@ -28,197 +102,156 @@
         <div
           id="tab-{{ section.id }}-{{ block.id }}"
           class="tab-pane {% if forloop.first %}active{% endif %}"
-        >
-          {% if collection.products_count > 0 %}
-            <div class="product-carousel owl-carousel carousel">
-              {% assign available_count = 0 %}
-
-              {% for product in collection.products %}
-                {% if product.available %}
-                  <div class="item">
-                    {% render 'card-product',
-                      card_product: product,
-                      media_aspect_ratio: 'adapt',
-                      image_shape: 'default',
-                      show_secondary_image: true,
-                      show_vendor: false,
-                      show_rating: true,
-                      quick_add: 'standard',
-                      section_id: section.id
-                    %}
-                  </div>
-
-                  {% assign available_count = available_count | plus: 1 %}
-                  {% if available_count == 15 %}
-                    {% break %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% else %}
-            <p>No products found in this collection.</p>
+          {% if forloop.first == false and collection != blank %}
+            data-tab-url="{{ collection.url }}?section_id=home-tab-products"
           {% endif %}
+        >
+          {%- if forloop.first or collection == blank -%}
+            {%- render 'home-tab-products', collection: collection, section_id: section.id -%}
+          {%- endif -%}
         </div>
       {% endfor %}
     </div>
   </div>
 </section>
-
-<style>
-  .shopify-tabber .tab-nav {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    margin-top: 0 !important;
-    align-items: center;
-    padding-bottom:5px;
-
-    span.tab-nav{
-      gap: 10px;
-    }
-  }
-  .shopify-tabber .tab-nav li {
-    padding: 8px 16px;
-    border: 1px solid var(--nh-brand);
-    cursor: pointer;
-    border-radius: 4px;
-    transition: 0.3s;
-  }
-  .shopify-tabber .tab-nav li.active {
-    background-color: var(--nh-brand);
-    color: #fff;
-    border-color: var(--nh-brand);
-  }
-  .shopify-tabber .tab-pane {
-    display: none;
-  }
-  .shopify-tabber .tab-pane.active {
-    display: block;
-    margin-top: 20px;
-  }
-  .shopify-tabber .item {
-
-    text-align: center;
-  }
-  .shopify-tabber .item img {
-    max-width: 100%;
-    height: auto;
-  }
-</style>
-
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.shopify-tabber').forEach(function (section) {
-      const tabLinks = section.querySelectorAll('.tab-nav li');
-      const tabPanes = section.querySelectorAll('.tab-pane');
+  (function () {
+    // Scoped to this section: the script is emitted once per tabber, so it
+    // must not also initialise the other tabbers on the page.
+    var section = document.getElementById('shopify-tabber-{{ section.id }}');
+    if (!section) return;
 
-      {% comment %} function initCarousel(scope) {
-        $(scope)
-          .find('.product-carousel')
-          .not('.owl-loaded')
-          .owlCarousel({
-            items: 5,
-            margin: 20,
-            loop: false,
-            nav: true,
-            dots: false,
-            navText: [
-              `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-              fill="none" stroke="currentColor" stroke-width="2" 
-              stroke-linecap="round" stroke-linejoin="round" 
-              class="feather feather-chevron-left">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>`,
-              `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-              fill="none" stroke="currentColor" stroke-width="2" 
-              stroke-linecap="round" stroke-linejoin="round" 
-              class="feather feather-chevron-right">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>`,
-            ],
-            responsive: {
-              0: {
-                items: 2,
-                margin: 5,
-              },
-              600: { items: 2 },
-              1000: { items: 6 },
-            },
+    var NAV_ARROW_LEFT =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"></path><path d="M10 6l-6 6 6 6"></path></svg>';
+    var NAV_ARROW_RIGHT =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"></path><path d="M14 6l6 6-6 6"></path></svg>';
+
+    // Tabs other than the first load their products on demand. Each URL is
+    // fetched once; hovering a tab starts the request so it is usually ready
+    // by the time the click lands.
+    var requests = {};
+
+    function load(pane) {
+      var url = pane.getAttribute('data-tab-url');
+      if (!url) return Promise.resolve();
+      if (!requests[url]) {
+        requests[url] = fetch(url)
+          .then(function (res) {
+            if (!res.ok) throw new Error(res.status);
+            return res.text();
+          })
+          .catch(function (err) {
+            delete requests[url]; // allow a retry on the next click
+            throw err;
           });
-      } {% endcomment %}
-      function initCarousel(scope) {
-  const $carousel = $(scope).find('.product-carousel');
-
-  if ($carousel.hasClass('owl-loaded')) {
-    $carousel.trigger('destroy.owl.carousel');
-    $carousel.removeClass('owl-loaded');
-    $carousel.find('.owl-stage-outer').children().unwrap();
-  }
-
-  $carousel.owlCarousel({
-    margin: 10,
-    loop: false,
-    nav: true,
-    dots: false,
-    navText: [
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>`,
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>`
-    ],
-    responsive: {
-      0: { items: 2, margin: 5,nav:false },
-      600: { items: 2 },
-      1000: { items: 6 }
+      }
+      return requests[url];
     }
-  });
-}
 
+    function fill(pane, html) {
+      if (!pane.hasAttribute('data-tab-url')) return;
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      var content = doc.querySelector('.product-carousel') || doc.querySelector('.shopify-section > p');
+      if (!content) return;
+      pane.replaceChildren(document.importNode(content, true));
+      pane.removeAttribute('data-tab-url');
 
-      initCarousel(section.querySelector('.tab-pane.active'));
+      // Snapmint adds its EMI line to product cards in a single pass when it
+      // loads, so cards added later need another pass. collectionList() is
+      // Snapmint's global and skips cards it has already decorated.
+      if (typeof window.collectionList === 'function') {
+        try {
+          window.collectionList('.product-card-wrapper');
+        } catch (e) {}
+      }
+    }
 
-      tabLinks.forEach((tab) => {
-        {% comment %} tab.addEventListener('click', () => {
-          tabLinks.forEach((el) => el.classList.remove('active'));
-          tabPanes.forEach((el) => el.classList.remove('active'));
+    function initCarousel(pane) {
+      if (!pane || typeof window.jQuery !== 'function') return;
+      var $carousel = window.jQuery(pane).find('.product-carousel');
+      if (!$carousel.length || $carousel.hasClass('owl-loaded')) return;
 
-          tab.classList.add('active');
-          const targetId = tab.getAttribute('data-tab');
-          const targetTab = section.querySelector('#' + targetId);
-          if (targetTab) {
-            targetTab.classList.add('active');
-            initCarousel(targetTab);
-          }
-        }); {% endcomment %}
-        tab.addEventListener('click', () => {
-  tabLinks.forEach(el => el.classList.remove('active'));
-  tabPanes.forEach(el => el.classList.remove('active'));
-
-  tab.classList.add('active');
-  const targetId = tab.getAttribute('data-tab');
-  const targetTab = section.querySelector('#' + targetId);
-
-  if (targetTab) {
-    targetTab.classList.add('active');
-
-    setTimeout(() => {
-      initCarousel(targetTab);
-    }, 50);
-  }
-});
-
-
+      $carousel.owlCarousel({
+        margin: 10,
+        loop: false,
+        nav: true,
+        dots: false,
+        navText: [NAV_ARROW_LEFT, NAV_ARROW_RIGHT],
+        responsive: {
+          // No arrows on phones — the row is swipeable and the buttons
+          // crowded a 2-up grid. 750 is the theme's phone breakpoint.
+          0: { items: 2, margin: 5, nav: false },
+          750: { items: 2 },
+          1000: { items: 6 },
+        },
       });
-    });
-  });
+    }
+
+    function init() {
+      var tabLinks = section.querySelectorAll('.tab-nav li');
+      var tabPanes = section.querySelectorAll('.tab-pane');
+
+      // Build the first tab's carousel after load, once it nears the screen
+      // (nhWhenVisible lives in assets/main.js). Its pre-init layout in
+      // style.css already shows the same row until then.
+      var first = section.querySelector('.tab-pane.active');
+      if (typeof window.nhWhenVisible === 'function') {
+        window.nhWhenVisible(first, function () { initCarousel(first); });
+      } else {
+        initCarousel(first);
+      }
+
+      tabLinks.forEach(function (tab) {
+        function prefetch() {
+          var target = section.querySelector('#' + tab.getAttribute('data-tab'));
+          if (target) load(target).catch(function () {});
+        }
+        tab.addEventListener('pointerenter', prefetch);
+        tab.addEventListener('focus', prefetch);
+
+        tab.addEventListener('click', function () {
+          var target = section.querySelector('#' + tab.getAttribute('data-tab'));
+          if (!target || target.classList.contains('active')) return;
+
+          // Hold the current row's height while the new tab loads, so the
+          // page below doesn't collapse and jump back.
+          var current = section.querySelector('.tab-pane.active');
+          if (current) target.style.minHeight = current.offsetHeight + 'px';
+
+          tabLinks.forEach(function (el) { el.classList.remove('active'); });
+          tabPanes.forEach(function (el) { el.classList.remove('active'); });
+          tab.classList.add('active');
+
+          target.classList.add('active');
+
+          if (!target.hasAttribute('data-tab-url')) {
+            target.style.minHeight = '';
+            initCarousel(target);
+            return;
+          }
+          target.classList.add('is-loading');
+          load(target)
+            .then(function (html) {
+              fill(target, html);
+              // Owl measures its container, so wait until the pane is laid out.
+              requestAnimationFrame(function () { initCarousel(target); });
+            })
+            .catch(function () {})
+            .then(function () {
+              target.classList.remove('is-loading');
+              target.style.minHeight = '';
+            });
+        });
+      });
+    }
+
+    // jQuery + Owl load with defer, so they are ready by DOMContentLoaded.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
 </script>
 
 {% schema %}

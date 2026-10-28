@@ -419,7 +419,7 @@
             <a class="sitemap-link-card" href="/search"><span>Search</span></a>
             <a class="sitemap-link-card" href="/cart"><span>Cart</span></a>
             <a class="sitemap-link-card" href="/collections/all"><span>All Products</span></a>
-            <a class="sitemap-link-card" href="/blogs"><span>All Blogs</span></a>
+            <a class="sitemap-link-card" href="{{ settings.blog_hub_url | default: routes.root_url }}"><span>All Blogs</span></a>
             <a class="sitemap-link-card" href="/sitemap.xml"><span>XML Sitemap</span></a>
           </div>
         </div>

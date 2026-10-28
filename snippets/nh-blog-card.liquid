@@ -1,0 +1,135 @@
+{%- comment -%}
+  Renders one article as an .nh-blog-card — the compact framed card with a square
+  cover, a date + reading-time meta line and a two-line title.
+
+  Extracted from sections/custom-blog-slider.liquid so the homepage slider, the blog
+  hub (sections/blog-categories.liquid), the category page (sections/main-blog.liquid)
+  and the article page's related row all share one card. Styles live in
+  assets/style.css under "Blog slider".
+
+  Accepts:
+  - article:        {Object}  Article object. Required — nothing renders without it.
+  - extra_classes:  {String}  Extra classes for the root element. The slider passes
+                              'item blog-slide' (Owl needs them). Optional.
+  - heading_tag:    {String}  'h2', 'h3' or 'h4'. Default 'h3'; anything else falls back.
+  - blog:           {Object}  Parent blog. Only needed when show_category is true,
+                              since an article does not carry its blog.
+  - show_category:  {Boolean} Show the blog title as a pill on the cover. Default false.
+  - show_date:      {Boolean} Default true.
+  - show_read_time: {Boolean} Default true.
+  - show_excerpt:   {Boolean} Default false.
+  - excerpt_words:  {Number}  Words to truncate the excerpt to. Default 18.
+  - sizes:          {String}  Image sizes attribute. Has a sensible 4-up default.
+  - lazy:           {Boolean} Lazy-load the cover. Default true. Pass false for
+                              anything above the fold.
+
+  Usage:
+  {% render 'nh-blog-card', article: article, extra_classes: 'item blog-slide' %}
+{%- endcomment -%}
+
+{%- if article != blank -%}
+  {%- liquid
+    # Merchants can override the cover per article; fall back to the featured image.
+    assign cover = article.metafields.custom.mobile_cover_image.value
+    if cover == blank
+      assign cover = article.image
+    endif
+
+    # The tag is interpolated into markup, so allow only a known set.
+    assign tag_name = heading_tag | default: 'h3'
+    unless tag_name == 'h2' or tag_name == 'h4'
+      assign tag_name = 'h3'
+    endunless
+
+    if sizes == blank
+      assign sizes = '(min-width: 1100px) 300px, (min-width: 750px) 30vw, 45vw'
+    endif
+
+    assign show_date_final = true
+    if show_date == false
+      assign show_date_final = false
+    endif
+
+    assign show_read_time_final = true
+    if show_read_time == false
+      assign show_read_time_final = false
+    endif
+
+    assign excerpt_words_final = excerpt_words | default: 18
+
+    # `default` would swallow an explicit false here, so branch instead.
+    assign loading_attr = 'lazy'
+    if lazy == false
+      assign loading_attr = 'eager'
+    endif
+
+    # Deliberately computed ONLY when it will be shown: this scans the entire
+    # article body, and the hub can render dozens of cards on one page.
+    if show_read_time_final
+      assign word_count = article.content | strip_html | split: ' ' | size
+      assign read_minutes = word_count | divided_by: 200
+      if read_minutes < 1
+        assign read_minutes = 1
+      endif
+    endif
+  -%}
+
+  <article class="nh-blog-card {{ extra_classes }}">
+    <a href="{{ article.url }}" class="nh-blog-card__link">
+      <div class="nh-blog-card__media">
+        {%- if cover != blank -%}
+          {{
+            cover
+            | image_url: width: 800
+            | image_tag:
+              widths: '300, 400, 500, 600, 800',
+              sizes: sizes,
+              loading: loading_attr,
+              alt: article.title,
+              class: 'nh-blog-card__img'
+          }}
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: 'nh-blog-card__img nh-blog-card__img--placeholder' }}
+        {%- endif -%}
+
+        {%- if show_category and blog != blank -%}
+          <span class="nh-blog-card__category">{{ blog.title | escape }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="nh-blog-card__body">
+        {%- if show_date_final or show_read_time_final -%}
+          <p class="nh-blog-card__meta">
+            {%- if show_date_final -%}
+              <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                {{- article.published_at | date: '%b %d, %Y' -}}
+              </time>
+            {%- endif -%}
+            {%- if show_date_final and show_read_time_final -%}
+              <span class="nh-blog-card__dot" aria-hidden="true"></span>
+            {%- endif -%}
+            {%- if show_read_time_final -%}
+              <span>{{ read_minutes }} min read</span>
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+
+        <{{ tag_name }} class="nh-blog-card__title">{{ article.title | escape }}</{{ tag_name }}>
+
+        {%- if show_excerpt -%}
+          {%- liquid
+            assign card_excerpt = article.excerpt
+            if card_excerpt == blank
+              assign card_excerpt = article.content
+            endif
+          -%}
+          {%- if card_excerpt != blank -%}
+            <p class="nh-blog-card__excerpt">
+              {{- card_excerpt | strip_html | truncatewords: excerpt_words_final -}}
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </a>
+  </article>
+{%- endif -%}

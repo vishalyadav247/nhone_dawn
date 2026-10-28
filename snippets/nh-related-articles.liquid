@@ -1,0 +1,85 @@
+{%- comment -%}
+  "You may also like" — more articles from the same blog.
+
+  Two passes: articles sharing a tag with this one first, then the most recent
+  from the same blog to top up. The cards are captured before anything is
+  rendered so the count is known up front — that way zero results hides the
+  heading too, instead of leaving a stranded title, and 1-3 results lay out at
+  natural width instead of stretching across the row.
+
+  Deliberately uses `limit:` and never {% paginate %}: the comments block on
+  this template already owns the ?page= param, and a second paginate would make
+  paging the comments silently change which related articles appear.
+
+  Accepts:
+  - article, blog: the current article and its blog
+  - heading:       {String} pipe-accent heading, passed to section-heading
+  - count:         {Number} how many cards to aim for
+  - match_tags:    {Boolean} run the tag-matching pass first
+  - view_all_label:{String} optional link back to the blog
+
+  Usage:
+  {% render 'nh-related-articles', article: article, blog: blog, count: 4 %}
+{%- endcomment -%}
+
+{%- liquid
+  assign want = count | default: 4
+  if want > 8
+    assign want = 8
+  endif
+
+  # blog.articles caps at 50 iterations here anyway; 24 is plenty to find 4 and
+  # keeps the nested tag comparison cheap.
+  assign scan = 24
+  assign found = 0
+  # Kept comma-delimited on BOTH sides (",123,456,") and always tested as
+  # ",<id>,". Without the leading comma, article 8472233 would look "already
+  # used" inside 558472233.
+  assign used_ids = ','
+-%}
+
+{%- capture related_cards -%}
+  {%- if match_tags and article.tags.size > 0 -%}
+    {%- for a in blog.articles limit: scan -%}
+      {%- if found >= want -%}{%- break -%}{%- endif -%}
+      {%- unless a.id == article.id -%}
+        {%- assign is_match = false -%}
+        {%- for t in article.tags -%}
+          {%- if a.tags contains t -%}
+            {%- assign is_match = true -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if is_match -%}
+          {% render 'nh-blog-card', article: a %}
+          {%- assign found = found | plus: 1 -%}
+          {%- assign used_ids = used_ids | append: a.id | append: ',' -%}
+        {%- endif -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  {%- for a in blog.articles limit: scan -%}
+    {%- if found >= want -%}{%- break -%}{%- endif -%}
+    {%- unless a.id == article.id -%}
+      {%- assign id_key = ',' | append: a.id | append: ',' -%}
+      {%- unless used_ids contains id_key -%}
+        {% render 'nh-blog-card', article: a %}
+        {%- assign found = found | plus: 1 -%}
+        {%- assign used_ids = used_ids | append: a.id | append: ',' -%}
+      {%- endunless -%}
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if found > 0 -%}
+  <div class="nh-related page-width" style="--nh-related-cols: {{ found }};">
+    <div class="nh-related__header">
+      {% render 'section-heading', heading: heading %}
+      {%- if view_all_label != blank -%}
+        <a class="blog-view-all" href="{{ blog.url }}">{{ view_all_label | escape }}</a>
+      {%- endif -%}
+    </div>
+    <div class="nh-related__grid">{{ related_cards }}</div>
+  </div>
+{%- endif -%}
