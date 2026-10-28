@@ -669,6 +669,14 @@
       it straight away (the PDP widget and checkout button are above the fold).
       Everywhere else it waits for the visitor's first interaction, so it never
       competes with the initial render.
+
+      That first interaction is usually the first scroll on a collection page,
+      and starting a seconds-long script then froze the page just as the
+      visitor began browsing. So after the interaction it also waits for the
+      browser to be idle (requestIdleCallback): it runs in the first quiet
+      moment instead of mid-scroll. The 4s timeout makes sure it still loads
+      on a page that never goes quiet. Browsers without requestIdleCallback
+      (older Safari) get a short delay instead.
     {%- endcomment -%}
     {%- if template.name == 'product' or template.name == 'cart' -%}
       <script src="https://checkout-merchant.snapmint.com/js/v1/8916" defer></script>
@@ -676,14 +684,24 @@
       <script>
         (function () {
           var events = ['scroll', 'pointerdown', 'mousemove', 'touchstart', 'keydown'];
-          function loadSnapmint() {
-            events.forEach(function (e) {
-              window.removeEventListener(e, loadSnapmint, { passive: true });
-            });
+          var queued = false;
+          function injectSnapmint() {
             var s = document.createElement('script');
             s.src = 'https://checkout-merchant.snapmint.com/js/v1/8916';
             s.async = true;
             document.body.appendChild(s);
+          }
+          function loadSnapmint() {
+            if (queued) return;
+            queued = true;
+            events.forEach(function (e) {
+              window.removeEventListener(e, loadSnapmint, { passive: true });
+            });
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(injectSnapmint, { timeout: 4000 });
+            } else {
+              setTimeout(injectSnapmint, 1500);
+            }
           }
           events.forEach(function (e) {
             window.addEventListener(e, loadSnapmint, { passive: true, once: true });

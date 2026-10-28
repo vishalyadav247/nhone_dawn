@@ -241,7 +241,24 @@
                 {%- endif -%}
               </div>
             {%- endif -%}
-            <ul class="list list-social list-unstyled" role="list">
+            {%- comment -%}
+              Social links: the same brand-tinted discs as the menu icons above.
+              Styles: component-menu-drawer.css, "Social links". The label
+              only shows when at least one link is set in Theme settings >
+              Social media.
+            {%- endcomment -%}
+            {%- liquid
+              assign nh_has_social = false
+              if settings.social_facebook_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_tiktok_link != blank or settings.social_twitter_link != blank
+                assign nh_has_social = true
+              elsif settings.social_pinterest_link != blank or settings.social_snapchat_link != blank or settings.social_tumblr_link != blank or settings.social_vimeo_link != blank
+                assign nh_has_social = true
+              endif
+            -%}
+            {%- if nh_has_social -%}
+              <span class="menu-drawer__social-label" aria-hidden="true">Follow us</span>
+            {%- endif -%}
+            <ul class="list list-social list-unstyled" role="list" aria-label="Follow us">
               {%- if settings.social_twitter_link != blank -%}
                 <li class="list-social__item">
                   <a href="{{ settings.social_twitter_link }}" class="list-social__link link">

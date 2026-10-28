@@ -935,18 +935,63 @@
               {%- endif -%}
 
               <div class="mobile-facets__footer">
-                <facet-remove class="mobile-facets__clear-wrapper">
-                  <a href="{{ results_url }}" class="mobile-facets__clear underlined-link">
-                    {{- 'products.facets.clear_all' | t -}}
-                  </a>
-                </facet-remove>
-                <button
-                  type="button"
-                  class="button button--primary"
-                  onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
-                >
-                  {{ 'products.facets.apply' | t }}
-                </button>
+                {%- comment -%}
+                  Applied filters, on mobile shown only here: in the drawer,
+                  right above Remove all / Apply, not over the product grid.
+                  Keeps the `active-facets-mobile` class so facets.js
+                  (renderActiveFacets) refreshes it after every change. It has
+                  no "Remove all" chip; the button beside Apply is that.
+                {%- endcomment -%}
+                <div class="active-facets active-facets-mobile nh-drawer-chips">
+                  {%- for filter in results.filters -%}
+                    {%- for value in filter.active_values -%}
+                      <facet-remove>
+                        <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
+                          <span class="active-facets__button-inner button button--tertiary">
+                            <span class="nh-chip__key">{{ filter.label | escape }}:</span> {{ value.label | escape }}
+                            <span class="svg-wrapper">
+                              {{- 'icon-close-small.svg' | inline_asset_content -}}
+                            </span>
+                            <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}</span>
+                          </span>
+                        </a>
+                      </facet-remove>
+                    {%- endfor -%}
+
+                    {%- if filter.type == 'price_range' -%}
+                      {% assign min = filter.min_value.value %}
+                      {% assign max = filter.max_value.value %}
+                      {%- if min != null or max != null -%}
+                        <facet-remove>
+                          <a href="{{ filter.url_to_remove }}" class="active-facets__button active-facets__button--light">
+                            <span class="active-facets__button-inner button button--tertiary">
+                              {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
+                              <span class="svg-wrapper">
+                                {{- 'icon-close-small.svg' | inline_asset_content -}}
+                              </span>
+                              <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}</span>
+                            </span>
+                          </a>
+                        </facet-remove>
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+
+                <div class="mobile-facets__actions">
+                  <facet-remove class="mobile-facets__clear-wrapper">
+                    <a href="{{ results_url }}" class="mobile-facets__clear underlined-link">
+                      {{- 'products.facets.clear_all' | t -}}
+                    </a>
+                  </facet-remove>
+                  <button
+                    type="button"
+                    class="button button--primary"
+                    onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
+                  >
+                    {{ 'products.facets.apply' | t }}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -964,46 +1009,10 @@
     </details>
   </menu-drawer>
 
-  <div class="active-facets active-facets-mobile medium-hide large-up-hide">
-    {%- for filter in results.filters -%}
-      {%- for value in filter.active_values -%}
-        <facet-remove>
-          <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
-            <span class="active-facets__button-inner button button--tertiary">
-              <span class="nh-chip__key">{{ filter.label | escape }}:</span> {{ value.label | escape }}
-              <span class="svg-wrapper">
-                {{- 'icon-close-small.svg' | inline_asset_content -}}
-              </span>
-              <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}</span>
-            </span>
-          </a>
-        </facet-remove>
-      {%- endfor -%}
-
-      {%- if filter.type == 'price_range' -%}
-        {% assign min = filter.min_value.value %}
-        {% assign max = filter.max_value.value %}
-        {%- if min != null or max != null -%}
-          <facet-remove>
-            <a href="{{ filter.url_to_remove }}" class="active-facets__button active-facets__button--light">
-              <span class="active-facets__button-inner button button--tertiary">
-                {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
-                <span class="svg-wrapper">
-                  {{- 'icon-close-small.svg' | inline_asset_content -}}
-                </span>
-                <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}</span>
-              </span>
-            </a>
-          </facet-remove>
-        {%- endif -%}
-      {%- endif -%}
-    {%- endfor -%}
-    <facet-remove class="active-facets__button-wrapper">
-      <a href="{{ results_url }}" class="active-facets__button-remove underlined-link">
-        <span>{{ 'products.facets.clear_all' | t }}</span>
-      </a>
-    </facet-remove>
-  </div>
+  {%- comment -%}
+    Dawn's row of applied-filter chips over the product grid on mobile used to
+    render here. On mobile they now live in the filter drawer's footer (above).
+  {%- endcomment -%}
   {% comment %} Sort, product count and filter pills at the end when filter is type of Drawer for the correct tabbing order {% endcomment %}
   {%- if enable_sorting and filter_type == 'drawer' -%}
     <facet-filters-form class="facets small-hide">

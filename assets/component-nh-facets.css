@@ -123,7 +123,10 @@
   padding: 0;
 }
 
-.facets-container span.active-facets__button-inner {
+/* The #FacetsWrapperDesktop selectors are the desktop sidebar's own chips,
+   addressed by id so no class rule anywhere can repaint them solid. */
+.facets-container span.active-facets__button-inner,
+#FacetsWrapperDesktop span.active-facets__button-inner {
   gap: 0.4rem;
   min-height: 0;
   padding: 0.3rem 0.4rem 0.3rem 0.9rem;
@@ -167,7 +170,8 @@
 }
 
 .facets-container .active-facets__button:hover span.active-facets__button-inner,
-.facets-container .active-facets__button--light:hover span.active-facets__button-inner {
+.facets-container .active-facets__button--light:hover span.active-facets__button-inner,
+#FacetsWrapperDesktop .active-facets__button:hover span.active-facets__button-inner {
   border-color: var(--nh-brand);
   background: rgba(var(--nh-brand-rgb), 0.06);
   box-shadow: none;
@@ -886,8 +890,15 @@
 }
 
 /* --- Mobile drawer ------------------------------------------------------- */
+/* 7.2rem, the same masthead height as the mobile navigation drawer
+   (--nh-drawer-header-height in component-menu-drawer.css), with the close
+   button centred in it at the same spot. */
 .mobile-facets__header {
-  padding: 1.6rem 6.4rem 1.6rem 2rem; /* right side clears the close button */
+  --nh-mf-header-height: 7.2rem;
+  box-sizing: border-box;
+  align-items: center;
+  min-height: var(--nh-mf-header-height);
+  padding: 1.2rem 6.4rem 1.2rem 2rem; /* right side clears the close button */
   border-bottom: 1px solid var(--nh-border);
   text-align: left;
   background: var(--nh-surface);
@@ -906,8 +917,10 @@
   font-size: 1.25rem;
 }
 
+/* Dawn's close target is 4.4rem with the 3.6rem disc centred in it, so this
+   puts the disc in the middle of the 7.2rem header, 1.8rem from the edge. */
 .mobile-facets__close {
-  top: 1rem;
+  top: calc((7.2rem - 4.4rem) / 2);
   right: 1.4rem;
 }
 
@@ -1104,19 +1117,73 @@
   border-bottom: 0;
 }
 
-/* Footer: Clear as an outline button beside the primary Apply. */
+/* Footer: the applied-filter chips in one row, then Remove all and Apply
+   side by side at exactly equal widths (flex: 1 1 0 shares the row evenly
+   whatever the two labels say). */
 .mobile-facets__footer {
-  gap: 1rem;
+  flex-direction: column;
+  gap: 1.2rem;
   padding: 1.4rem 2rem;
   border-top: 1px solid var(--nh-border);
+}
+
+.mobile-facets__footer > * {
+  width: 100%;
 }
 
 .mobile-facets__footer > * + * {
   margin-left: 0;
 }
 
+.mobile-facets__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.mobile-facets__actions > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .mobile-facets__clear-wrapper {
   align-self: stretch;
+}
+
+/* Applied filters in the drawer: one row that scrolls sideways, so a long
+   list never pushes the buttons up the screen; the right edge fades to hint
+   that there is more. Hidden when nothing is applied. */
+.nh-drawer-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  width: auto;
+  margin: 0 -2rem;
+  padding: 0 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent);
+}
+
+.nh-drawer-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.nh-drawer-chips:not(:has(facet-remove)) {
+  display: none;
+}
+
+/* Dawn hides a lone chip (on the page, the only child was "Remove all").
+   Here a single applied filter must still show. */
+.nh-drawer-chips facet-remove,
+.nh-drawer-chips facet-remove:only-child {
+  display: block;
+  flex-shrink: 0;
+}
+
+.facets-container .nh-drawer-chips .active-facets__button {
+  margin: 0;
+  white-space: nowrap;
 }
 
 /* Remove all and Apply are one matched pair of pills, the shape of the

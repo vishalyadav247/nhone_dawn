@@ -64,9 +64,25 @@
           <a href="{{ sub_collection.url }}" class="sub-collection-card__link">
             {% if sub_collection.metafields.custom.second_image != blank %}
               <div class="sub-collection-card__image">
+                {%- comment -%}
+                  Shown in a 110px box, so 110 / 220 / 330 covers 1x-3x screens.
+                  It used to fetch 600px for every tile. The width/height
+                  reserve the box (the CSS letterboxes the image inside it with
+                  object-fit: contain), so the row doesn't jump while images
+                  arrive.
+                {%- endcomment -%}
+                {%- assign sub_image = sub_collection.metafields.custom.second_image -%}
                 <img
-                  src="{{ sub_collection.metafields.custom.second_image | image_url: width: 600 }}"
-                  alt="sub_collection.title"
+                  srcset="
+                    {{ sub_image | image_url: width: 110 }} 110w,
+                    {{ sub_image | image_url: width: 220 }} 220w,
+                    {{ sub_image | image_url: width: 330 }} 330w
+                  "
+                  sizes="110px"
+                  src="{{ sub_image | image_url: width: 220 }}"
+                  alt="{{ sub_collection.title | escape }}"
+                  width="110"
+                  height="110"
                   loading="lazy"
                 >
               </div>

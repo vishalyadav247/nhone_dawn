@@ -21,8 +21,36 @@
       }
   }
 
+  /* The banner <img> sits in a <picture> (see the markup). The picture
+     generates no box, so the image lays out exactly as it did when it was a
+     direct child of .media. Dawn's `.media > img` sizing no longer matches
+     through the wrapper, so it is restated here. The chained selector outranks
+     Dawn's `.media > *:not(.zoom):not(...)`, which would otherwise make the
+     picture a block. */
+  .collection-hero__image-container.media.desk > picture {
+    display: contents;
+  }
+  .collection-hero__image-container.media.desk > picture > img {
+    display: block;
+    max-width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
   .mob{
     display:none;
+  }
+  /* The mobile banner carries its real pixel size (for a reserved aspect
+     ratio, so nothing jumps when it loads); this keeps it full width. */
+  .mob img{
+    display:block;
+    width:100%;
+    height:auto;
   }
   @media screen and (max-width:767px){
     .desk{
@@ -48,23 +76,66 @@
     </div>
 
     {%- if section.settings.show_collection_image and collection.image -%}
+      {%- comment -%}
+        The banner is usually the largest thing on the page (the LCP image),
+        so these two are built to download exactly one right-sized image:
+
+        - Each <picture> swaps in a 1x1 inline GIF at the breakpoint where its
+          container is hidden (.desk / .mob, 767px). An <img> inside a
+          display:none box is still downloaded, so without this phones fetched
+          the desktop banner as well as their own.
+        - The desktop srcset offers real sizes. It used to list only the
+          original upload, so every visitor downloaded the full-resolution
+          file whatever their screen.
+        - fetchpriority="high": fetched ahead of the product images below it.
+        - The mobile banner falls back to the desktop image when the
+          custom.collection_banner_mobile metafield is empty (it used to
+          render an <img> with an empty src).
+      {%- endcomment -%}
+      {%- liquid
+        assign nh_blank_gif = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+        assign mobile_banner = collection.metafields.custom.collection_banner_mobile.value | default: collection.image
+      -%}
       <div class="collection-hero__image-container media gradient desk">
-        <img
-          srcset="            {{ collection.image | image_url }} {{ collection.image.width }}w"
-          src="{{ collection.image | image_url: width: 750 }}"
-          sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 | divided_by: 2 }}px, (min-width: 750px) calc(50vw - 130px), calc(50vw - 55px)"
-          alt="{{ collection.image.alt | escape }}"
-          width="{{ collection.image.width }}"
-          height="{{ collection.image.height }}"
-        >
+        <picture>
+          <source media="(max-width: 767px)" srcset="{{ nh_blank_gif }}">
+          <img
+            srcset="
+              {%- if collection.image.width >= 750 -%}{{ collection.image | image_url: width: 750 }} 750w,{%- endif -%}
+              {%- if collection.image.width >= 1100 -%}{{ collection.image | image_url: width: 1100 }} 1100w,{%- endif -%}
+              {%- if collection.image.width >= 1500 -%}{{ collection.image | image_url: width: 1500 }} 1500w,{%- endif -%}
+              {%- if collection.image.width >= 1800 -%}{{ collection.image | image_url: width: 1800 }} 1800w,{%- endif -%}
+              {%- if collection.image.width >= 2200 -%}{{ collection.image | image_url: width: 2200 }} 2200w,{%- endif -%}
+              {%- if collection.image.width >= 2800 -%}{{ collection.image | image_url: width: 2800 }} 2800w,{%- endif -%}
+              {{ collection.image | image_url: width: 3000 }} {{ collection.image.width | at_most: 3000 }}w
+            "
+            src="{{ collection.image | image_url: width: 1500 }}"
+            sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width }}px, 100vw"
+            alt="{{ collection.image.alt | escape }}"
+            width="{{ collection.image.width }}"
+            height="{{ collection.image.height }}"
+            fetchpriority="high"
+          >
+        </picture>
       </div>
       <div class="mob">
-        <img
-          src="{{ collection.metafields.custom.collection_banner_mobile | image_url: width: 500 }}"
-          alt="{{ collection.image.alt | escape }}"
-          width="100%"
-          height="100%"
-        >
+        <picture>
+          <source media="(min-width: 768px)" srcset="{{ nh_blank_gif }}">
+          <img
+            srcset="
+              {%- if mobile_banner.width >= 375 -%}{{ mobile_banner | image_url: width: 375 }} 375w,{%- endif -%}
+              {%- if mobile_banner.width >= 550 -%}{{ mobile_banner | image_url: width: 550 }} 550w,{%- endif -%}
+              {%- if mobile_banner.width >= 750 -%}{{ mobile_banner | image_url: width: 750 }} 750w,{%- endif -%}
+              {{ mobile_banner | image_url: width: 1100 }} {{ mobile_banner.width | at_most: 1100 }}w
+            "
+            src="{{ mobile_banner | image_url: width: 750 }}"
+            sizes="100vw"
+            alt="{{ collection.image.alt | escape }}"
+            width="{{ mobile_banner.width }}"
+            height="{{ mobile_banner.height }}"
+            fetchpriority="high"
+          >
+        </picture>
       </div>
     {%- endif -%}
   </div>

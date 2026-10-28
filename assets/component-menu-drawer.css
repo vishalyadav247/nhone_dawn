@@ -275,12 +275,9 @@ header-drawer{
       }
     }
 
-    .list-social{
-      .svg-wrapper,svg{
-        width: 40px;
-        height: 40px;
-      }
-    }
+    /* Social icon sizing lives in "Social links" further down. This used to
+       force every icon to 40px, which with Dawn's padding made each one
+       about 62px wide. */
   }
 }
 
@@ -303,7 +300,10 @@ header-drawer {
      masthead, and one level-one row (1.6rem text + 1.3rem padding either
      side), so an open brand parks directly under the category above it. */
   --nh-drawer-width: 340px;
-  --nh-drawer-header-height: 5.6rem;
+  /* Same masthead as the mobile filter drawer (component-nh-facets.css,
+     .mobile-facets__header): 7.2rem tall with a 3.6rem round close button,
+     so the two drawers open onto the same top bar. */
+  --nh-drawer-header-height: 7.2rem;
   --nh-drawer-row-height: 4.9rem;
 
   .menu-drawer__menu-item {
@@ -452,12 +452,14 @@ header-drawer {
   text-decoration: none;
 }
 
+/* Sized for the 7.2rem masthead; the width cap leaves room for the close
+   button on a 320px phone. */
 .menu-drawer__logo-image {
   display: block;
   width: auto;
   height: auto;
-  max-height: 3.6rem;
-  max-width: 17rem;
+  max-height: 4.8rem;
+  max-width: 20rem;
 }
 
 .menu-drawer__logo-text {
@@ -468,15 +470,24 @@ header-drawer {
 
 /* Dawn's close control. It lives in the header summary outside the drawer, so
    it is positioned rather than moved — parked at the right of the masthead,
-   which is why the offset is measured from the drawer's own width. */
+   which is why the offset is measured from the drawer's own width.
+
+   Drawn as the filter drawer's close button: a 3.6rem soft grey disc with
+   the cross inside, centred in the masthead and 1.8rem in from the right
+   edge. The <svg> is itself the disc — its padding shrinks the drawing
+   inside the circle. */
 header-drawer .icon.icon-close {
+  --nh-close-size: 3.6rem;
   display: block;
   position: fixed;
-  top: 0;
-  left: calc(min(100vw, var(--nh-drawer-width, 340px)) - 4.6rem);
-  width: 2.2rem;
-  height: var(--nh-drawer-header-height);
-  padding: 0 0.4rem;
+  top: calc((var(--nh-drawer-header-height) - var(--nh-close-size)) / 2);
+  left: calc(min(100vw, var(--nh-drawer-width, 340px)) - 1.8rem - var(--nh-close-size));
+  box-sizing: border-box;
+  width: var(--nh-close-size);
+  height: var(--nh-close-size);
+  padding: 1.1rem;
+  border-radius: 50%;
+  background-color: #f4f4f5;
   z-index: 111;
   stroke: var(--nh-heading);
   color: var(--nh-heading);
@@ -591,6 +602,94 @@ header-drawer .menu-drawer__utility-links {
   .menu-drawer__header,
   header-drawer .menu-drawer__utility-links {
     background-color: rgb(var(--color-background));
+  }
+}
+
+/* --- Social links ---------------------------------------------------------
+   "Follow us" on the left, lined up with the menu text (3rem, like the rows
+   and the masthead), and the icons on the right in the same brand-tinted
+   discs as the menu icons: 4rem discs, 2rem glyphs, filling with the brand
+   colour (white glyph) on tap / hover. One colour for every network — this
+   used to be Facebook blue, Instagram pink and a black YouTube, from global
+   rules in style.css that are overridden here. Each link is a 4.4rem tap
+   target around its 4rem disc.
+
+   The footer rule is id-scoped to match the older `#menu-drawer
+   .menu-drawer__utility-links` block near the top of this file (which
+   right-aligned everything and zeroed the vertical padding); it comes later,
+   so it wins. */
+#menu-drawer .menu-drawer__utility-links {
+  justify-content: space-between;
+  gap: 1.2rem;
+  min-height: 6.8rem;
+  padding: 1rem 1.2rem 1rem 3rem;
+}
+
+.menu-drawer__social-label {
+  color: var(--nh-muted);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+header-drawer .menu-drawer__utility-links .list-social {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  margin: 0 0 0 auto;
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link {
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link .svg-wrapper {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.1);
+  color: var(--nh-brand);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link .icon {
+  width: 2rem;
+  height: 2rem;
+  color: inherit; /* beats the global Facebook / Instagram brand colours */
+  transform: none; /* Dawn scales the bare icon on hover; the disc moves instead */
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link:hover .svg-wrapper,
+header-drawer .menu-drawer__utility-links .list-social__link:active .svg-wrapper {
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link:active .svg-wrapper {
+  transform: scale(0.94);
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link:focus-visible {
+  outline: none;
+}
+
+header-drawer .menu-drawer__utility-links .list-social__link:focus-visible .svg-wrapper {
+  box-shadow: 0 0 0 0.3rem rgba(var(--nh-brand-rgb), 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header-drawer .menu-drawer__utility-links .list-social__link .svg-wrapper {
+    transition: none;
   }
 }
 
