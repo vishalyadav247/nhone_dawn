@@ -121,12 +121,18 @@
       <div class="list-collect-product-grid-wrapper">
         {% render 'sub-collection-list' %}
         <div
-          class="product-grid-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          class="product-grid-container"
           id="ProductGridContainer"
           {% if settings.animations_reveal_on_scroll %}
             data-cascade
           {% endif %}
         >
+          {%- comment -%}
+            No reveal-on-scroll on the grid itself: the "Reveal sections on
+            scroll" effect starts an element invisible and fades it in, which
+            held the whole grid back. Only cards below the first screen
+            animate now (see the grid items below).
+          {%- endcomment -%}
           {%- if collection.products.size == 0 -%}
             <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
               <div class="loading-overlay gradient"></div>
@@ -163,17 +169,32 @@
 
                 {%- assign all_products = in_stock_products | concat: out_of_stock_products -%}
 
+                {%- comment -%}
+                  First screen first. The first 8 cards (two rows on desktop,
+                  four on phones) render visible straight away; with "Reveal
+                  sections on scroll" on, every card used to start invisible
+                  and fade in 75ms after the one before, so the 8th finished
+                  ~1.2s after the page had already loaded. Cards from 9 on keep
+                  the reveal, which plays as they scroll into view.
+
+                  The first 4 card images load eagerly (the whole first row on
+                  desktop, two rows on phones); the rest stay lazy.
+                {%- endcomment -%}
                 {%- for product in all_products -%}
                   {% assign lazy_load = false %}
-                  {%- if forloop.index > 2 -%}
+                  {%- if forloop.index > 4 -%}
                     {%- assign lazy_load = true -%}
+                  {%- endif -%}
+                  {%- assign nh_reveal = false -%}
+                  {%- if settings.animations_reveal_on_scroll and forloop.index > 8 -%}
+                    {%- assign nh_reveal = true -%}
                   {%- endif -%}
 
                   <li
-                    class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                    {% if settings.animations_reveal_on_scroll %}
+                    class="grid__item{% if nh_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                    {% if nh_reveal %}
                       data-cascade
-                      style="--animation-order: {{ forloop.index }};"
+                      style="--animation-order: {{ forloop.index | minus: 8 }};"
                     {% endif %}
                   >
                     {% render 'card-product',

@@ -1,0 +1,122 @@
+{%- comment -%}
+  Cart add-ons: a small, sideways-scrolling row of products inside the cart
+  drawer, under the cart items, each with a one-tap Add.
+
+  WHERE THE PRODUCTS COME FROM
+  A metaobject, so the list is edited in Shopify admin, not in code:
+    Settings > Custom data > Metaobjects > "Cart add-ons"
+      type:   cart_add_ons
+      fields: heading  (Single line text)        e.g. "Add to your order"
+              products (Product, list of products)
+  The theme uses the FIRST ACTIVE entry of that type
+  (Content > Metaobjects > Cart add-ons). With no definition, no entry or no
+  products, nothing renders.
+
+  WHAT IS SHOWN
+  - Products already in the cart, and sold-out products, are skipped.
+  - At most 12 cards.
+  - A product with a single variant gets an "Add" button that adds it in
+    place (assets/cart-addons.js). A product with options gets "Choose", a
+    link to its product page, because the right variant can't be guessed.
+
+  Re-rendering: the drawer replaces its whole .drawer__inner after every
+  cart change (cart-drawer.js / cart.js), so this row is rebuilt each time
+  and an added product drops out of it on its own.
+
+  Styles: assets/component-cart-addons.css. Both it and cart-addons.js load
+  from layout/theme.liquid with the drawer: a <script> inside this snippet
+  would not run when the drawer is re-rendered via innerHTML.
+{%- endcomment -%}
+
+{%- liquid
+  assign addon_entry = metaobjects.cart_add_ons.values | first
+  assign addon_products = blank
+  if addon_entry != blank
+    assign addon_products = addon_entry.products.value
+  endif
+
+  # Product ids already in the cart, as ",id," so a lookup can't match part
+  # of a longer id.
+  assign in_cart_ids = ','
+  for item in cart.items
+    assign in_cart_ids = in_cart_ids | append: item.product_id | append: ','
+  endfor
+
+  assign addon_heading = 'Add to your order'
+  if addon_entry.heading.value != blank
+    assign addon_heading = addon_entry.heading.value
+  endif
+  assign addon_shown = 0
+-%}
+
+{%- capture addon_cards -%}
+  {%- for product in addon_products -%}
+    {%- liquid
+      if addon_shown >= 12
+        break
+      endif
+      unless product.available
+        continue
+      endunless
+      assign product_key = ',' | append: product.id | append: ','
+      if in_cart_ids contains product_key
+        continue
+      endif
+      assign addon_shown = addon_shown | plus: 1
+      assign variant = product.selected_or_first_available_variant
+      assign single_variant = false
+      if product.has_only_default_variant or product.variants.size == 1
+        assign single_variant = true
+      endif
+    -%}
+    <li class="cart-addon">
+      <a href="{{ product.url }}" class="cart-addon__media" tabindex="-1" aria-hidden="true">
+        {%- if product.featured_image -%}
+          <img
+            srcset="
+              {{ product.featured_image | image_url: width: 80 }} 80w,
+              {{ product.featured_image | image_url: width: 160 }} 160w,
+              {{ product.featured_image | image_url: width: 240 }} 240w
+            "
+            sizes="80px"
+            src="{{ product.featured_image | image_url: width: 160 }}"
+            alt=""
+            width="80"
+            height="80"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </a>
+      <a href="{{ product.url }}" class="cart-addon__title">{{ product.title | escape }}</a>
+      <div class="cart-addon__price">
+        <span>{{ variant.price | money }}</span>
+        {%- if variant.compare_at_price > variant.price -%}
+          <s>{{ variant.compare_at_price | money }}</s>
+        {%- endif -%}
+      </div>
+      {%- if single_variant -%}
+        <button
+          type="button"
+          class="cart-addon__add"
+          data-addon-variant="{{ variant.id }}"
+          aria-label="Add {{ product.title | escape }} to cart"
+        >
+          <span class="cart-addon__add-label">Add</span>
+          <span class="cart-addon__spinner" aria-hidden="true"></span>
+        </button>
+      {%- else -%}
+        <a href="{{ product.url }}" class="cart-addon__add cart-addon__add--choose">Choose</a>
+      {%- endif -%}
+    </li>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if addon_shown > 0 -%}
+  <cart-addons class="cart-addons">
+    <h3 class="cart-addons__heading">{{ addon_heading | escape }}</h3>
+    <ul class="cart-addons__track list-unstyled" role="list">
+      {{- addon_cards -}}
+    </ul>
+    <p class="cart-addons__error" role="alert" hidden></p>
+  </cart-addons>
+{%- endif -%}

@@ -1,0 +1,194 @@
+/* ==========================================================================
+   Cart add-ons (snippets/cart-addons.liquid)
+   A compact row of small product cards under the cart items in the drawer:
+   a native sideways scroll (swipe on phones, trackpad / shift-wheel on
+   desktop) that snaps card by card, with the right edge faded to show there
+   is more. No carousel library — it is a plain overflowing list.
+
+   Each card: a soft-grey image well, a two-line title, the price, and a
+   small outlined pill — "Add" (adds in place, assets/cart-addons.js) or
+   "Choose" (product with options; opens the product page).
+   ========================================================================== */
+.cart-addons {
+  display: block;
+  margin: 1.6rem 0 0.8rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--nh-border);
+}
+
+.cart-addons__heading {
+  margin: 0 0 1rem;
+  color: var(--nh-heading);
+  font-family: var(--font-body-family);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.cart-addons__track {
+  display: flex;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0 0 0.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 0;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.4rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 2.4rem), transparent);
+}
+
+.cart-addons__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Card ---------------------------------------------------------------- */
+.cart-addon {
+  display: flex;
+  flex: 0 0 11.2rem;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.8rem;
+  border: 1px solid var(--nh-border);
+  border-radius: 1.2rem;
+  background: var(--nh-surface);
+  scroll-snap-align: start;
+}
+
+.cart-addon__media {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 0.8rem;
+  background: #f4f4f5;
+  overflow: hidden;
+}
+
+.cart-addon__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply; /* white product backgrounds sit on the grey well */
+}
+
+.cart-addon__title {
+  display: -webkit-box;
+  min-height: 2.6em; /* two lines, so prices line up across cards */
+  overflow: hidden;
+  color: var(--nh-heading);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cart-addon__title:hover {
+  color: var(--nh-brand);
+}
+
+.cart-addon__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  color: var(--nh-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.cart-addon__price s {
+  color: var(--nh-muted);
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
+/* --- Add / Choose ---------------------------------------------------------- */
+.cart-addon__add {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.8rem;
+  margin-top: auto;
+  padding: 0 1rem;
+  border: 1px solid var(--nh-brand);
+  border-radius: 999px;
+  background: var(--nh-surface);
+  color: var(--nh-brand);
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.cart-addon__add:hover {
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+}
+
+.cart-addon__add:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+.cart-addon__add--choose {
+  border-color: var(--nh-btn-outline-border);
+  color: var(--nh-btn-outline-label);
+}
+
+.cart-addon__add--choose:hover {
+  border-color: var(--nh-brand);
+  background: var(--nh-surface);
+  color: var(--nh-brand);
+}
+
+/* Loading: the label gives way to a small spinner while the item is added. */
+.cart-addon__spinner {
+  display: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid rgba(var(--nh-brand-rgb), 0.3);
+  border-top-color: var(--nh-brand);
+  border-radius: 50%;
+  animation: cart-addon-spin 0.7s linear infinite;
+}
+
+.cart-addon__add.is-loading {
+  cursor: progress;
+}
+
+.cart-addon__add.is-loading .cart-addon__add-label {
+  visibility: hidden;
+}
+
+.cart-addon__add.is-loading .cart-addon__spinner {
+  position: absolute;
+  display: block;
+}
+
+@keyframes cart-addon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cart-addons__error {
+  margin: 0.8rem 0 0;
+  color: var(--nh-error);
+  font-size: 1.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-addon__spinner {
+    animation-duration: 1.6s;
+  }
+}

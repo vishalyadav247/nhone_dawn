@@ -1,3 +1,17 @@
+/* ==========================================================================
+   Pagination (snippets/pagination.liquid)
+   One row that never wraps: Prev, the page numbers, Next.
+
+   - Page numbers are rounded squares; the current page is filled with the
+     brand colour, the others turn a soft grey on hover, and "…" gaps are
+     plain muted dots.
+   - Prev / Next are outlined pills (the outline-button tokens), the border
+     and label turning brand on hover; greyed out and inert at either end.
+   - Phones (< 750px): only the first, current and last page show (the snippet
+     marks the rest .pagination__page--optional), and below 420px Prev / Next
+     shrink to arrows, so the row fits a 320px screen:
+     7 x 3.6rem + 6 x 0.4rem gaps = 27.6rem, inside 28.8rem of content width.
+   ========================================================================== */
 .pagination-wrapper {
   margin-top: 4rem;
 }
@@ -9,74 +23,125 @@
 }
 
 .pagination__list {
+  --nh-page-size: 3.6rem;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
 }
 
 .pagination__list > li {
-  flex: 1 0 4.4rem;
-  max-width: 4.4rem;
+  flex: 0 0 auto;
 }
 
-.pagination__list > li:not(:last-child) {
-  margin-right: 1rem;
-}
-
+/* --- Page numbers ---------------------------------------------------------- */
 .pagination__item {
-  color: rgb(var(--color-foreground));
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  height: 4.4rem;
-  width: 100%;
-  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--nh-page-size);
+  height: var(--nh-page-size);
+  padding: 0 0.6rem;
+  border-radius: 1rem;
+  color: var(--nh-heading);
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1;
   text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-a.pagination__item:hover::after {
-  height: 0.1rem;
+a.pagination__item:not(.pagination__item--current):hover {
+  background: #f4f4f5;
+  color: var(--nh-heading);
 }
 
-.pagination__item .icon-caret {
-  height: 0.6rem;
+.pagination__item--current {
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+  font-weight: 700;
+  box-shadow: 0 0.4rem 1rem rgba(var(--nh-brand-rgb), 0.3);
+  cursor: default;
 }
 
-.pagination__item--current::after {
-  height: 0.1rem;
+.pagination__item--gap {
+  min-width: 2.4rem;
+  padding: 0;
+  color: var(--nh-muted);
+  letter-spacing: 0.1em;
 }
 
-.pagination__item--current::after,
-.pagination__item:hover::after {
-  content: '';
-  display: block;
-  width: 2rem;
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: currentColor;
+/* --- Prev / Next ---------------------------------------------------------- */
+.pagination__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  height: var(--nh-page-size);
+  padding: 0 1.4rem;
+  border: 1px solid var(--nh-btn-outline-border);
+  border-radius: 999px;
+  background: var(--nh-surface);
+  color: var(--nh-btn-outline-label);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
-.pagination__item--next .icon {
-  margin-left: -0.2rem;
-  transform: rotate(90deg);
+.pagination__arrow svg {
+  flex-shrink: 0;
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
-.pagination__item--next:hover .icon {
-  transform: rotate(90deg) scale(1.07);
+a.pagination__arrow:hover {
+  border-color: var(--nh-btn-outline-border-hover);
+  color: var(--nh-brand);
 }
 
-.pagination__item--prev .icon {
-  margin-right: -0.2rem;
-  transform: rotate(-90deg);
+.pagination__arrow.is-disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-.pagination__item--prev:hover .icon {
-  transform: rotate(-90deg) scale(1.07);
+.pagination__item:focus-visible,
+.pagination__arrow:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
 }
 
-.pagination__item-arrow:hover::after {
-  display: none;
+/* --- Phones --------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .pagination__page--optional {
+    display: none;
+  }
+}
+
+/* Under 420px Prev / Next are round arrow buttons, the size of a page number;
+   their labels stay for screen readers via aria-label on the link. */
+@media screen and (max-width: 419px) {
+  .pagination__arrow {
+    width: var(--nh-page-size);
+    padding: 0;
+  }
+
+  .pagination__arrow-label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagination__item,
+  .pagination__arrow {
+    transition: none;
+  }
 }

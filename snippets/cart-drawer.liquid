@@ -445,6 +445,12 @@
                   </tbody>
                 </table>
               </div>
+              {%- comment -%}
+                Add-on products (list from the "Cart add-ons" metaobject).
+                Inside the scrolling area, so it scrolls with the items and
+                never squeezes the checkout footer.
+              {%- endcomment -%}
+              {%- render 'cart-addons' -%}
             {%- endif -%}
             <p id="CartDrawer-LiveRegionText" class="visually-hidden" role="status"></p>
             <p id="CartDrawer-LineItemStatus" class="visually-hidden" aria-hidden="true" role="status">

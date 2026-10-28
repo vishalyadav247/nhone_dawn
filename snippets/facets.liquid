@@ -100,7 +100,11 @@
   endif
 -%}
 
-<div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+{%- comment -%}
+  No reveal-on-scroll fade: the filter sidebar is on the first screen, and the
+  fade started it invisible.
+{%- endcomment -%}
+<div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}">
   {%- if filter_type == 'vertical' or filter_type == 'horizontal' -%}
     <facet-filters-form class="facets small-hide">
       <form
@@ -231,6 +235,23 @@
               {% liquid
                 assign total_active_values = total_active_values | plus: filter.active_values.size
                 assign presentation = filter.presentation | default: default_presentation
+
+                # A filter set to "Swatch" in Search & Discovery whose values
+                # carry no swatch colour or image (e.g. Car Brand) would render
+                # every value as Dawn's empty dotted circle. Show it as the
+                # standard checkbox list instead; real colour swatches are kept.
+                if presentation == 'swatch'
+                  assign nh_has_swatch = false
+                  for value in filter.values
+                    if value.swatch.color or value.swatch.image
+                      assign nh_has_swatch = true
+                      break
+                    endif
+                  endfor
+                  unless nh_has_swatch
+                    assign presentation = 'text'
+                  endunless
+                endif
 
                 if presentation == 'image'
                   assign show_more_number = 12
@@ -716,6 +737,22 @@
 
                   {% liquid
                     assign presentation = filter.presentation | default: default_presentation
+
+                    # Same as desktop: a "Swatch" filter with no swatch colours
+                    # or images is shown as the checkbox list.
+                    if presentation == 'swatch'
+                      assign nh_has_swatch = false
+                      for value in filter.values
+                        if value.swatch.color or value.swatch.image
+                          assign nh_has_swatch = true
+                          break
+                        endif
+                      endfor
+                      unless nh_has_swatch
+                        assign presentation = 'text'
+                      endunless
+                    endif
+
                     if presentation == 'image'
                       assign visual_layout_class = 'facets-layout facets-layout-grid facets-layout-grid--' | append: presentation
                     else

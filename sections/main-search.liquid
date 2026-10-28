@@ -65,7 +65,11 @@
 
 {% paginate search.results by 24 %}
   <div class="template-search{% unless search.performed and search.results_count > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
-    <div class="template-search__header page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+    {%- comment -%}
+      No reveal-on-scroll fade on the heading and search box: they are the
+      first thing on the page, and the fade started them invisible.
+    {%- endcomment -%}
+    <div class="template-search__header page-width">
       <h1 class="h2 center">
         {%- if search.performed -%}
           {{- 'templates.search.title' | t -}}
@@ -257,16 +261,29 @@
                 role="list"
               >
                 {%- assign skip_card_product_styles = false -%}
+                {%- comment -%}
+                  First screen first, as on collection pages
+                  (main-collection-product-grid.liquid): the first 8 results
+                  render visible straight away instead of starting invisible
+                  and fading in one by one; results from 9 on keep the
+                  "Reveal sections on scroll" effect as they scroll into view.
+                  The first 4 images load eagerly, the rest stay lazy.
+                {%- endcomment -%}
                 {%- for item in search.results -%}
                   {% assign lazy_load = false %}
-                  {%- if forloop.index > 2 -%}
+                  {%- if forloop.index > 4 -%}
                     {%- assign lazy_load = true -%}
+                  {%- endif -%}
+                  {%- assign nh_reveal = false -%}
+                  {%- if settings.animations_reveal_on_scroll and forloop.index > 8 -%}
+                    {%- assign nh_reveal = true -%}
                   {%- endif -%}
 
                   <li
-                    class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                    {% if settings.animations_reveal_on_scroll %}
+                    class="grid__item{% if nh_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                    {% if nh_reveal %}
                       data-cascade
+                      style="--animation-order: {{ forloop.index | minus: 8 }};"
                     {% endif %}
                   >
                     {%- case item.object_type -%}

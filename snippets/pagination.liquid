@@ -9,69 +9,117 @@
   Accepts:
   - paginate: {Object}
   - anchor: {String} (optional) This can be added so that on page reload it takes you to wherever you've placed your anchor tag.
+
+  NH ONE layout: one row that never wraps, even on a 320px phone.
+  - Previous and Next are always there (greyed out at either end), so the row
+    never shifts as you page through.
+  - Page numbers come from Shopify's own windowed list (paginate.parts: the
+    first page, a few around the current one, the last, with "…" gaps). On
+    phones only the first, current and last pages show, with the "…" between
+    them; a short run of 5 pages or fewer shows in full.
+  Styles: assets/component-pagination.css.
 {% endcomment %}
 
 {{ 'component-pagination.css' | asset_url | stylesheet_tag }}
 
 {%- if paginate.parts.size > 0 -%}
+  {%- liquid
+    assign nh_compact = true
+    if paginate.pages <= 5
+      assign nh_compact = false
+    endif
+    assign nh_last = paginate.pages
+  -%}
   <div class="pagination-wrapper">
     <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
       <ul class="pagination__list list-unstyled" role="list">
-        {%- if paginate.previous -%}
-          <li>
+        <li class="pagination__step">
+          {%- if paginate.previous -%}
             <a
               href="{{ paginate.previous.url }}{{ anchor }}"
-              class="pagination__item pagination__item--next pagination__item-arrow link motion-reduce"
+              class="pagination__arrow pagination__arrow--prev"
               aria-label="{{ 'general.pagination.previous' | t }}"
             >
-              <span class="svg-wrapper">
-                {{- 'icon-caret.svg' | inline_asset_content -}}
-              </span>
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+              <span class="pagination__arrow-label">Prev</span>
             </a>
-          </li>
-        {%- endif -%}
+          {%- else -%}
+            <span class="pagination__arrow pagination__arrow--prev is-disabled" aria-hidden="true">
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+              <span class="pagination__arrow-label">Prev</span>
+            </span>
+          {%- endif -%}
+        </li>
 
         {%- for part in paginate.parts -%}
-          <li>
+          {%- liquid
+            # On phones, keep the first, current and last page and the gaps;
+            # everything else in the window hides.
+            # A page that is the ONLY one between an end and the current page
+            # (page 2 while on 3, or the second-last while two from the end)
+            # stays: hiding it would leave "1 3" with no "…" to say a page
+            # is missing.
+            assign nh_optional = false
+            if nh_compact and part.is_link
+              assign nh_page = part.title | plus: 0
+              assign nh_current_minus = paginate.current_page | minus: 2
+              assign nh_current_plus = paginate.current_page | plus: 2
+              assign nh_fills_gap = false
+              if nh_page == 2 and nh_current_minus == 1
+                assign nh_fills_gap = true
+              elsif nh_current_plus == nh_last
+                assign nh_second_last = nh_last | minus: 1
+                if nh_page == nh_second_last
+                  assign nh_fills_gap = true
+                endif
+              endif
+              if nh_page != 1 and nh_page != nh_last and nh_fills_gap == false
+                assign nh_optional = true
+              endif
+            endif
+          -%}
+          <li class="pagination__page{% if nh_optional %} pagination__page--optional{% endif %}">
             {%- if part.is_link -%}
               <a
                 href="{{ part.url }}{{ anchor }}"
-                class="pagination__item link"
+                class="pagination__item"
+                aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+              >
+                {{- part.title -}}
+              </a>
+            {%- elsif part.title == paginate.current_page -%}
+              <a
+                role="link"
+                aria-disabled="true"
+                class="pagination__item pagination__item--current"
+                aria-current="page"
                 aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
               >
                 {{- part.title -}}
               </a>
             {%- else -%}
-              {%- if part.title == paginate.current_page -%}
-                <a
-                  role="link"
-                  aria-disabled="true"
-                  class="pagination__item pagination__item--current light"
-                  aria-current="page"
-                  aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
-                >
-                  {{- part.title -}}
-                </a>
-              {%- else -%}
-                <span class="pagination__item">{{ part.title }}</span>
-              {%- endif -%}
+              <span class="pagination__item pagination__item--gap" aria-hidden="true">…</span>
             {%- endif -%}
           </li>
         {%- endfor -%}
 
-        {%- if paginate.next -%}
-          <li>
+        <li class="pagination__step">
+          {%- if paginate.next -%}
             <a
               href="{{ paginate.next.url }}{{ anchor }}"
-              class="pagination__item pagination__item--prev pagination__item-arrow link motion-reduce"
+              class="pagination__arrow pagination__arrow--next"
               aria-label="{{ 'general.pagination.next' | t }}"
             >
-              <span class="svg-wrapper">
-                {{- 'icon-caret.svg' | inline_asset_content -}}
-              </span>
+              <span class="pagination__arrow-label">Next</span>
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
             </a>
-          </li>
-        {%- endif -%}
+          {%- else -%}
+            <span class="pagination__arrow pagination__arrow--next is-disabled" aria-hidden="true">
+              <span class="pagination__arrow-label">Next</span>
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
+          {%- endif -%}
+        </li>
       </ul>
     </nav>
   </div>
