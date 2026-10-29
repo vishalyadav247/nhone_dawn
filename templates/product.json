@@ -199,7 +199,7 @@
       "settings": {
         "title": "Add-ons for this product",
         "heading_size": "h2",
-        "source": "auto",
+        "source": "shared",
         "products_to_show": 12,
         "color_scheme": "",
         "image_ratio": "adapt",
