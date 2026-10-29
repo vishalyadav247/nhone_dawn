@@ -274,9 +274,25 @@ class FacetFiltersForm extends HTMLElement {
     ];
   }
 
+  // Only what the visitor actually chose goes into the URL. Dawn serialised
+  // every field, so ticking one brand produced
+  //   ?sort_by=best-selling&filter.v.price.gte=&filter.v.price.lte=&filter.p.vendor=Blaupunkt
+  // Empty fields (the price From / To boxes when no price is set) are
+  // dropped, and so is sort_by while it is the collection's default
+  // (data-default-sort on each Sort select). Same results, clean URL:
+  //   ?filter.p.vendor=Blaupunkt
   createSearchParams(form) {
     const formData = new FormData(form);
-    return new URLSearchParams(formData).toString();
+    const params = new URLSearchParams();
+    const sortSelect = form.querySelector('select[name="sort_by"]');
+    const defaultSort = sortSelect ? sortSelect.dataset.defaultSort : '';
+
+    for (const [key, value] of formData) {
+      if (value === '') continue;
+      if (key === 'sort_by' && defaultSort && value === defaultSort) continue;
+      params.append(key, value);
+    }
+    return params.toString();
   }
 
   onSubmitForm(searchParams, event) {
@@ -302,7 +318,9 @@ class FacetFiltersForm extends HTMLElement {
           forms.push(this.createSearchParams(form));
         }
       });
-      this.onSubmitForm(forms.join('&'), event);
+      // filter(Boolean): a form with nothing chosen gives '', which would
+      // otherwise leave a stray "&" in the URL ("?&filter...").
+      this.onSubmitForm(forms.filter(Boolean).join('&'), event);
     }
   }
 

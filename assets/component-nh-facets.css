@@ -43,6 +43,34 @@
   }
 }
 
+/* --- Sticky sidebar ------------------------------------------------------
+   Setting: "Keep filters in view while scrolling (desktop)" on the collection
+   and search grid sections (adds .facets-wrapper--sticky). The sidebar stays
+   on screen 1.6rem below the sticky header while the products scroll.
+
+   - --header-height is published by the sticky header (sections/header.liquid)
+     at its full height; with "reduce logo size" the header gets a little
+     shorter once scrolled, so the gap under it grows by that much.
+   - align-self: flex-start, because .facets-vertical is a flex row and a
+     stretched (full-height) child has nowhere to stick.
+   - A sidebar taller than the screen scrolls on its own, inside, instead of
+     running off the bottom; overscroll-behavior keeps that scroll from
+     carrying on into the page.
+   - html uses overflow-x: clip, not hidden (style.css, "No horizontal page
+     scroll"), which is what keeps position: sticky working here. */
+@media screen and (min-width: 750px) {
+  .facets-vertical .facets-wrapper--sticky {
+    --nh-sticky-top: calc(var(--header-height, 0px) + 1.6rem);
+    position: sticky;
+    top: var(--nh-sticky-top);
+    align-self: flex-start;
+    max-height: calc(100vh - var(--nh-sticky-top) - 1.6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+}
+
 /* --- Panel header: title, Remove all, applied chips ---------------------- */
 .facets-vertical .active-facets-vertical-filter {
   align-items: center;

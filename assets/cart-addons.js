@@ -19,11 +19,45 @@ if (!customElements.get('cart-addons')) {
       connectedCallback() {
         this.addEventListener('click', this.onClick);
         this.addEventListener('change', this.onVariantChange);
+
+        // Previous / next arrows (mouse and trackpad; CSS hides them on touch).
+        this.track = this.querySelector('.cart-addons__track');
+        this.nav = this.querySelector('.cart-addons__nav');
+        this.arrows = this.querySelectorAll('[data-addon-scroll]');
+        if (this.track && this.nav) {
+          this.track.addEventListener('scroll', this.updateArrows, { passive: true });
+          this.resizeObserver = new ResizeObserver(this.updateArrows);
+          this.resizeObserver.observe(this.track);
+          this.updateArrows();
+        }
       }
 
       disconnectedCallback() {
         this.removeEventListener('click', this.onClick);
         this.removeEventListener('change', this.onVariantChange);
+        if (this.track) this.track.removeEventListener('scroll', this.updateArrows);
+        if (this.resizeObserver) this.resizeObserver.disconnect();
+      }
+
+      // Arrows show only when the row overflows, and each is disabled at its
+      // end. (The drawer is hidden off-screen until opened; the
+      // ResizeObserver re-runs this once it has a real size.)
+      updateArrows = () => {
+        const { scrollLeft, scrollWidth, clientWidth } = this.track;
+        const overflows = scrollWidth > clientWidth + 2;
+        this.nav.hidden = !overflows;
+        if (!overflows) return;
+        this.arrows[0].disabled = scrollLeft <= 2;
+        this.arrows[1].disabled = scrollLeft + clientWidth >= scrollWidth - 2;
+      };
+
+      // One card (plus the gap) per click; the row's scroll-snap settles it.
+      scrollByCard(direction) {
+        const card = this.track.querySelector('.cart-addon');
+        const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+        const distance = card ? card.getBoundingClientRect().width + gap : this.track.clientWidth * 0.8;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.track.scrollBy({ left: direction * distance, behavior: reduceMotion ? 'auto' : 'smooth' });
       }
 
       // Products with options: point the card's button and price at the
@@ -46,6 +80,12 @@ if (!customElements.get('cart-addons')) {
       };
 
       onClick = (event) => {
+        const arrow = event.target.closest('[data-addon-scroll]');
+        if (arrow) {
+          this.scrollByCard(Number(arrow.dataset.addonScroll));
+          return;
+        }
+
         const button = event.target.closest('[data-addon-variant]');
         if (!button || button.disabled) return;
         this.add(button);

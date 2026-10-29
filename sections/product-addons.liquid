@@ -6,15 +6,18 @@
   same carousel. The list carries the `pdp-featured-collection` class, which
   assets/main.js turns into that Owl carousel (6 / 4 / 3 / 2 across).
 
-  WHERE THE PRODUCTS COME FROM (first one that has products wins)
-  1. This product's own list: product metafield custom.add_on_products
-     (Settings > Custom data > Products > Add definition:
-      name "Add-on products", namespace and key "custom.add_on_products",
-      type Product > List of products). Fill it on each product.
-  2. Otherwise the shared list used by the cart drawer: the first active
-     entry of the "Cart add-ons" metaobject (type cart_add_ons, field
-     `products`; see snippets/cart-addons.liquid).
-  The "Product list" setting can force one of the two.
+  WHERE THE PRODUCTS COME FROM (first one that has products wins; each
+  source can be switched off with the "Product list" setting)
+  1. "Pick products here": a product list chosen in the theme editor on this
+     section. Same add-ons on every product page.
+  2. This product's own list: a product metafield, key set in "Product
+     metafield" (default custom.add_on_products). Create it at Settings >
+     Custom data > Products > Add definition, type Product > List of
+     products, and fill it on each product.
+  3. The shared list: the first active entry of the metaobject type set in
+     "Metaobject type" (default cart_add_ons — the cart drawer's "Cart
+     add-ons", see snippets/cart-addons.liquid); its product list field must
+     have the key `products`.
 
   The product being viewed and sold-out products are skipped. With nothing
   to show, the section renders nothing (the theme editor shows a hint).
@@ -47,17 +50,37 @@
   assign addon_source = section.settings.source
   assign addon_products = blank
 
-  if addon_source != 'shared'
-    assign own_products = product.metafields.custom.add_on_products.value
-    if own_products != blank
-      assign addon_products = own_products
+  # 1. Picked in the theme editor.
+  if addon_source == 'auto' or addon_source == 'picked'
+    if section.settings.products != blank
+      assign addon_products = section.settings.products
     endif
   endif
 
-  if addon_products == blank and addon_source != 'product'
-    assign shared_entry = metaobjects.cart_add_ons.values | first
-    if shared_entry != blank
-      assign addon_products = shared_entry.products.value
+  # 2. This product's metafield, e.g. "custom.add_on_products".
+  if addon_products == blank
+    if addon_source == 'auto' or addon_source == 'product'
+      assign mf_key = section.settings.metafield_key | default: 'custom.add_on_products' | strip
+      assign mf_parts = mf_key | split: '.'
+      if mf_parts.size == 2
+        assign mf_namespace = mf_parts | first
+        assign mf_name = mf_parts | last
+        assign own_products = product.metafields[mf_namespace][mf_name].value
+        if own_products != blank
+          assign addon_products = own_products
+        endif
+      endif
+    endif
+  endif
+
+  # 3. The shared metaobject list, e.g. type "cart_add_ons", field "products".
+  if addon_products == blank
+    if addon_source == 'auto' or addon_source == 'shared'
+      assign mo_type = section.settings.metaobject_type | default: 'cart_add_ons' | strip
+      assign shared_entry = metaobjects[mo_type].values | first
+      if shared_entry != blank
+        assign addon_products = shared_entry.products.value
+      endif
     endif
   endif
 
@@ -121,8 +144,10 @@
 {%- elsif request.design_mode -%}
   <div class="page-width section-{{ section.id }}-padding">
     <p class="caption">
-      Product add-ons: nothing to show for this product. Fill its "Add-on products" metafield
-      (custom.add_on_products), or add products to the "Cart add-ons" metaobject entry.
+      Product add-ons: nothing to show for this product. Pick products in this section's settings, fill
+      this product's "{{ section.settings.metafield_key | default: 'custom.add_on_products' | escape }}" metafield,
+      or add products to the first entry of the "{{ section.settings.metaobject_type | default: 'cart_add_ons' | escape }}"
+      metaobject.
     </p>
   </div>
 {%- endif -%}
@@ -154,16 +179,42 @@
       "label": "t:sections.all.heading_size.label"
     },
     {
+      "type": "header",
+      "content": "Products"
+    },
+    {
       "type": "select",
       "id": "source",
       "label": "Product list",
       "options": [
-        { "value": "auto", "label": "This product's add-ons, else the shared list" },
-        { "value": "product", "label": "Only this product's add-ons" },
-        { "value": "shared", "label": "Only the shared list (Cart add-ons)" }
+        { "value": "auto", "label": "First available: picked, product metafield, metaobject" },
+        { "value": "picked", "label": "Only products picked below" },
+        { "value": "product", "label": "Only the product metafield" },
+        { "value": "shared", "label": "Only the metaobject list" }
       ],
       "default": "auto",
-      "info": "This product's add-ons: product metafield custom.add_on_products. Shared list: the \"Cart add-ons\" metaobject, also used in the cart drawer."
+      "info": "\"First available\" uses the products picked below if any; otherwise this product's metafield; otherwise the metaobject list."
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Pick products here",
+      "limit": 24,
+      "info": "Optional. Shown on every product page. Leave empty to use the metafield or metaobject below."
+    },
+    {
+      "type": "text",
+      "id": "metafield_key",
+      "label": "Product metafield",
+      "default": "custom.add_on_products",
+      "info": "namespace.key of a product metafield of type \"Product > List of products\" (Settings > Custom data > Products). Lets each product have its own add-ons."
+    },
+    {
+      "type": "text",
+      "id": "metaobject_type",
+      "label": "Metaobject type",
+      "default": "cart_add_ons",
+      "info": "Type of the metaobject holding the shared list; its first active entry is used, from a product list field with the key \"products\". cart_add_ons is the cart drawer's \"Cart add-ons\"."
     },
     {
       "type": "range",

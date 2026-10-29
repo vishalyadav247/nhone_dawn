@@ -21,8 +21,66 @@
   border-top: 1px solid var(--nh-border);
 }
 
+.cart-addons__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Previous / next: small soft-grey discs (the drawer close button's look),
+   brand on hover, faded at the end of the row. Mouse and trackpad only —
+   touch screens swipe, so the pair is hidden there. */
+.cart-addons__nav {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.cart-addons__nav[hidden] {
+  display: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cart-addons__nav {
+    display: none;
+  }
+}
+
+.cart-addons__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f4f4f5;
+  color: var(--nh-heading);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.cart-addons__arrow:hover:not(:disabled) {
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
+}
+
+.cart-addons__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cart-addons__arrow:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
 .cart-addons__heading {
-  margin: 0 0 0.8rem;
+  margin: 0;
   color: var(--nh-heading);
   font-family: var(--font-body-family);
   font-size: 1.4rem;

@@ -165,6 +165,7 @@
                   {%- assign sort_by = search.sort_by | default: search.default_sort_by -%}
                   <select
                     name="sort_by"
+                    data-default-sort="{{ search.default_sort_by | escape }}"
                     class="facet-filters__sort select__select caption-large"
                     id="SortBy"
                     aria-describedby="a11y-refresh-page-message"
@@ -216,7 +217,7 @@
           {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
             <aside
               aria-labelledby="verticalTitle"
-              class="facets-wrapper{% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+              class="facets-wrapper{% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}{% if section.settings.filter_type == 'vertical' and section.settings.sticky_filters %} facets-wrapper--sticky{% endif %}"
               id="main-search-filters"
               data-id="{{ section.id }}"
             >
@@ -480,6 +481,13 @@
       "default": "horizontal",
       "label": "t:sections.main-collection-product-grid.settings.filter_type.label",
       "info": "t:sections.main-collection-product-grid.settings.filter_type.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_filters",
+      "default": true,
+      "label": "Keep filters in view while scrolling (desktop)",
+      "info": "With the vertical filter layout, the filter sidebar stays on screen below the header as the products scroll. A sidebar taller than the screen scrolls on its own."
     },
     {
       "type": "checkbox",
