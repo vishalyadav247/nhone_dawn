@@ -15,9 +15,10 @@
   WHAT IS SHOWN
   - Products already in the cart, and sold-out products, are skipped.
   - At most 12 cards.
-  - A product with a single variant gets an "Add" button that adds it in
-    place (assets/cart-addons.js). A product with options gets "Choose", a
-    link to its product page, because the right variant can't be guessed.
+  - Every card has an "Add to cart" button that adds in place
+    (assets/cart-addons.js). A product with options also gets a small
+    dropdown of its variants above the button; the first available one is
+    preselected and the price follows the choice.
 
   Re-rendering: the drawer replaces its whole .drawer__inner after every
   cart change (cart-drawer.js / cart.js), so this row is rebuilt each time
@@ -89,24 +90,46 @@
       </a>
       <a href="{{ product.url }}" class="cart-addon__title">{{ product.title | escape }}</a>
       <div class="cart-addon__price">
-        <span>{{ variant.price | money }}</span>
-        {%- if variant.compare_at_price > variant.price -%}
-          <s>{{ variant.compare_at_price | money }}</s>
-        {%- endif -%}
+        <span data-addon-price>{{ variant.price | money }}</span>
+        <s data-addon-compare{% unless variant.compare_at_price > variant.price %} hidden{% endunless %}>
+          {{- variant.compare_at_price | money -}}
+        </s>
       </div>
-      {%- if single_variant -%}
-        <button
-          type="button"
-          class="cart-addon__add"
-          data-addon-variant="{{ variant.id }}"
-          aria-label="Add {{ product.title | escape }} to cart"
-        >
-          <span class="cart-addon__add-label">Add</span>
-          <span class="cart-addon__spinner" aria-hidden="true"></span>
-        </button>
-      {%- else -%}
-        <a href="{{ product.url }}" class="cart-addon__add cart-addon__add--choose">Choose</a>
-      {%- endif -%}
+      <div class="cart-addon__actions">
+      {%- unless single_variant -%}
+        {%- comment -%}
+          Products with options pick one here; cart-addons.js points the
+          button and the price at the chosen variant. Sold-out options are
+          listed but disabled.
+        {%- endcomment -%}
+        <select class="cart-addon__variant" aria-label="{{ product.title | escape }}: choose an option">
+          {%- for v in product.variants -%}
+            <option
+              value="{{ v.id }}"
+              data-price="{{ v.price | money | strip_html | escape }}"
+              data-compare="{% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | strip_html | escape }}{% endif %}"
+              {% if v.id == variant.id %}
+                selected
+              {% endif %}
+              {% unless v.available %}
+                disabled
+              {% endunless %}
+            >
+              {{- v.title | escape -}}
+            </option>
+          {%- endfor -%}
+        </select>
+      {%- endunless -%}
+      <button
+        type="button"
+        class="cart-addon__add"
+        data-addon-variant="{{ variant.id }}"
+        aria-label="Add {{ product.title | escape }} to cart"
+      >
+        <span class="cart-addon__add-label">Add to cart</span>
+        <span class="cart-addon__spinner" aria-hidden="true"></span>
+      </button>
+      </div>
     </li>
   {%- endfor -%}
 {%- endcapture -%}

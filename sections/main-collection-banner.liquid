@@ -62,7 +62,19 @@
   }
 {%- endstyle -%}
 {% render 'breadcrumb', emit_jsonld: false %}
-<div class="collection-hero{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
+{%- liquid
+  # A collection can have a mobile banner (custom.collection_banner_mobile)
+  # without a main image; the banner area used to require the main image, so
+  # such a collection showed no banner at all on phones.
+  assign mobile_banner_own = collection.metafields.custom.collection_banner_mobile.value
+  assign nh_has_banner = false
+  if section.settings.show_collection_image
+    if collection.image or mobile_banner_own
+      assign nh_has_banner = true
+    endif
+  endif
+-%}
+<div class="collection-hero{% if nh_has_banner %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
   {%- comment -%}
     No reveal-on-scroll fade here: the banner is the largest thing on the
     first screen, and the fade started it invisible.
@@ -79,7 +91,7 @@
       {%- endif -%}
     </div>
 
-    {%- if section.settings.show_collection_image and collection.image -%}
+    {%- if nh_has_banner -%}
       {%- comment -%}
         The banner is usually the largest thing on the page (the LCP image),
         so these two are built to download exactly one right-sized image:
@@ -98,8 +110,10 @@
       {%- endcomment -%}
       {%- liquid
         assign nh_blank_gif = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
-        assign mobile_banner = collection.metafields.custom.collection_banner_mobile.value | default: collection.image
+        assign mobile_banner = mobile_banner_own | default: collection.image
+        assign banner_alt = collection.image.alt | default: collection.title
       -%}
+      {%- if collection.image -%}
       <div class="collection-hero__image-container media gradient desk">
         <picture>
           <source media="(max-width: 767px)" srcset="{{ nh_blank_gif }}">
@@ -115,13 +129,14 @@
             "
             src="{{ collection.image | image_url: width: 1500 }}"
             sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width }}px, 100vw"
-            alt="{{ collection.image.alt | escape }}"
+            alt="{{ banner_alt | escape }}"
             width="{{ collection.image.width }}"
             height="{{ collection.image.height }}"
             fetchpriority="high"
           >
         </picture>
       </div>
+      {%- endif -%}
       <div class="mob">
         <picture>
           <source media="(min-width: 768px)" srcset="{{ nh_blank_gif }}">
@@ -134,7 +149,7 @@
             "
             src="{{ mobile_banner | image_url: width: 750 }}"
             sizes="100vw"
-            alt="{{ collection.image.alt | escape }}"
+            alt="{{ banner_alt | escape }}"
             width="{{ mobile_banner.width }}"
             height="{{ mobile_banner.height }}"
             fetchpriority="high"

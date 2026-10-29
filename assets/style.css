@@ -1745,7 +1745,11 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   opacity:0;
 }
 
-@media screen and (min-width:768px){
+/* 750px, not 768px: Dawn shows the desktop filter sidebar from 750px, so
+   between 750 and 767 it used to sit at its natural width beside a 100%-wide
+   grid and the page scrolled sideways. Same breakpoint as the grid's 75%
+   below. */
+@media screen and (min-width:750px){
 
   .facets-vertical{
     .facets-wrapper{
@@ -1838,10 +1842,14 @@ predictive-search:not([loading]) .predictive-search__loading-state{
 .price .price-item{
   margin-right:2px !important;
 }
-@media screen and (max-width:767px){
+/* Full width only where the sidebar is gone (below 750px, Dawn's breakpoint),
+   so 750-767 keeps the 25% sidebar + 75% grid split. */
+@media screen and (max-width:749px){
   .list-collect-product-grid-wrapper{
     width:100%;
   }
+}
+@media screen and (max-width:767px){
   .product__title{
     h1{
       font-size:1.8rem;
@@ -1867,10 +1875,15 @@ predictive-search:not([loading]) .predictive-search__loading-state{
   }
 }
 
-@media screen and (min-width: 768px) {
+/* The grid fills its 75% wrapper (.list-collect-product-grid-wrapper) from
+   750px, the sidebar's breakpoint; without this, 750-767 got 75% of 75%. */
+@media screen and (min-width: 750px) {
   .facets-vertical .product-grid-container {
       width: 100% !important;
   }
+}
+
+@media screen and (min-width: 768px) {
   .product__info-wrapper .product__info-container{
     .product__title{
       h1{
@@ -2632,6 +2645,43 @@ background-color: transparent !important;
     padding-left: 2rem;
     padding-right: 2rem;
   }
+}
+
+/* --- Drawer header icon ----------------------------------------------------
+   The icon at the left of a drawer's title: a line glyph in a brand-tinted
+   disc, the same treatment as the desktop filter panel's title icon. Used by
+   the mobile filter drawer (snippets/facets.liquid) and the cart drawer
+   (snippets/cart-drawer.liquid). It lives here, not in either drawer's own
+   stylesheet, because it is shared and style.css loads on every page. */
+.nh-drawer-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background: rgba(var(--nh-brand-rgb), 0.12);
+  color: var(--nh-brand);
+}
+
+.nh-drawer-icon svg {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+/* Filter drawer: the disc sits left of the title / product-count block. */
+.mobile-facets__header .nh-drawer-icon {
+  margin-right: 1.2rem;
+}
+
+/* Cart drawer: the disc sits inside the title, so the heading stays one
+   element for screen readers. Dawn gives the heading a 1rem bottom margin
+   that pushes it off-centre against the close button; it is dropped here. */
+.drawer__heading.nh-drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0;
 }
 
 /* --- Mobile bottom tab bar -------------------------------------------------

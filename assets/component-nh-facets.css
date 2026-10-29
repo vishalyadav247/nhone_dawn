@@ -107,7 +107,10 @@
 
   /* The chips sit in a row under the title; the last one leaves a little air
      before the first group's hairline. */
-  .facets-vertical .active-facets facet-remove:last-of-type {
+  /* `>`: only the chips. A plain descendant selector also matched "Remove
+     all" (the last facet-remove in the title row) and lifted it about 6px
+     off the title's centre line. */
+  .facets-vertical .active-facets > facet-remove:last-of-type {
     margin-bottom: 1.2rem;
   }
 }
@@ -830,6 +833,15 @@
     pointer-events: none;
   }
 
+  /* The <summary> is what takes keyboard focus, so it is the one hidden:
+     `visibility` flips only after the slide-out has finished, and the
+     tucked-away button drops out of the Tab order. Coming back it is
+     visible at once (the plain state has no transition on it). */
+  .facets-vertical .mobile-facets__open-wrapper.nh-fab-away {
+    visibility: hidden;
+    transition: visibility 0s linear 0.35s;
+  }
+
   .facets-vertical .mobile-facets__open > * + * {
     margin-left: 0;
   }
@@ -949,6 +961,11 @@
    row directly under the drawer header without measuring anything. */
 .mobile-facets__inner {
   interpolate-size: allow-keywords; /* lets a group animate to auto height */
+  /* Same width as the cart drawer (component-cart-drawer.css, .drawer__inner):
+     40rem, leaving a 3rem strip of the page visible on narrow phones. Dawn's
+     own was calc(100% - 5rem), capped at 37.5rem. */
+  width: 40rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .mobile-facets__main {

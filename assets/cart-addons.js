@@ -18,11 +18,32 @@ if (!customElements.get('cart-addons')) {
     class CartAddons extends HTMLElement {
       connectedCallback() {
         this.addEventListener('click', this.onClick);
+        this.addEventListener('change', this.onVariantChange);
       }
 
       disconnectedCallback() {
         this.removeEventListener('click', this.onClick);
+        this.removeEventListener('change', this.onVariantChange);
       }
+
+      // Products with options: point the card's button and price at the
+      // variant picked in its dropdown.
+      onVariantChange = (event) => {
+        const select = event.target.closest('.cart-addon__variant');
+        if (!select) return;
+        const card = select.closest('.cart-addon');
+        const option = select.selectedOptions[0];
+        const button = card.querySelector('[data-addon-variant]');
+        const price = card.querySelector('[data-addon-price]');
+        const compare = card.querySelector('[data-addon-compare]');
+
+        if (button) button.dataset.addonVariant = select.value;
+        if (price && option.dataset.price) price.textContent = option.dataset.price;
+        if (compare) {
+          compare.textContent = option.dataset.compare || '';
+          compare.hidden = !option.dataset.compare;
+        }
+      };
 
       onClick = (event) => {
         const button = event.target.closest('[data-addon-variant]');

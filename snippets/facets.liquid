@@ -43,20 +43,25 @@
     Model" filter only lists models that belong to it. Shopify's own values
     would include every model a product here also fits, so a seat cover that
     fits a Honda City and a Hyundai Creta would put "Creta" on the Honda page.
-    The brand's models are read from each product's custom.car_model list
-    (car_model metaobjects with a `brand` reference and a `model_name`),
-    keeping those whose brand is the "Car Brand" filter value whose label
-    matches this collection's title.
+    Every car model is a metaobject with a `brand` reference and a
+    `model_name`. The brand is the "Car Brand" filter value whose label
+    matches this collection's title; the brand's models are collected from:
+      1. the Car Model filter's own values: each value is looked up as a
+         metaobject by its handle (the handleized label) and kept when its
+         brand is this brand. The filter's values do not depend on what is
+         ticked, so the list no longer collapses to one model after a
+         selection (it used to be built only from the products in the grid,
+         which the selection itself narrows);
+      2. the car_model list on each product on this page, which catches a
+         model whose handle doesn't match its label;
+      3. and a ticked value always stays listed (see the value loops).
+    Names are compared lower-cased and trimmed, so "City" and "city " match.
   - car-model template: both "Car Brand" and "Car Model" are hidden — the
     page is already one model.
   - Every other template shows both filters as Shopify returns them.
 
   Any filter group left with no values to show is not rendered at all (see
   nh_visible_count in the loops below).
-
-  Limitation: collection.products is the CURRENT PAGE of results inside
-  paginate, so a model whose products all sit on page 2+ is not listed on
-  page 1.
 {%- endcomment -%}
 {%- liquid
   assign nh_scope_models = false
@@ -64,13 +69,14 @@
 
   if template.suffix == 'car-brand'
     assign nh_scope_models = true
-    assign current_brand_title = collection.title | strip
+    assign current_brand_title = collection.title | strip | downcase
     assign brand_gid = ''
 
     for filter in results.filters
       if filter.label == 'Car Brand'
         for value in filter.values
-          if value.label == current_brand_title
+          assign brand_label = value.label | strip | downcase
+          if brand_label == current_brand_title
             assign brand_gid = value.value | strip | remove: '"'
           endif
         endfor
@@ -78,12 +84,18 @@
     endfor
 
     if brand_gid != ''
+      # 2. Models on this page's products. Also tells us the metaobject
+      #    type that car models use, for the lookups below.
+      assign car_model_type = 'car_model'
       for product in collection.products
         assign models = product.metafields.custom.car_model.value
         for model in models
+          if model.system.type != blank
+            assign car_model_type = model.system.type
+          endif
           assign model_brand_norm = model.brand | strip | remove: '"'
           if model_brand_norm == brand_gid
-            assign product_model = model.model_name | strip
+            assign product_model = model.model_name | strip | downcase
             if product_model != blank
               unless brand_models contains product_model
                 # Split on a delimiter that never occurs to get a one-item
@@ -95,7 +107,27 @@
           endif
         endfor
       endfor
-      assign brand_models = brand_models | sort
+
+      # 1. The Car Model filter's values, each looked up by handle.
+      for filter in results.filters
+        if filter.label == 'Car Model'
+          for value in filter.values
+            assign model_key = value.label | strip | downcase
+            if brand_models contains model_key
+              continue
+            endif
+            assign model_handle = value.label | handleize
+            assign model_entry = metaobjects[car_model_type][model_handle]
+            if model_entry != blank
+              assign entry_brand = model_entry.brand | strip | remove: '"'
+              if entry_brand == brand_gid
+                assign one_model = model_key | split: '~~nh~~'
+                assign brand_models = brand_models | concat: one_model
+              endif
+            endif
+          endfor
+        endif
+      endfor
     endif
   endif
 -%}
@@ -211,8 +243,8 @@
                   assign nh_visible_count = 0
                   for value in filter.values
                     if nh_scope_models and filter.label == 'Car Model'
-                      assign model_name = value.label | strip
-                      unless brand_models contains model_name
+                      assign model_name = value.label | strip | downcase
+                      unless brand_models contains model_name or value.active
                         continue
                       endunless
                     endif
@@ -339,9 +371,9 @@
                           {%- for value in sorted_values -%}
                             {% comment %} On brand pages, only that brand's models (see top of file) {% endcomment %}
                             {% if nh_scope_models and filter.label == 'Car Model' %}
-                              {% assign model_name = value.label | strip %}
+                              {% assign model_name = value.label | strip | downcase %}
 
-                              {% unless brand_models contains model_name %}
+                              {% unless brand_models contains model_name or value.active %}
                                 {% continue %}
                               {% endunless %}
                             {% endif %}
@@ -665,6 +697,18 @@
         <form id="FacetFiltersFormMobile" class="mobile-facets">
           <div class="mobile-facets__inner gradient">
             <div class="mobile-facets__header">
+              {%- comment -%}
+                Header icon, left of the title: the floating Filter button's
+                "sliders" glyph in a brand disc. Shared style: .nh-drawer-icon
+                in assets/style.css (the cart drawer header uses it too).
+              {%- endcomment -%}
+              <span class="nh-drawer-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" focusable="false">
+                  <path d="M4 7h8.5M17.5 7H20M4 17h2.5M11.5 17H20"/>
+                  <circle cx="15" cy="7" r="2.5"/>
+                  <circle cx="9" cy="17" r="2.5"/>
+                </svg>
+              </span>
               <div class="mobile-facets__header-inner">
                 <h2 class="mobile-facets__heading medium-hide large-up-hide">
                   {%- if enable_filtering and enable_sorting -%}
@@ -722,8 +766,8 @@
                       assign nh_visible_count = 0
                       for value in filter.values
                         if nh_scope_models and filter.label == 'Car Model'
-                          assign model_name = value.label | strip
-                          unless brand_models contains model_name
+                          assign model_name = value.label | strip | downcase
+                          unless brand_models contains model_name or value.active
                             continue
                           endunless
                         endif
@@ -811,9 +855,9 @@
                             {%- for value in sorted_values -%}
                               {% comment %} On brand pages, only that brand's models (see top of file) {% endcomment %}
                               {% if nh_scope_models and filter.label == 'Car Model' %}
-                                {% assign model_name = value.label | strip %}
+                                {% assign model_name = value.label | strip | downcase %}
 
-                                {% unless brand_models contains model_name %}
+                                {% unless brand_models contains model_name or value.active %}
                                   {% continue %}
                                 {% endunless %}
                               {% endif %}
@@ -836,7 +880,7 @@
                                 </span>
                                 <span class="visually-hidden">
                                   {{- value.label | escape }} (
-                                  {%- if value.count == '1' -%}
+                                  {%- if value.count == 1 -%}
                                     {{- 'products.facets.product_count_simple.one' | t: count: value.count -}}
                                   {%- else -%}
                                     {{- 'products.facets.product_count_simple.other' | t: count: value.count -}}

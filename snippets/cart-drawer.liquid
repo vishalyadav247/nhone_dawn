@@ -62,7 +62,20 @@
         </div>
       {%- endif -%}
       <div class="drawer__header">
-        <h2 class="drawer__heading">{{ 'sections.cart.title' | t }}</h2>
+        {%- comment -%}
+          Header icon, left of the title: a line-drawn bag in a brand disc,
+          the same treatment as the mobile filter drawer's header
+          (.nh-drawer-icon in assets/style.css).
+        {%- endcomment -%}
+        <h2 class="drawer__heading nh-drawer-title">
+          <span class="nh-drawer-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+              <path d="M5.5 8h13l-1.1 11.2a2 2 0 0 1-2 1.8H8.6a2 2 0 0 1-2-1.8z"/>
+              <path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>
+            </svg>
+          </span>
+          {{- 'sections.cart.title' | t -}}
+        </h2>
         <button
           class="drawer__close"
           type="button"

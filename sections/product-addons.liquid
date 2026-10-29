@@ -1,0 +1,241 @@
+{%- comment -%}
+  Product add-ons — a product-page row of add-on products, built to look and
+  behave exactly like the "featured collection" and "related products" rows
+  on the same page: the same heading, the same product cards
+  (snippets/card-product.liquid, with GoKwik Buy Now and ratings) and the
+  same carousel. The list carries the `pdp-featured-collection` class, which
+  assets/main.js turns into that Owl carousel (6 / 4 / 3 / 2 across).
+
+  WHERE THE PRODUCTS COME FROM (first one that has products wins)
+  1. This product's own list: product metafield custom.add_on_products
+     (Settings > Custom data > Products > Add definition:
+      name "Add-on products", namespace and key "custom.add_on_products",
+      type Product > List of products). Fill it on each product.
+  2. Otherwise the shared list used by the cart drawer: the first active
+     entry of the "Cart add-ons" metaobject (type cart_add_ons, field
+     `products`; see snippets/cart-addons.liquid).
+  The "Product list" setting can force one of the two.
+
+  The product being viewed and sold-out products are skipped. With nothing
+  to show, the section renders nothing (the theme editor shows a hint).
+{%- endcomment -%}
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  .product-addons slider-component ul {
+    padding: 0;
+    list-style: none;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign addon_source = section.settings.source
+  assign addon_products = blank
+
+  if addon_source != 'shared'
+    assign own_products = product.metafields.custom.add_on_products.value
+    if own_products != blank
+      assign addon_products = own_products
+    endif
+  endif
+
+  if addon_products == blank and addon_source != 'product'
+    assign shared_entry = metaobjects.cart_add_ons.values | first
+    if shared_entry != blank
+      assign addon_products = shared_entry.products.value
+    endif
+  endif
+
+  assign addon_count = 0
+  for p in addon_products
+    if p.id != product.id and p.available
+      assign addon_count = addon_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if addon_count > 0 -%}
+  <div class="product-addons color-{{ section.settings.color_scheme }} isolate gradient">
+    <div class="section-{{ section.id }}-padding collection--full-width" id="product-addons-{{ section.id }}" data-id="{{ section.id }}">
+      {%- if section.settings.title != blank -%}
+        <div class="collection__title title-wrapper title-wrapper--no-top-margin page-width collection__title--desktop-slider">
+          <h2 class="section-heading inline-richtext {{ section.settings.heading_size }}">
+            {{ section.settings.title }}
+          </h2>
+        </div>
+      {%- endif -%}
+
+      <slider-component class="page-width slider-mobile-gutter slider-component-full-width slider-component-desktop">
+        <ul
+          id="Slider-{{ section.id }}"
+          data-id="{{ section.id }}"
+          class="pdp-featured-collection owl-carousel owl-theme"
+          aria-label="{{ 'general.slider.name' | t }}"
+        >
+          {%- assign skip_card_product_styles = false -%}
+          {%- assign shown = 0 -%}
+          {%- for addon in addon_products -%}
+            {%- liquid
+              if shown >= section.settings.products_to_show
+                break
+              endif
+              if addon.id == product.id or addon.available == false
+                continue
+              endif
+              assign shown = shown | plus: 1
+            -%}
+            <li id="Slide-{{ section.id }}-{{ shown }}" class="item">
+              {% render 'card-product',
+                card_product: addon,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: 'default',
+                show_secondary_image: section.settings.show_secondary_image,
+                show_vendor: false,
+                show_rating: section.settings.show_rating,
+                skip_styles: skip_card_product_styles,
+                section_id: section.id,
+                quick_add: 'none'
+              %}
+            </li>
+            {%- assign skip_card_product_styles = true -%}
+          {%- endfor -%}
+        </ul>
+      </slider-component>
+    </div>
+  </div>
+{%- elsif request.design_mode -%}
+  <div class="page-width section-{{ section.id }}-padding">
+    <p class="caption">
+      Product add-ons: nothing to show for this product. Fill its "Add-on products" metafield
+      (custom.add_on_products), or add products to the "Cart add-ons" metaobject entry.
+    </p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product add-ons",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "Add-ons for this product",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "t:sections.all.heading_size.options__1.label" },
+        { "value": "h1", "label": "t:sections.all.heading_size.options__2.label" },
+        { "value": "h0", "label": "t:sections.all.heading_size.options__3.label" }
+      ],
+      "default": "h2",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Product list",
+      "options": [
+        { "value": "auto", "label": "This product's add-ons, else the shared list" },
+        { "value": "product", "label": "Only this product's add-ons" },
+        { "value": "shared", "label": "Only the shared list (Cart add-ons)" }
+      ],
+      "default": "auto",
+      "info": "This product's add-ons: product metafield custom.add_on_products. Shared list: the \"Cart add-ons\" metaobject, also used in the cart drawer."
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 12,
+      "label": "Maximum products to show"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Product card"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        { "value": "adapt", "label": "t:sections.featured-collection.settings.image_ratio.options__1.label" },
+        { "value": "portrait", "label": "t:sections.featured-collection.settings.image_ratio.options__2.label" },
+        { "value": "square", "label": "t:sections.featured-collection.settings.image_ratio.options__3.label" }
+      ],
+      "default": "adapt",
+      "label": "t:sections.featured-collection.settings.image_ratio.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.show_secondary_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": true,
+      "label": "t:sections.featured-collection.settings.show_rating.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product add-ons"
+    }
+  ]
+}
+{% endschema %}

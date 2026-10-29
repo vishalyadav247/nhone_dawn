@@ -194,8 +194,11 @@ cart-drawer-items {
     overflow: visible;
   }
 
+  /* Was `overflow: scroll`, which forces scrollbars on BOTH axes even when
+     nothing overflows. Vertical scrolling only, as needed. */
   .drawer__inner {
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
@@ -404,4 +407,97 @@ cart-drawer-items::-webkit-scrollbar-track-piece {
   .cart-drawer .cart-item__error {
     margin-left: 0;
   }
+}
+
+/* ==========================================================================
+   NH ONE: same frame as the mobile filter drawer and the mobile menu
+   Same 7.2rem header with a hairline under it, the same 3.6rem soft grey
+   round close button in the same spot (centred, 1.8rem from the right edge),
+   the same 2rem side padding, white ground and hairline dividers. See
+   .mobile-facets__header (component-nh-facets.css) and .menu-drawer__header
+   (component-menu-drawer.css).
+   ========================================================================== */
+.drawer__inner {
+  padding: 0 2rem;
+  border: 0;
+  background-color: var(--nh-surface);
+}
+
+.drawer__header {
+  box-sizing: border-box;
+  min-height: 7.2rem;
+  margin: 0 -2rem;
+  padding: 0 6.4rem 0 2rem; /* right side clears the close button */
+  border-bottom: 1px solid var(--nh-border);
+}
+
+.drawer__heading.nh-drawer-title {
+  color: var(--nh-heading);
+  font-family: var(--font-body-family);
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.drawer__close {
+  top: 50%;
+  right: 1.8rem;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  min-width: 3.6rem;
+  height: 3.6rem;
+  min-height: 3.6rem;
+  border-radius: 50%;
+  background-color: #f4f4f5;
+  color: var(--nh-heading);
+  box-shadow: none;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease;
+}
+
+.drawer__close:hover {
+  background-color: #ebebed;
+}
+
+.drawer__close:focus-visible {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+.drawer__close .svg-wrapper {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* The empty-cart view has its own close button, pinned to the top corner. */
+.cart-drawer__warnings .drawer__close {
+  top: calc(7.2rem / 2);
+  right: 1.8rem;
+}
+
+.drawer__footer {
+  margin: 0 -2rem;
+  padding: 1.4rem 2rem;
+  border-top: 1px solid var(--nh-border);
+}
+
+/* --- Overflow ----------------------------------------------------------------
+   Flex items default to `min-width: auto`, i.e. never narrower than their
+   content. A sideways-scrolling row (the add-ons) still reports its full
+   content width as that minimum, so it stretched the whole cart area and the
+   drawer scrolled sideways. These let every level shrink to the drawer. */
+.cart-drawer__form,
+.cart-drawer .drawer__contents,
+.cart-drawer .drawer__cart-items-wrapper,
+cart-drawer-items {
+  min-width: 0;
+}
+
+.cart-drawer .drawer__contents {
+  width: 100%;
+}
+
+cart-drawer-items {
+  overflow-x: hidden;
 }

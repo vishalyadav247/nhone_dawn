@@ -163,15 +163,27 @@ class FacetFiltersForm extends HTMLElement {
         FacetFiltersForm.renderCounts(countsToRender, event.target.closest('.js-filter'));
         FacetFiltersForm.renderMobileCounts(countsToRender, document.getElementById(closestJSFilterID));
 
+        // Put focus back where the visitor was. The checkbox they just used
+        // was replaced by the refresh above (outerHTML), so focus fell to
+        // <body> and keyboard / screen-reader users lost their place; its
+        // replacement has the same id. Text fields (price) and the price
+        // slider's range inputs are never replaced and keep focus as they
+        // are. Only when the control can't be found does focus go to the
+        // group's title, as in Dawn (desktop only: the mobile groups have no
+        // separate title control to land on).
+        const type = event.target.getAttribute('type');
+        const keepsFocus = type === 'text' || type === 'range';
         const newFacetDetailsElement = document.getElementById(closestJSFilterID);
-        const newElementSelector = newFacetDetailsElement.classList.contains('mobile-facets__details')
-          ? `.mobile-facets__close-button`
-          : `.facets__summary`;
-        const newElementToActivate = newFacetDetailsElement.querySelector(newElementSelector);
 
-        const isTextInput = event.target.getAttribute('type') === 'text';
-
-        if (newElementToActivate && !isTextInput) newElementToActivate.focus();
+        if (!keepsFocus) {
+          const sameControl = event.target.id ? document.getElementById(event.target.id) : null;
+          if (sameControl && sameControl !== event.target) {
+            sameControl.focus({ preventScroll: true });
+          } else if (!newFacetDetailsElement.classList.contains('mobile-facets__details')) {
+            const summary = newFacetDetailsElement.querySelector('.facets__summary');
+            if (summary) summary.focus({ preventScroll: true });
+          }
+        }
       }
     }
   }
@@ -339,27 +351,40 @@ class PriceRange extends HTMLElement {
     const loLabel = root.querySelector('[data-nh-price-lo]');
     const hiLabel = root.querySelector('[data-nh-price-hi]');
     const top = Number(hi.max);
+    const step = Number(lo.step) || 1;
+    // The slider's top is rounded UP to a whole step, past the highest price,
+    // so the low thumb stops one step short of it: a "From" at the very top
+    // would sit above every product and empty the grid.
+    const loMax = Math.max(0, top - step);
     const symbol = root.dataset.currency || '';
     const format = (value) => symbol + Number(value).toLocaleString();
 
     const paint = () => {
       root.style.setProperty('--nh-lo', `${(Number(lo.value) / top) * 100}%`);
       root.style.setProperty('--nh-hi', `${(Number(hi.value) / top) * 100}%`);
-      // With both thumbs parked at the top, the low one must be the one you
-      // grab, or neither could move.
-      lo.style.zIndex = Number(lo.value) >= top ? '3' : '';
+      // With the low thumb parked at its stop, under the high one, it must be
+      // the one you grab, or neither could move.
+      lo.style.zIndex = Number(lo.value) >= loMax ? '3' : '';
     };
 
     const update = (moved) => {
+      const changed = new Set([moved]);
+
+      if (Number(lo.value) > loMax) lo.value = loMax;
+
       // Dragging one thumb past the other pushes it along rather than
       // blocking, so the pair can never lock together.
       if (Number(lo.value) > Number(hi.value)) {
         if (moved === lo) hi.value = lo.value;
         else lo.value = hi.value;
+        changed.add(moved === lo ? hi : lo);
       }
 
-      minField.value = Number(lo.value) > 0 ? lo.value : '';
-      maxField.value = Number(hi.value) < top ? hi.value : '';
+      // Only the fields of thumbs that actually moved are rewritten. A thumb
+      // shows a URL price snapped to the step (1,555 shown as 1,600); the
+      // field keeps the exact value until that thumb itself is touched.
+      if (changed.has(lo)) minField.value = Number(lo.value) > 0 ? lo.value : '';
+      if (changed.has(hi)) maxField.value = Number(hi.value) < top ? hi.value : '';
       loLabel.textContent = format(lo.value);
       hiLabel.textContent = format(hi.value);
       this.setMinAndMaxValues();
@@ -456,18 +481,27 @@ customElements.define('facet-remove', FacetRemove);
     summary.classList.toggle('nh-fab-away', away && !drawerOpen);
   };
 
+  // Within this distance of the end of the page the button stays away, so it
+  // never sits on top of the pagination row or the footer links.
+  const BOTTOM_ZONE = 600;
+  const nearBottom = () =>
+    window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - BOTTOM_ZONE;
+
   const onScroll = () => {
     ticking = false;
     if (!mobile.matches) return;
 
     const y = window.scrollY;
-    if (y < TOP_ZONE) setAway(false);
+    if (nearBottom()) setAway(true);
+    else if (y < TOP_ZONE) setAway(false);
     else if (y > lastY + NUDGE) setAway(true);
     else if (y < lastY - NUDGE) setAway(false);
     if (Math.abs(y - lastY) > NUDGE) lastY = y;
 
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => setAway(false), IDLE_MS);
+    idleTimer = setTimeout(() => {
+      if (!nearBottom()) setAway(false);
+    }, IDLE_MS);
   };
 
   window.addEventListener(
@@ -496,12 +530,33 @@ customElements.define('facet-remove', FacetRemove);
 (() => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  // The groups are a plain accordion, but MenuDrawer (global.js) binds every
+  // <summary> in the drawer as a slide-in submenu: on each tap it traps Tab
+  // inside that one group (so the other groups, Sort and Apply can't be
+  // reached by keyboard) and marks it aria-expanded="true" even when the tap
+  // closed it. Stopping the click on its way down keeps MenuDrawer (and
+  // Dawn's generic aria-expanded toggler) off these rows; the <details>
+  // still opens and closes natively, since nothing cancels the default.
+  // aria-expanded is kept in step by the toggle listener below. The drawer
+  // as a whole keeps MenuDrawer's own focus trap.
+  document.addEventListener(
+    'click',
+    (event) => {
+      if (event.target.closest('summary.mobile-facets__summary')) event.stopImmediatePropagation();
+    },
+    true
+  );
+
   document.addEventListener(
     'toggle',
     (event) => {
       const details = event.target;
       if (!(details instanceof HTMLDetailsElement)) return;
-      if (!details.classList.contains('mobile-facets__details') || !details.open) return;
+      if (!details.classList.contains('mobile-facets__details')) return;
+
+      const ownSummary = details.querySelector(':scope > summary');
+      if (ownSummary) ownSummary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+      if (!details.open) return;
 
       const list = details.closest('.mobile-facets__main');
       if (!list) return;

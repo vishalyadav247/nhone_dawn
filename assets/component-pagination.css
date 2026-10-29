@@ -120,9 +120,19 @@ a.pagination__arrow:hover {
 }
 
 /* --- Phones --------------------------------------------------------------- */
+/* --optional: in-between pages and Shopify's own "…", desktop only.
+   --mobile-gap: the snippet's own "…" between kept pages, phones only. */
+.pagination__page--mobile-gap {
+  display: none;
+}
+
 @media screen and (max-width: 749px) {
   .pagination__page--optional {
     display: none;
+  }
+
+  .pagination__page--mobile-gap {
+    display: block;
   }
 }
 
