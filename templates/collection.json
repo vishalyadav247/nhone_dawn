@@ -21,6 +21,9 @@
       "type": "main-collection-product-grid",
       "settings": {
         "show_collection_description": true,
+        "description_eyebrow": "About this collection",
+        "description_show_title": true,
+        "description_lines": 4,
         "products_per_page": 48,
         "columns_desktop": 4,
         "color_scheme": "scheme-1",
@@ -32,6 +35,7 @@
         "quick_add": "standard",
         "enable_filtering": true,
         "filter_type": "vertical",
+        "sticky_filters": true,
         "enable_sorting": true,
         "columns_mobile": "2",
         "padding_top": 0,

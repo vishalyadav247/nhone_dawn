@@ -147,6 +147,7 @@
     },
     "product_addons": {
       "type": "product-addons",
+      "disabled": true,
       "settings": {
         "title": "Add-ons for this product",
         "heading_size": "h2",
