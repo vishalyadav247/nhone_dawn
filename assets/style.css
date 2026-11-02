@@ -1286,7 +1286,7 @@ h3.card__heading {
   padding:0 !important;
   >div {
     flex-direction: column-reverse;
-    gap: 50px;
+    gap: 15px;
 
     .collection-hero__text-wrapper {
       padding: 0;
