@@ -1283,6 +1283,7 @@ h3.card__heading {
 }
 
 .collection-hero {
+  padding:0;
   >div {
     flex-direction: column-reverse;
     gap: 50px;
