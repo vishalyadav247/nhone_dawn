@@ -2225,6 +2225,9 @@ body{
 .wishlisthero-product-in-wishlist{
   opacity:1 !important;
 }
+.wishlisthero-floating{
+  z-index:1;
+}
 .custom-wishlist-holder{
   position: absolute;
     right: 20px;
