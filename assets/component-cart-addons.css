@@ -7,9 +7,8 @@
 
    Each card is compact and horizontal: a soft-grey image well on the left;
    on the right a one-line add-on title (custom.addon_title, see the
-   snippet), the price, and one row with the option dropdown (products with
-   variants) and a filled "Add" pill that adds in place
-   (assets/cart-addons.js).
+   snippet) and the price, with a filled "Add" pill underneath that adds the
+   first available variant in place (assets/cart-addons.js).
    ========================================================================== */
 /* min-width: 0 at every level: a scrolling row still reports its full
    content width as its minimum, and without this it widened the drawer. */
@@ -91,7 +90,6 @@
 
 .cart-addons__track {
   display: flex;
-  gap: 0.8rem;
   min-width: 0;
   margin: 0;
   padding: 0 0 0.4rem;
@@ -100,8 +98,8 @@
   scroll-padding-left: 0;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.4rem), transparent);
-  mask-image: linear-gradient(to right, #000 calc(100% - 2.4rem), transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.6rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.6rem), transparent);
 }
 
 .cart-addons__track::-webkit-scrollbar {
@@ -109,18 +107,25 @@
 }
 
 /* --- Card ----------------------------------------------------------------
-   Compact and horizontal: the image on the left, title / price / actions
-   stacked on the right, so the row adds as little height to the cart as
-   possible (about 7.5rem). 21rem wide, so close to two cards fit in the
-   40rem drawer and the next one peeks in, which shows the row scrolls. */
+   Compact: a small image with the title and price beside it, and the Add
+   button on a full-width row underneath.
+   Sized from the track width, not a fixed rem, so two whole cards and a
+   --cart-addon-peek slice of the third show at any drawer width (desktop
+   40rem drawer and phones alike); the slice tells people the row scrolls. */
+.cart-addons__track {
+  --cart-addon-gap: 0.6rem;
+  --cart-addon-peek: 3.2rem;
+  gap: var(--cart-addon-gap);
+}
+
 .cart-addon {
   display: grid;
-  flex: 0 0 21rem;
-  grid-template-columns: 5.2rem minmax(0, 1fr);
-  grid-template-rows: auto auto 1fr;
-  column-gap: 0.8rem;
+  flex: 0 0 calc((100% - 2 * var(--cart-addon-gap) - var(--cart-addon-peek)) / 2);
+  grid-template-columns: 4.4rem minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  column-gap: 0.6rem;
   row-gap: 0.2rem;
-  max-width: 85%;
+  min-width: 0;
   padding: 0.6rem;
   border: 1px solid var(--nh-border);
   border-radius: 1rem;
@@ -130,7 +135,7 @@
 
 .cart-addon__media {
   display: grid;
-  grid-row: 1 / -1;
+  grid-row: 1 / 3;
   place-items: center;
   align-self: start;
   aspect-ratio: 1;
@@ -139,28 +144,16 @@
   overflow: hidden;
 }
 
-/* Option dropdown and button share one row. */
+/* The Add button's row, the card's full width. */
 .cart-addon__actions {
+  grid-column: 1 / -1;
+  margin-top: 0.4rem;
   display: flex;
   align-items: flex-end;
   gap: 0.4rem;
   min-width: 0;
 }
 
-.cart-addon__actions .cart-addon__variant {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.cart-addon__actions .cart-addon__add {
-  flex: 0 0 auto;
-  width: auto;
-}
-
-/* No option dropdown: the button takes the whole row. */
-.cart-addon__actions .cart-addon__add:only-child {
-  flex: 1 1 auto;
-}
 
 .cart-addon__media img {
   display: block;
@@ -203,30 +196,11 @@
   font-weight: 400;
 }
 
-/* --- Option picker (products with variants) ------------------------------ */
-.cart-addon__variant {
-  width: 100%;
-  height: 2.6rem;
-  padding: 0 2rem 0 0.7rem;
-  border: 1px solid var(--nh-border);
-  border-radius: 0.8rem;
-  background-color: var(--nh-surface);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-position: right 0.7rem center;
-  background-repeat: no-repeat;
-  background-size: 1.2rem;
-  color: var(--nh-heading);
-  font-family: inherit;
-  font-size: 1.15rem;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-.cart-addon__variant:focus-visible {
-  outline: 2px solid var(--nh-brand);
-  outline-offset: 1px;
+/* Compare-at price is hidden for now. The markup is kept (the snippet still
+   renders it, with [hidden] when there is no saving), so deleting this rule
+   brings it back. */
+.cart-addon__price [data-addon-compare] {
+  display: none !important;
 }
 
 /* --- Add to cart ----------------------------------------------------------

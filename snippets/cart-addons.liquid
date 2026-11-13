@@ -22,10 +22,9 @@
   WHAT IS SHOWN
   - Products already in the cart, and sold-out products, are skipped.
   - At most 12 cards.
-  - Every card has an "Add to cart" button that adds in place
-    (assets/cart-addons.js). A product with options also gets a small
-    dropdown of its variants above the button; the first available one is
-    preselected and the price follows the choice.
+  - Every card has an "Add" button that adds in place
+    (assets/cart-addons.js). No option picker: the card always adds, and
+    prices, the product's first available variant.
 
   Re-rendering: the drawer replaces its whole .drawer__inner after every
   cart change (cart-drawer.js / cart.js), so this row is rebuilt each time
@@ -71,12 +70,8 @@
         continue
       endif
       assign addon_shown = addon_shown | plus: 1
-      assign variant = product.selected_or_first_available_variant
+      assign variant = product.first_available_variant
       assign addon_title = product.metafields.custom.addon_title.value | default: product.title | strip
-      assign single_variant = false
-      if product.has_only_default_variant or product.variants.size == 1
-        assign single_variant = true
-      endif
     -%}
     <li class="cart-addon">
       <a href="{{ product.url }}" class="cart-addon__media" tabindex="-1" aria-hidden="true">
@@ -87,11 +82,11 @@
               {{ product.featured_image | image_url: width: 160 }} 160w,
               {{ product.featured_image | image_url: width: 240 }} 240w
             "
-            sizes="52px"
+            sizes="44px"
             src="{{ product.featured_image | image_url: width: 160 }}"
             alt=""
-            width="52"
-            height="52"
+            width="44"
+            height="44"
             loading="lazy"
           >
         {%- endif -%}
@@ -106,30 +101,6 @@
         </s>
       </div>
       <div class="cart-addon__actions">
-      {%- unless single_variant -%}
-        {%- comment -%}
-          Products with options pick one here; cart-addons.js points the
-          button and the price at the chosen variant. Sold-out options are
-          listed but disabled.
-        {%- endcomment -%}
-        <select class="cart-addon__variant" aria-label="{{ product.title | escape }}: choose an option">
-          {%- for v in product.variants -%}
-            <option
-              value="{{ v.id }}"
-              data-price="{{ v.price | money | strip_html | escape }}"
-              data-compare="{% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | strip_html | escape }}{% endif %}"
-              {% if v.id == variant.id %}
-                selected
-              {% endif %}
-              {% unless v.available %}
-                disabled
-              {% endunless %}
-            >
-              {{- v.title | escape -}}
-            </option>
-          {%- endfor -%}
-        </select>
-      {%- endunless -%}
       <button
         type="button"
         class="cart-addon__add"
