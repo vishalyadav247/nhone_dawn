@@ -6,9 +6,10 @@
    is more. No carousel library — it is a plain overflowing list.
 
    Each card is compact and horizontal: a soft-grey image well on the left;
-   on the right a two-line title, the price, and one row with the option
-   dropdown (products with variants) and a filled "Add to cart" pill that
-   adds in place (assets/cart-addons.js).
+   on the right a one-line add-on title (custom.addon_title, see the
+   snippet), the price, and one row with the option dropdown (products with
+   variants) and a filled "Add" pill that adds in place
+   (assets/cart-addons.js).
    ========================================================================== */
 /* min-width: 0 at every level: a scrolling row still reports its full
    content width as its minimum, and without this it widened the drawer. */
@@ -110,19 +111,19 @@
 /* --- Card ----------------------------------------------------------------
    Compact and horizontal: the image on the left, title / price / actions
    stacked on the right, so the row adds as little height to the cart as
-   possible (about 9rem). 26rem wide, so the next card peeks in at the edge
-   of the 40rem drawer and the row reads as scrollable. */
+   possible (about 7.5rem). 21rem wide, so close to two cards fit in the
+   40rem drawer and the next one peeks in, which shows the row scrolls. */
 .cart-addon {
   display: grid;
-  flex: 0 0 26rem;
-  grid-template-columns: 6.4rem minmax(0, 1fr);
+  flex: 0 0 21rem;
+  grid-template-columns: 5.2rem minmax(0, 1fr);
   grid-template-rows: auto auto 1fr;
-  column-gap: 1rem;
-  row-gap: 0.3rem;
+  column-gap: 0.8rem;
+  row-gap: 0.2rem;
   max-width: 85%;
-  padding: 0.8rem;
+  padding: 0.6rem;
   border: 1px solid var(--nh-border);
-  border-radius: 1.2rem;
+  border-radius: 1rem;
   background: var(--nh-surface);
   scroll-snap-align: start;
 }
@@ -142,7 +143,7 @@
 .cart-addon__actions {
   display: flex;
   align-items: flex-end;
-  gap: 0.6rem;
+  gap: 0.4rem;
   min-width: 0;
 }
 
@@ -152,8 +153,13 @@
 }
 
 .cart-addon__actions .cart-addon__add {
-  flex: 1 0 auto;
+  flex: 0 0 auto;
   width: auto;
+}
+
+/* No option dropdown: the button takes the whole row. */
+.cart-addon__actions .cart-addon__add:only-child {
+  flex: 1 1 auto;
 }
 
 .cart-addon__media img {
@@ -165,7 +171,7 @@
 }
 
 .cart-addon__title {
-  display: -webkit-box;
+  display: block;
   min-width: 0;
   overflow: hidden;
   color: var(--nh-heading);
@@ -173,8 +179,8 @@
   font-weight: 500;
   line-height: 1.3;
   text-decoration: none;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cart-addon__title:hover {
@@ -200,8 +206,8 @@
 /* --- Option picker (products with variants) ------------------------------ */
 .cart-addon__variant {
   width: 100%;
-  height: 2.8rem;
-  padding: 0 2.2rem 0 0.8rem;
+  height: 2.6rem;
+  padding: 0 2rem 0 0.7rem;
   border: 1px solid var(--nh-border);
   border-radius: 0.8rem;
   background-color: var(--nh-surface);
@@ -233,8 +239,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 2.8rem;
-  padding: 0 1rem;
+  height: 2.6rem;
+  padding: 0 1.2rem;
   border: 0;
   border-radius: 999px;
   background: var(--nh-btn-primary-bg);

@@ -12,6 +12,13 @@
   (Content > Metaobjects > Cart add-ons). With no definition, no entry or no
   products, nothing renders.
 
+  CARD TITLE
+  The drawer is narrow, so each card shows its "Add-on title", not the full
+  product title. It comes from the product metafield custom.addon_title
+  (Single line text, Settings > Custom data > Products), and falls back to
+  the product title when that is empty. Screen readers and the hover tooltip
+  still get the full title.
+
   WHAT IS SHOWN
   - Products already in the cart, and sold-out products, are skipped.
   - At most 12 cards.
@@ -65,6 +72,7 @@
       endif
       assign addon_shown = addon_shown | plus: 1
       assign variant = product.selected_or_first_available_variant
+      assign addon_title = product.metafields.custom.addon_title.value | default: product.title | strip
       assign single_variant = false
       if product.has_only_default_variant or product.variants.size == 1
         assign single_variant = true
@@ -79,16 +87,18 @@
               {{ product.featured_image | image_url: width: 160 }} 160w,
               {{ product.featured_image | image_url: width: 240 }} 240w
             "
-            sizes="80px"
+            sizes="52px"
             src="{{ product.featured_image | image_url: width: 160 }}"
             alt=""
-            width="80"
-            height="80"
+            width="52"
+            height="52"
             loading="lazy"
           >
         {%- endif -%}
       </a>
-      <a href="{{ product.url }}" class="cart-addon__title">{{ product.title | escape }}</a>
+      <a href="{{ product.url }}" class="cart-addon__title" title="{{ product.title | escape }}">
+        {{- addon_title | escape -}}
+      </a>
       <div class="cart-addon__price">
         <span data-addon-price>{{ variant.price | money }}</span>
         <s data-addon-compare{% unless variant.compare_at_price > variant.price %} hidden{% endunless %}>
@@ -126,7 +136,7 @@
         data-addon-variant="{{ variant.id }}"
         aria-label="Add {{ product.title | escape }} to cart"
       >
-        <span class="cart-addon__add-label">Add to cart</span>
+        <span class="cart-addon__add-label">Add</span>
         <span class="cart-addon__spinner" aria-hidden="true"></span>
       </button>
       </div>
