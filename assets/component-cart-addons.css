@@ -7,7 +7,7 @@
 
    Each card is compact and horizontal: a soft-grey image well on the left;
    on the right a one-line add-on title (custom.addon_title, see the
-   snippet) and the price, with a filled "Add" pill underneath that adds the
+   snippet), then the price and a small outline "+ Add" pill that adds the
    first available variant in place (assets/cart-addons.js).
    ========================================================================== */
 /* min-width: 0 at every level: a scrolling row still reports its full
@@ -98,8 +98,8 @@
   scroll-padding-left: 0;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.6rem), transparent);
-  mask-image: linear-gradient(to right, #000 calc(100% - 1.6rem), transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.2rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.2rem), transparent);
 }
 
 .cart-addons__track::-webkit-scrollbar {
@@ -107,26 +107,27 @@
 }
 
 /* --- Card ----------------------------------------------------------------
-   Compact: a small image with the title and price beside it, and the Add
-   button on a full-width row underneath.
+   Compact and inline: the image on the left; on the right the add-on title,
+   then the price and a small outline "+ Add" on one line.
    Sized from the track width, not a fixed rem, so two whole cards and a
    --cart-addon-peek slice of the third show at any drawer width (desktop
    40rem drawer and phones alike); the slice tells people the row scrolls. */
 .cart-addons__track {
   --cart-addon-gap: 0.6rem;
-  --cart-addon-peek: 3.2rem;
+  --cart-addon-peek: 2.4rem;
   gap: var(--cart-addon-gap);
 }
 
 .cart-addon {
   display: grid;
   flex: 0 0 calc((100% - 2 * var(--cart-addon-gap) - var(--cart-addon-peek)) / 2);
-  grid-template-columns: 4.4rem minmax(0, 1fr);
-  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 5.2rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
   column-gap: 0.6rem;
-  row-gap: 0.2rem;
+  row-gap: 0.5rem;
   min-width: 0;
-  padding: 0.6rem;
+  padding: 0.5rem;
   border: 1px solid var(--nh-border);
   border-radius: 1rem;
   background: var(--nh-surface);
@@ -135,25 +136,14 @@
 
 .cart-addon__media {
   display: grid;
-  grid-row: 1 / 3;
+  grid-row: 1 / -1;
   place-items: center;
-  align-self: start;
+  align-self: center;
   aspect-ratio: 1;
   border-radius: 0.8rem;
   background: #f4f4f5;
   overflow: hidden;
 }
-
-/* The Add button's row, the card's full width. */
-.cart-addon__actions {
-  grid-column: 1 / -1;
-  margin-top: 0.4rem;
-  display: flex;
-  align-items: flex-end;
-  gap: 0.4rem;
-  min-width: 0;
-}
-
 
 .cart-addon__media img {
   display: block;
@@ -165,10 +155,11 @@
 
 .cart-addon__title {
   display: block;
+  align-self: end;
   min-width: 0;
   overflow: hidden;
   color: var(--nh-heading);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 500;
   line-height: 1.3;
   text-decoration: none;
@@ -178,6 +169,18 @@
 
 .cart-addon__title:hover {
   color: var(--nh-brand);
+}
+
+/* Price and Add on one line. If a long price leaves no room, the button
+   wraps under it instead of squeezing. */
+.cart-addon__buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-self: start;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
 .cart-addon__price {
@@ -203,33 +206,43 @@
   display: none !important;
 }
 
-/* --- Add to cart ----------------------------------------------------------
-   A filled primary pill — the card's one call to action — using the primary
-   button tokens, so it matches every other Add to cart on the site and
-   darkens on hover like them. */
+/* --- Add ------------------------------------------------------------------
+   A small outline pill in the brand colour, so the row stays light next to
+   the drawer's main Checkout button; it fills with the brand on hover and
+   while adding. */
 .cart-addon__add {
   position: relative;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 2.6rem;
-  padding: 0 1.2rem;
-  border: 0;
+  height: 2.4rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--nh-brand);
   border-radius: 999px;
-  background: var(--nh-btn-primary-bg);
-  color: var(--nh-btn-primary-label);
+  background: transparent;
+  color: var(--nh-brand);
   font-family: inherit;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: filter 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-.cart-addon__add:hover {
-  filter: brightness(var(--nh-btn-hover-darken, 0.88));
+.cart-addon__add-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cart-addon__add:hover,
+.cart-addon__add.is-loading {
+  background: var(--nh-brand);
+  color: var(--nh-on-brand);
 }
 
 .cart-addon__add:focus-visible {
@@ -243,7 +256,7 @@
   width: 1.4rem;
   height: 1.4rem;
   border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: var(--nh-btn-primary-label);
+  border-top-color: var(--nh-on-brand);
   border-radius: 50%;
   animation: cart-addon-spin 0.7s linear infinite;
 }

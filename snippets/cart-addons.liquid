@@ -82,11 +82,11 @@
               {{ product.featured_image | image_url: width: 160 }} 160w,
               {{ product.featured_image | image_url: width: 240 }} 240w
             "
-            sizes="44px"
+            sizes="52px"
             src="{{ product.featured_image | image_url: width: 160 }}"
             alt=""
-            width="44"
-            height="44"
+            width="52"
+            height="52"
             loading="lazy"
           >
         {%- endif -%}
@@ -94,20 +94,23 @@
       <a href="{{ product.url }}" class="cart-addon__title" title="{{ product.title | escape }}">
         {{- addon_title | escape -}}
       </a>
+      <div class="cart-addon__buy">
       <div class="cart-addon__price">
-        <span data-addon-price>{{ variant.price | money }}</span>
+        <span data-addon-price>{{ variant.price | money | replace: '.00', '' }}</span>
         <s data-addon-compare{% unless variant.compare_at_price > variant.price %} hidden{% endunless %}>
-          {{- variant.compare_at_price | money -}}
+          {{- variant.compare_at_price | money | replace: '.00', '' -}}
         </s>
       </div>
-      <div class="cart-addon__actions">
       <button
         type="button"
         class="cart-addon__add"
         data-addon-variant="{{ variant.id }}"
         aria-label="Add {{ product.title | escape }} to cart"
       >
-        <span class="cart-addon__add-label">Add</span>
+        <span class="cart-addon__add-label">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add
+        </span>
         <span class="cart-addon__spinner" aria-hidden="true"></span>
       </button>
       </div>
