@@ -349,11 +349,24 @@
       search results inject card HTML via innerHTML, which never executes
       <script> tags emitted alongside the cards.
     {%- endcomment -%}
+    {%- comment -%}
+      Product-card Add to cart, on every page. card-product.liquid renders a
+      <product-form> (and, for products with options, a <quick-add-modal>)
+      even when a section's quick add is "none" or not passed at all, e.g.
+      the search results and collection.main-collection. Without these
+      scripts that form submitted natively to /cart/add and the browser
+      landed on /cart; with them it adds via AJAX and opens the cart drawer.
+      Loaded here, not per section, for the same innerHTML reason as below.
+      Both files guard customElements.define, so sections that also include
+      them are harmless.
+    {%- endcomment -%}
+    {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+
     {%- if settings.goEnable and settings.goCardBuynowEnable -%}
       {{ 'component-card-buy-now.css' | asset_url | stylesheet_tag }}
-      {{ 'quick-add.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'card-buy-now.js' | asset_url }}" defer="defer"></script>
-      <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
       <style>
         :root {
           {%- comment -%}
